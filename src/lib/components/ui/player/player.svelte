@@ -40,7 +40,7 @@
   import Volume from './volume.svelte'
 
   import type { ResolvedFile } from './resolver'
-  import type { TorrentFile } from '../../../../app'
+  import type { TorrentFile } from 'native'
   import type { SvelteMediaTimeRange } from 'svelte/elements'
 
   import { beforeNavigate, goto } from '$app/navigation'
@@ -743,8 +743,8 @@
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
-<div class='w-full h-full relative content-center bg-black overflow-clip text-left' class:fitWidth class:seeking class:pip={pictureInPictureElement} bind:this={wrapper} on:navigate={resetMove}>
-  <video class='w-full h-full' preload='metadata' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking || pictureInPictureElement} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
+<div class='w-full h-full relative content-center bg-black overflow-clip text-left touch-none' class:fitWidth class:seeking class:pip={pictureInPictureElement} bind:this={wrapper} on:navigate={resetMove}>
+  <video class='w-full h-full touch-none' preload='metadata' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking || pictureInPictureElement} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
     use:createDeband={$settings.playerDeband}
     use:holdToFF={'pointer'}
@@ -857,7 +857,7 @@
           <a class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300 hover:underline' href='/app/anime/{mediaInfo.media.id}'>{mediaInfo.session.title}</a>
           <Sheet.Root portal={wrapper}>
             <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left hover:underline'>{mediaInfo.session.description}</Sheet.Trigger>
-            <Sheet.Content class='w-[550px] sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black justify-between'>
+            <Sheet.Content class='w-full sm:w-[550px] p-3 sm:p-6 max-w-full sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black justify-between'>
               {#if mediaInfo.media}
                 {#await Promise.all([episodes(mediaInfo.media.id), client.single(mediaInfo.media.id)]) then [eps, media]}
                   {#if media.data?.Media}

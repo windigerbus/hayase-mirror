@@ -8,7 +8,7 @@
 
   import type { ResolvedFile } from './resolver'
   import type { MediaInfo } from './util'
-  import type { TorrentFile } from '../../../../app'
+  import type { TorrentFile } from 'native'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'

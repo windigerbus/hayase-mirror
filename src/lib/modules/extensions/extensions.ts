@@ -11,21 +11,23 @@ import { storage } from './storage'
 import type { EpisodesResponse } from '../anizip/types'
 import type { TorrentResult } from 'hayase-extensions'
 
+import { dev } from '$app/environment'
 import { options as extensionOptions, saved } from '$lib/modules/extensions'
 
+// TODO: ember exclusions might not be needed anymore as parser was improved
 const exclusions = ['DTS', 'TrueHD', '[EMBER]']
-const isDev = location.hostname === 'localhost'
 
 const video = document.createElement('video')
 
-if (!isDev && !video.canPlayType('video/mp4; codecs="hev1.1.6.L93.B0"')) {
+if (!dev && !video.canPlayType('video/mp4; codecs="hev1.1.6.L93.B0"')) {
   exclusions.push('HEVC', 'x265', 'H.265')
 }
-if (!isDev && !video.canPlayType('audio/mp4; codecs="ac-3"')) {
+if (!dev && !video.canPlayType('audio/mp4; codecs="ac-3"')) {
   exclusions.push('AC3', 'AC-3')
 }
 if (!('audioTracks' in HTMLVideoElement.prototype)) {
   exclusions.push('DUAL')
+  exclusions.push('MULTI')
 }
 video.remove()
 

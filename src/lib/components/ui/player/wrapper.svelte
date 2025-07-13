@@ -63,7 +63,7 @@
   }
 </script>
 
-<div class={cn('w-full h-full', isMiniplayer && 'z-[49] absolute top-0 left-0 pointer-events-none cursor-grabbing')}
+<div class={cn('w-full h-full', isMiniplayer && 'z-[49] absolute top-0 left-0 pointer-events-none cursor-grabbing touch-none')}
   bind:this={wrapper}
   on:pointerdown={startDragging}
   on:pointerup|self={endDragging}

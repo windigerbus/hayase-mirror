@@ -41,7 +41,8 @@ const config: Config = {
       center: true,
       padding: '2rem',
       screens: {
-        '2xl': '1400px'
+        '2xl': '1400px',
+        xs: '480px'
       }
     },
     extend: {
@@ -88,6 +89,10 @@ const config: Config = {
       },
       fontFamily: {
         sans: [...fontFamily.sans]
+      },
+      screens: {
+        '2xl': '1400px',
+        xs: '480px'
       }
     }
   }

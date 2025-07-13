@@ -57,7 +57,7 @@
 </script>
 
 <div class='flex flex-col w-full relative h-full overflow-clip'>
-  <div class='space-y-0.5 px-10 pt-10'>
+  <div class='space-y-0.5 p-3 md:p-10 pb-0'>
     <h2 class='text-2xl font-bold'>Watch Together <span class='text-muted-foreground text-lg ml-4 font-semibold'>{$w2globby?.code}</span></h2>
     <p class='text-muted-foreground'>
       Watch videos together with friends in real-time. You can invite others to your lobby and chat while watching.

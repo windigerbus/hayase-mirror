@@ -3,7 +3,7 @@ import { writable } from 'simple-store-svelte'
 import { get } from 'svelte/store'
 
 import type { ResolvedFile } from './resolver'
-import type { TorrentFile } from '../../../../app'
+import type { TorrentFile } from 'native'
 
 import native from '$lib/modules/native'
 import { type defaults, settings, SUPPORTS } from '$lib/modules/settings'

@@ -1,17 +1,12 @@
 import type { Media } from '$lib/modules/anilist'
 import type { ResolvedFile } from './resolver'
 import type { Track } from '../../../../app'
+import type { SessionMetadata } from 'native'
 
 export interface Chapter {
   start: number
   end: number
   text: string
-}
-
-export interface SessionMetadata {
-  title: string
-  description: string
-  image: string
 }
 
 export interface MediaInfo {

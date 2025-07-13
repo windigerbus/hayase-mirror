@@ -5,8 +5,8 @@ import { persisted } from 'svelte-persisted-store'
 import native from '../native'
 import { w2globby } from '../w2g/lobby'
 
-import type { TorrentFile, TorrentInfo } from '$lib/../app'
 import type { Media } from '../anilist'
+import type { TorrentFile, TorrentInfo } from 'native'
 
 const defaultTorrentInfo: TorrentInfo = {
   name: '',

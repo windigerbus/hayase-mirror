@@ -6,7 +6,7 @@
 
   import { MediaCell, NameCell, StatusCell } from './cells'
 
-  import type { LibraryEntry } from '$lib/../app'
+  import type { LibraryEntry } from 'native'
 
   import { goto } from '$app/navigation'
   import * as Table from '$lib/components/ui/table'

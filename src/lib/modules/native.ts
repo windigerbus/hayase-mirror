@@ -1,4 +1,4 @@
-import type { AuthResponse, Native, TorrentInfo } from '../../app'
+import type { AuthResponse, Native, TorrentInfo } from 'native'
 
 import { sleep } from '$lib/utils'
 

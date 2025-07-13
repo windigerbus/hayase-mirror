@@ -89,6 +89,9 @@ importers:
       marked:
         specifier: ^15.0.11
         version: 15.0.11
+      native:
+        specifier: github:hayase-app/native
+        version: https://codeload.github.com/hayase-app/native/tar.gz/151ca360188ffd431143f1b9ba2f33ae0a87480b
       p2pt:
         specifier: github:ThaUnknown/p2pt#modernise
         version: https://codeload.github.com/ThaUnknown/p2pt/tar.gz/9ad7a56ed6ee43f5664ebad33b803702ee349316
@@ -1896,6 +1899,10 @@ packages:
     resolution: {integrity: sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw==}
     engines: {node: ^18 || >=20}
     hasBin: true
+
+  native@https://codeload.github.com/hayase-app/native/tar.gz/151ca360188ffd431143f1b9ba2f33ae0a87480b:
+    resolution: {tarball: https://codeload.github.com/hayase-app/native/tar.gz/151ca360188ffd431143f1b9ba2f33ae0a87480b}
+    version: 1.0.0
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
@@ -4542,6 +4549,8 @@ snapshots:
   nanoid@3.3.11: {}
 
   nanoid@5.1.5: {}
+
+  native@https://codeload.github.com/hayase-app/native/tar.gz/151ca360188ffd431143f1b9ba2f33ae0a87480b: {}
 
   natural-compare@1.4.0: {}
 

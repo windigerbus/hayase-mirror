@@ -79,7 +79,7 @@
   const _list = list
 </script>
 
-<div class='flex flex-col items-center w-full h-full overflow-y-auto p-10 min-w-0' use:dragScroll>
+<div class='flex flex-col items-center w-full h-full overflow-y-auto p-3 md:p-10 min-w-0' use:dragScroll>
   <div class='space-y-0.5 self-start mb-6'>
     <h2 class='text-2xl font-bold'>Airing Calendar</h2>
     <p class='text-muted-foreground'>
@@ -138,8 +138,8 @@
       {#each aggregate($query.data, dayList) as { day, episodes } (day.date)}
         {@const sameMonth = isSameMonth(now, day.date)}
         <div>
-          <div class='flex flex-col text-xs py-3 h-48' class:opacity-30={!sameMonth}>
-            {#if !$breakpoints.md}
+          <div class='flex flex-col text-xs py-3 h-24 lg:h-48' class:opacity-30={!sameMonth}>
+            {#if !$breakpoints.lg}
               <Drawer.Root shouldScaleBackground portal='html'>
                 <Drawer.Trigger class='h-full flex flex-col'>
                   <div class={cn('w-6 h-6 flex items-center justify-center font-bold mx-3', isToday(day.date) && 'bg-[rgb(61,180,242)] rounded-full')}>
@@ -185,12 +185,12 @@
                   <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group mt-1.5 px-3', +episode.airTime < Date.now() && 'opacity-30')} href='/app/anime/{episode.id}'>
                     <div class='font-medium text-nowrap text-ellipsis overflow-hidden pr-2' title={episode.title?.userPreferred}>
                       {#if status}
-                        <StatusDot variant={status} class='hidden lg:inline-flex' />
+                        <StatusDot variant={status} class='hidden xl:inline-flex' />
                       {/if}
                       {episode.title?.userPreferred}
                     </div>
-                    <div class='ml-auto mr-1 text-nowrap hidden lg:inline-flex'>#{episode.episode}</div>
-                    <div class='text-neutral-400 group-select:text-neutral-200 ml-auto lg:ml-0'>{format(episode.airTime, 'HH:mm')}</div>
+                    <div class='ml-auto mr-1 text-nowrap hidden xl:inline-flex'>#{episode.episode}</div>
+                    <div class='text-neutral-400 group-select:text-neutral-200 ml-auto xl:ml-0'>{format(episode.airTime, 'HH:mm')}</div>
                   </ButtonPrimitive.Root>
                 {/each}
                 {#if episodes.length > 6}
@@ -204,12 +204,12 @@
                         <ButtonPrimitive.Root class={cn('flex items-center h-4 w-full group', +episode.airTime < Date.now() && 'text-neutral-300')} href='/app/anime/{episode.id}'>
                           <div class='font-medium text-nowrap text-ellipsis overflow-hidden pr-2' title={episode.title?.userPreferred}>
                             {#if status}
-                              <StatusDot variant={status} class='hidden lg:inline-flex' />
+                              <StatusDot variant={status} class='hidden xl:inline-flex' />
                             {/if}
                             {episode.title?.userPreferred}
                           </div>
-                          <div class='ml-auto mr-1 text-nowrap hidden lg:inline-flex'>#{episode.episode}</div>
-                          <div class='text-neutral-400 group-select:text-neutral-900 ml-auto lg:ml-0'>{format(episode.airTime, 'HH:mm')}</div>
+                          <div class='ml-auto mr-1 text-nowrap hidden xl:inline-flex'>#{episode.episode}</div>
+                          <div class='text-neutral-400 group-select:text-neutral-900 ml-auto xl:ml-0'>{format(episode.airTime, 'HH:mm')}</div>
                         </ButtonPrimitive.Root>
                       {/each}
                     </Tooltip.Content>
