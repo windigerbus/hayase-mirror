@@ -14,8 +14,7 @@ import type { TorrentResult } from 'hayase-extensions'
 import { dev } from '$app/environment'
 import { options as extensionOptions, saved } from '$lib/modules/extensions'
 
-// TODO: ember exclusions might not be needed anymore as parser was improved
-const exclusions = ['DTS', 'TrueHD', '[EMBER]']
+const exclusions = ['DTS', 'TrueHD']
 
 const video = document.createElement('video')
 

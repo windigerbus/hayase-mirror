@@ -54,10 +54,12 @@
 </script>
 
 <script lang='ts'>
+  import { getContext } from 'svelte'
+
   import ProgressButton from './ui/button/progress-button.svelte'
   import { Banner } from './ui/img'
 
-  import { goto } from '$app/navigation'
+  import { beforeNavigate, goto } from '$app/navigation'
   import { searchStore } from '$lib'
   import { saved } from '$lib/modules/extensions'
   import { server } from '$lib/modules/torrent'
@@ -147,6 +149,16 @@
   $: searchResult && startAnimation(searchResult)
 
   const downloaded = server.downloaded
+
+  const stop = getContext<() => void>('stop-progress-bar')
+
+  beforeNavigate(({ cancel }) => {
+    if (open) {
+      cancel()
+      close()
+      stop()
+    }
+  })
 </script>
 
 <Dialog.Root bind:open onOpenChange={close} portal='#episodeListTarget'>

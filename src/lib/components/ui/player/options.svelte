@@ -99,40 +99,44 @@
         </Keybinds>
       {:else}
         <Tree.Root bind:state={treeState}>
-          <Tree.Item>
-            <span slot='trigger'>Audio</span>
-            <Tree.Sub>
-              {#each Object.entries(normalizeTracks(video.audioTracks ?? [])) as [lang, tracks] (lang)}
-                <Tree.Item>
-                  <span slot='trigger' class='capitalize'>{lang}</span>
-                  <Tree.Sub>
-                    {#each tracks as track (track.id)}
-                      <Tree.Item active={track.enabled} on:click={() => { selectAudio(track.id); open = false }}>
-                        <span>{track.label}</span>
-                      </Tree.Item>
-                    {/each}
-                  </Tree.Sub>
-                </Tree.Item>
-              {/each}
-            </Tree.Sub>
-          </Tree.Item>
-          <Tree.Item>
-            <span slot='trigger'>Video</span>
-            <Tree.Sub>
-              {#each Object.entries(normalizeTracks(video.videoTracks ?? [])) as [lang, tracks] (lang)}
-                <Tree.Item>
-                  <span slot='trigger' class='capitalize'>{lang}</span>
-                  <Tree.Sub>
-                    {#each tracks as track (track.id)}
-                      <Tree.Item active={track.enabled} on:click={() => { selectVideo(track.id); open = false }}>
-                        <span>{track.label}</span>
-                      </Tree.Item>
-                    {/each}
-                  </Tree.Sub>
-                </Tree.Item>
-              {/each}
-            </Tree.Sub>
-          </Tree.Item>
+          {#if 'audioTracks' in HTMLVideoElement.prototype}
+            <Tree.Item>
+              <span slot='trigger'>Audio</span>
+              <Tree.Sub>
+                {#each Object.entries(normalizeTracks(video.audioTracks ?? [])) as [lang, tracks] (lang)}
+                  <Tree.Item>
+                    <span slot='trigger' class='capitalize'>{lang}</span>
+                    <Tree.Sub>
+                      {#each tracks as track (track.id)}
+                        <Tree.Item active={track.enabled} on:click={() => { selectAudio(track.id); open = false }}>
+                          <span>{track.label}</span>
+                        </Tree.Item>
+                      {/each}
+                    </Tree.Sub>
+                  </Tree.Item>
+                {/each}
+              </Tree.Sub>
+            </Tree.Item>
+          {/if}
+          {#if 'videoTracks' in HTMLVideoElement.prototype}
+            <Tree.Item>
+              <span slot='trigger'>Video</span>
+              <Tree.Sub>
+                {#each Object.entries(normalizeTracks(video.videoTracks ?? [])) as [lang, tracks] (lang)}
+                  <Tree.Item>
+                    <span slot='trigger' class='capitalize'>{lang}</span>
+                    <Tree.Sub>
+                      {#each tracks as track (track.id)}
+                        <Tree.Item active={track.enabled} on:click={() => { selectVideo(track.id); open = false }}>
+                          <span>{track.label}</span>
+                        </Tree.Item>
+                      {/each}
+                    </Tree.Sub>
+                  </Tree.Item>
+                {/each}
+              </Tree.Sub>
+            </Tree.Item>
+          {/if}
           {#if subtitles}
             <Tree.Item id='subs'>
               <span slot='trigger'>Subtitles</span>
@@ -225,7 +229,7 @@
           <Tree.Item on:click={fullscreen} active={!!fullscreenElement}>
             Fullscreen
           </Tree.Item>
-          <Tree.Item on:click={() => pip.pip()} active={!!$pipElement}>
+          <Tree.Item on:click={() => { pip.pip(); close() }} active={!!$pipElement}>
             Picture in Picture
           </Tree.Item>
           <Tree.Item on:click={deband} active={$settings.playerDeband}>

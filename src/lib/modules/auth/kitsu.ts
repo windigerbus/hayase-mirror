@@ -449,13 +449,14 @@ export default new class KitsuSync {
 
     const kitsuEntry = this.userlist.value[targetMediaId]
 
-    const kitsuEntryVariables = {
+    const kitsuEntryVariables: Partial<KEntry> = {
       status: AL_TO_KITSU_STATUS[variables.status!],
-      progress: variables.progress ?? undefined,
-      rating: (variables.score ?? 0) < 2 ? undefined : variables.score!.toString(),
-      reconsumeCount: variables.repeat ?? undefined,
       reconsuming: variables.status === 'REPEATING'
     }
+
+    if (variables.progress) kitsuEntryVariables.progress = variables.progress
+    if (variables.score) kitsuEntryVariables.rating = (variables.score < 2 ? undefined : variables.score.toString())
+    if (variables.repeat) kitsuEntryVariables.reconsumeCount = variables.repeat
 
     if (kitsuEntry) {
       await this._updateEntry(kitsuEntry.id, kitsuEntryVariables, targetMediaId)

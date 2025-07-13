@@ -40,7 +40,7 @@
     <Switch {id} bind:checked={$settings.torrentStreamedDownload} />
   </SettingCard>
   <SettingCard let:id title='Transfer Speed Limit' description='Download/Upload speed limit for torrents, higher values increase CPU usage, and values higher than your storage write speeds will quickly fill up RAM.'>
-    <div class='flex items-center relative scale-parent border border-input rounded-md'>
+    <div class='flex items-center relative scale-parent border border-input rounded-md self-baseline'>
       <Input type='number' inputmode='numeric' pattern='[0-9]*.?[0-9]*' min='1' max='50' step='0.1' bind:value={$settings.torrentSpeed} {id} class='w-32 shrink-0 bg-background pr-12 border-0 no-scale' />
       <div class='shrink-0 absolute right-3 z-10 pointer-events-none text-sm leading-5'>Mb/s</div>
     </div>

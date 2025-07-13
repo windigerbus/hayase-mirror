@@ -436,11 +436,12 @@ export default new class MALSync {
 
     const body: MALListUpdate = {
       status: AL_TO_MAL_STATUS[variables.status!],
-      num_watched_episodes: variables.progress ?? 0,
-      score: variables.score ?? 0,
-      num_times_rewatched: variables.repeat ?? 0,
       is_rewatching: variables.status === 'REPEATING'
     }
+
+    if (variables.progress) body.num_watched_episodes = variables.progress
+    if (variables.score) body.score = variables.score
+    if (variables.repeat) body.num_times_rewatched = variables.repeat
 
     const res = await this._patch<MALStatus>(`${ENDPOINTS.API_ANIME}/${malId}/my_list_status`, body)
 

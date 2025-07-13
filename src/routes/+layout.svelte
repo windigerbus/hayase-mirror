@@ -4,6 +4,7 @@
   import '@fontsource/geist-mono'
   import '$lib/modules/navigate'
   import { ProgressBar } from '@prgm/sveltekit-progress-bar'
+  import { setContext } from 'svelte'
   import { toast } from 'svelte-sonner'
 
   import Backplate from '$lib/components/Backplate.svelte'
@@ -24,6 +25,14 @@
     toast.error('Torrent Process Error!', { description: error?.stack ?? error?.message })
     console.error(error)
   })
+
+  const displayThresholdMs = 150
+  let complete: ((settleTime: number | undefined) => void) | undefined
+  setContext('stop-progress-bar', () => {
+    setTimeout(() => {
+      complete?.(0)
+    }, displayThresholdMs)
+  })
 </script>
 
 <svelte:head>
@@ -31,7 +40,7 @@
 </svelte:head>
 
 <div class='w-full h-full flex flex-col backface-hidden bg-black relative overflow-clip md:border-l-2 [border-image:linear-gradient(to_bottom,white_var(--progress),#2dcf58_var(--progress))_1] preserve-3d' bind:this={root} id='root' style:--progress='{100 - updateProgress}%'>
-  <ProgressBar zIndex={100} />
+  <ProgressBar zIndex={100} bind:complete {displayThresholdMs} />
   <Toaster position='top-right' expand={true} />
 
   <Menubar />
