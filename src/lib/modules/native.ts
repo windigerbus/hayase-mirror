@@ -51,7 +51,7 @@ const dummyFiles = [
 export default Object.assign<Native, Partial<Native>>({
   authAL: (url: string) => {
     return new Promise<AuthResponse>((resolve, reject) => {
-      const popup = open(url, 'authframe', 'popup')
+      const popup = open(url, 'authframe', 'popup,width=382,height=582')
       if (!popup) return reject(new Error('Failed to open popup'))
       const check = () => {
         if (popup.closed) return reject(new Error('Popup closed'))

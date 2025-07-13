@@ -41,15 +41,15 @@
     const sections = [...sectionsQueries]
     const unsub: Array<() => void> = []
 
-    if (planningIDs) {
-      const planningQuery = client.search({ ids: planningIDs }, true)
-      unsub.push(planningQuery.subscribe(() => undefined))
-      sections.unshift({ title: 'Your List', query: planningQuery, variables: { ids: planningIDs } })
-    }
     if (sequelIDs) {
       const sequelsQuery = client.search({ ids: sequelIDs, status: ['FINISHED', 'RELEASING'], onList: false }, true)
       unsub.push(sequelsQuery.subscribe(() => undefined))
       sections.unshift({ title: 'Sequels You Missed', query: sequelsQuery, variables: { ids: sequelIDs, status: ['FINISHED', 'RELEASING'], onList: false } })
+    }
+    if (planningIDs) {
+      const planningQuery = client.search({ ids: planningIDs, status: ['FINISHED', 'RELEASING'], sort: ['START_DATE_DESC'] }, true)
+      unsub.push(planningQuery.subscribe(() => undefined))
+      sections.unshift({ title: 'Your List', query: planningQuery, variables: { ids: planningIDs, status: ['FINISHED', 'RELEASING'], sort: ['START_DATE_DESC'] } })
     }
     if (continueIDs) {
       const contiueQuery = derived(client.search({ ids: continueIDs.slice(0, 50), sort: ['UPDATED_AT_DESC'] }, false), value => {

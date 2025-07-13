@@ -88,7 +88,10 @@
     seasons: [] as format[],
     formats: [] as format[],
     status: [] as format[],
-    sort: [] as format[],
+    sort: [{
+      value: 'TRENDING_DESC',
+      label: 'Trending'
+    }] as format[],
     ids: undefined,
     onList: [] as format[]
   }
