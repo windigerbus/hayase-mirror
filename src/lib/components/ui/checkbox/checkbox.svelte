@@ -3,6 +3,7 @@
   import Check from 'svelte-radix/Check.svelte'
   import Minus from 'svelte-radix/Minus.svelte'
 
+  import { keywrap } from '$lib/modules/navigate'
   import { cn } from '$lib/utils.js'
 
   type $$Props = CheckboxPrimitive.Props
@@ -11,6 +12,13 @@
   let className: $$Props['class'] = undefined
   export let checked: $$Props['checked'] = false
   export { className as class }
+
+  function check () {
+    const wr = keywrap(() => {
+      checked = !checked
+    })
+    return (e: unknown) => wr(e as KeyboardEvent)
+  }
 </script>
 
 <CheckboxPrimitive.Root
@@ -20,6 +28,7 @@
   )}
   bind:checked
   on:click
+  on:keydown={check()}
   {...$$restProps}
 >
   <CheckboxPrimitive.Indicator

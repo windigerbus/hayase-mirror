@@ -48,8 +48,8 @@
 <Tabs.Root bind:value class='w-full'>
   <div class='flex justify-between items-center gap-3 sm:flex-row flex-col'>
     <Tabs.List class='grid w-full grid-cols-2 md:max-w-72'>
-      <Tabs.Trigger value='extensions'>Extensions</Tabs.Trigger>
-      <Tabs.Trigger value='repositories'>Repositories</Tabs.Trigger>
+      <Tabs.Trigger tabindex={0} value='extensions'>Extensions</Tabs.Trigger>
+      <Tabs.Trigger tabindex={0} value='repositories'>Repositories</Tabs.Trigger>
     </Tabs.List>
     <div class='flex items-center relative scale-parent md:max-w-72 w-full'>
       <Input
@@ -119,7 +119,7 @@
   <Tabs.Content value='repositories' tabindex={-1}>
     <div class='gap-3 flex py-3 sm:flex-row flex-col'>
       <Tooltip.Root>
-        <Tooltip.Trigger class='w-full'>
+        <Tooltip.Trigger class='w-full' tabindex={-1}>
           <Input class='bg-neutral-950' type='url' placeholder='https://example.com/manifest.json' bind:value={extensionInput} />
         </Tooltip.Trigger>
         <Tooltip.Content class='max-w-full w-52'>

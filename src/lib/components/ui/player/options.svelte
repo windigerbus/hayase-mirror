@@ -212,7 +212,7 @@
               {#each videoFiles as file, i (i)}
                 <Tree.Item on:click={() => selectFile(file)}>
                   <Tooltip.Root>
-                    <Tooltip.Trigger class='text-ellipsis text-nowrap overflow-clip w-full'>
+                    <Tooltip.Trigger class='text-ellipsis text-nowrap overflow-clip w-full' tabindex={-1}>
                       {file.name}
                     </Tooltip.Trigger>
                     <Tooltip.Content>
