@@ -4,6 +4,7 @@
   import { Separator } from '$lib/components/ui/separator'
   import { Globe } from '$lib/components/ui/torrentclient'
   import { dragScroll } from '$lib/modules/navigate'
+  import { SUPPORTS } from '$lib/modules/settings'
 
   const items = [
     {
@@ -46,7 +47,7 @@
   }
 </script>
 
-<div class='space-y-6 p-3 md:p-10 pb-0 w-full h-full flex flex-col min-w-0'>
+<div class='space-y-6 p-3 md:p-10 mb:pb-0 pb-0 w-full h-full flex flex-col min-w-0'>
   <div class='space-y-0.5'>
     <h2 class='text-2xl font-bold'>{overview.title}</h2>
     <p class='text-muted-foreground'>
@@ -62,7 +63,9 @@
       </div>
     </aside>
     <div class='flex-1 overflow-y-scroll' use:dragScroll>
-      <Globe />
+      {#if !SUPPORTS.isUnderPowered}
+        <Globe />
+      {/if}
       <slot />
     </div>
   </div>

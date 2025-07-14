@@ -821,21 +821,23 @@
       {#if fastForwarding}
         <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
       {/if}
-      <div class='mobile:flex hidden gap-10 absolute items-center transition-opacity select:opacity-100' class:opacity-0={immersed || seeking}>
-        <Button class='p-3 size-10 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' disabled={!prev}>
-          <SkipBack fill='currentColor' strokeWidth='1' />
-        </Button>
-        <Button class='p-2.5 size-12 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' on:click={playPause}>
-          {#if paused}
-            <Play fill='currentColor' class='p-0.5' />
-          {:else}
-            <Pause fill='currentColor' strokeWidth='1' />
-          {/if}
-        </Button>
-        <Button class='p-3 size-10 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' disabled={!next}>
-          <SkipForward fill='currentColor' strokeWidth='1' />
-        </Button>
-      </div>
+      {#if !SUPPORTS.isAndroidTV}
+        <div class='mobile:flex hidden gap-10 absolute items-center transition-opacity select:opacity-100' class:opacity-0={immersed || seeking}>
+          <Button class='p-3 size-10 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' disabled={!prev}>
+            <SkipBack fill='currentColor' strokeWidth='1' />
+          </Button>
+          <Button class='p-2.5 size-12 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' on:click={playPause}>
+            {#if paused}
+              <Play fill='currentColor' class='p-0.5' />
+            {:else}
+              <Pause fill='currentColor' strokeWidth='1' />
+            {/if}
+          </Button>
+          <Button class='p-3 size-10 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' disabled={!next}>
+            <SkipForward fill='currentColor' strokeWidth='1' />
+          </Button>
+        </div>
+      {/if}
       {#if buffering}
         <div in:fade={{ duration: 200, delay: 500 }} out:fade={{ duration: 200 }}>
           <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />

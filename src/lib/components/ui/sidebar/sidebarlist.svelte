@@ -20,6 +20,7 @@
   import client from '$lib/modules/auth/client'
   import { lockedState, idleState, activityState } from '$lib/modules/idle'
   import native from '$lib/modules/native'
+  import { SUPPORTS } from '$lib/modules/settings'
   import { cn, highEntropyValues } from '$lib/utils'
 
   const auth = client.hasAuth
@@ -28,7 +29,7 @@
 
   let visibilityState: DocumentVisibilityState
 
-  $: active = ($lockedState === 'locked' || visibilityState === 'hidden' || ($idleState === 'active' && $activityState === 'active')) && $page.route.id !== '/app/player'
+  $: active = ($lockedState === 'locked' || visibilityState === 'hidden' || ($idleState === 'active' && $activityState === 'active')) && $page.route.id !== '/app/player' && !SUPPORTS.isUnderPowered
 
   let isMac = false
 

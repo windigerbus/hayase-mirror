@@ -8,6 +8,7 @@
 
   import { desc, duration, format, season, title, type Media } from '$lib/modules/anilist'
   import { of } from '$lib/modules/auth'
+  import { SUPPORTS } from '$lib/modules/settings'
   import { cn, type TraceAnime } from '$lib/utils'
 
   export let media: Media
@@ -23,13 +24,17 @@
 <div class='!absolute w-[17.5rem] h-80 left-1/2 right-1/2 top-0 bottom-0 m-auto bg-neutral-950 z-30 rounded cursor-pointer absolute-container'>
   <div class='h-[45%] banner relative bg-black rounded-t'>
     {#if trace}
-      <Load src={trace.image} alt={media.title?.english} class={cn('object-cover w-full h-full blur-2xl saturate-200 absolute -z-10', hideFrame === false && 'hidden')} />
+      {#if !SUPPORTS.isUnderPowered}
+        <Load src={trace.image} alt={media.title?.english} class={cn('object-cover w-full h-full blur-2xl saturate-200 absolute -z-10', hideFrame === false && 'hidden')} />
+      {/if}
       <Load src={trace.image} alt={media.title?.english} class='object-cover w-full h-full rounded-t' />
       <Videoframe src={trace.video} on:hide={hide} />
     {:else}
-      <Banner {media} class={cn('object-cover w-full h-full blur-2xl saturate-200 absolute -z-10', hideFrame === false && 'hidden')} />
+      {#if !SUPPORTS.isUnderPowered}
+        <Banner {media} class={cn('object-cover w-full h-full blur-2xl saturate-200 absolute -z-10', hideFrame === false && 'hidden')} />
+      {/if}
       <Banner {media} class='object-cover w-full h-full rounded-t' />
-      {#if media.trailer?.id && !hideFrame}
+      {#if media.trailer?.id && !hideFrame && !SUPPORTS.isUnderPowered}
         <YoutubeIframe id={media.trailer.id} on:hide={hide} />
       {/if}
     {/if}

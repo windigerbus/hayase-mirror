@@ -49,7 +49,7 @@
 </script>
 
 <div class='flex flex-col w-full relative h-full overflow-clip'>
-  <div class='space-y-0.5 p-3 md:p-10 pb-0'>
+  <div class='space-y-0.5 p-3 md:p-10 mb:pb-0 pb-0'>
     <h2 class='text-2xl font-bold'>Global App Chat</h2>
     <p class='text-muted-foreground'>
       Chat with other users of the app, share your thoughts, ask questions and have fun!

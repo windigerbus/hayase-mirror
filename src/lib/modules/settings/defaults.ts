@@ -13,7 +13,6 @@ export default {
   playerDeband: false,
   subtitleStyle: 'none' as 'none' | 'gandhisans' | 'notosans' | 'roboto',
   searchQuality: '1080' as keyof typeof videoResolutions,
-  rssFeedsNew: SUPPORTS.isAndroid ? [['New Releases', 'SubsPlease']] : [],
   searchAutoSelect: true,
   lookupPreference: 'quality' as 'quality' | 'size' | 'seeders',
   torrentSpeed: 40,

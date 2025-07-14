@@ -4,6 +4,7 @@
   import { createEventDispatcher } from 'svelte'
 
   import { click } from '$lib/modules/navigate'
+  import { SUPPORTS } from '$lib/modules/settings'
 
   export let src: string
 
@@ -41,16 +42,18 @@
     {src}
   />
 </div>
-<div class='h-full w-full overflow-clip absolute top-0 rounded-t blur-2xl saturate-200 -z-10 pointer-events-none'>
-  <video
-    class='w-full border-0 absolute left-0 h-[calc(100%+200px)] top-1/2 transform-gpu -translate-y-1/2'
-    class:hide
-    muted
-    autoplay
-    loop
-    {src}
-  />
-</div>
+{#if !SUPPORTS.isUnderPowered}
+  <div class='h-full w-full overflow-clip absolute top-0 rounded-t blur-2xl saturate-200 -z-10 pointer-events-none'>
+    <video
+      class='w-full border-0 absolute left-0 h-[calc(100%+200px)] top-1/2 transform-gpu -translate-y-1/2'
+      class:hide
+      muted
+      autoplay
+      loop
+      {src}
+    />
+  </div>
+{/if}
 
 <style>
   .absolute {
