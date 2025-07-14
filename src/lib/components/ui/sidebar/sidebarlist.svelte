@@ -4,6 +4,7 @@
   import House from 'lucide-svelte/icons/house'
   import LogIn from 'lucide-svelte/icons/log-in'
   import MessagesSquare from 'lucide-svelte/icons/messages-square'
+  import Play from 'lucide-svelte/icons/play'
   import Search from 'lucide-svelte/icons/search'
   import Settings from 'lucide-svelte/icons/settings'
   import Users from 'lucide-svelte/icons/users'
@@ -14,6 +15,7 @@
 
   import SidebarButton from './SidebarButton.svelte'
 
+  import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import Logo from '$lib/components/icons/Logo.svelte'
   import * as Avatar from '$lib/components/ui/avatar'
@@ -39,7 +41,12 @@
 <svelte:document bind:visibilityState />
 
 <BannerImage class='absolute top-0 left-0 w-14 -z-10 hidden md:block' />
-<Logo class={cn('mb-3 h-10 object-contain px-2.5 hidden md:block text-white ml-2', isMac && 'mt-3')} />
+<Logo class={cn('mb-3 h-10 object-contain px-2.5 hidden md:block text-white ml-2 cursor-pointer', isMac && 'mt-3')} on:click={() => goto('/app/home/')} />
+{#if SUPPORTS.isAndroidTV}
+  <SidebarButton href='/app/player/' class='hidden md:flex py-0'>
+    <Play size={16} />
+  </SidebarButton>
+{/if}
 <SidebarButton href='/app/home/'>
   <House size={18} />
 </SidebarButton>

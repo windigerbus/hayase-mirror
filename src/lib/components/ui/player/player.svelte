@@ -803,7 +803,7 @@
         {/await}
       {/if}
       {#if stats}
-        <div class='absolute top-10 left-10 backdrop-blur-lg border-white/15 border bg-black/20 pointer-events-auto transition-opacity select:opacity-100 px-3 py-2 rounded'>
+        <div class='absolute top-10 left-10 border-white/15 border bg-black/60 pointer-events-auto transition-opacity select:opacity-100 px-3 py-2 rounded'>
           <button class='absolute right-3 top-1' type='button' use:click={toggleStats}>×</button>
           FPS: {stats.fps}<br />
           Presented frames: {stats.presented}<br />
@@ -816,7 +816,7 @@
           Subtitle delay: {subtitleDelay} sec
         </div>
       {/if}
-      <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay
+      <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay id='player-options-button-top'
         class='{$settings.minimalPlayerUI ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-4 left-4 bg-black/20 pointer-events-auto transition-opacity select:opacity-100 {immersed && 'opacity-0'}' />
       {#if fastForwarding}
         <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
@@ -862,7 +862,7 @@
     <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity select:opacity-100' class:opacity-0={immersed}>
       <div class='flex justify-between gap-12 items-end'>
         <div class='flex flex-col gap-2 text-left cursor-pointer'>
-          <a class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300 hover:underline' href='/app/anime/{mediaInfo.media.id}'>{mediaInfo.session.title}</a>
+          <a class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300 hover:underline' href='/app/anime/{mediaInfo.media.id}' data-up='#player-options-button-top'>{mediaInfo.session.title}</a>
           <Sheet.Root portal={wrapper} bind:open={episodeListOpen}>
             <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left hover:underline'>{mediaInfo.session.description}</Sheet.Trigger>
             <Sheet.Content class='w-full sm:w-[550px] p-3 sm:p-6 max-w-full sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black justify-between'>

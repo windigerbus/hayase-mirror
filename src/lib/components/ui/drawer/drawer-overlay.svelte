@@ -1,6 +1,7 @@
 <script lang='ts'>
   import { Drawer as DrawerPrimitive } from 'vaul-svelte'
 
+  import { SUPPORTS } from '$lib/modules/settings'
   import { cn } from '$lib/utils.js'
 
   type $$Props = DrawerPrimitive.OverlayProps
@@ -12,7 +13,7 @@
 
 <DrawerPrimitive.Overlay
   bind:el
-  class={cn('custom-bg fixed inset-0 z-50 backdrop-blur-sm', className)}
+  class={cn('custom-bg fixed inset-0 z-50', !SUPPORTS.isUnderPowered && 'backdrop-blur-sm', className)}
   {...$$restProps}
 >
   <slot />

@@ -174,6 +174,7 @@
         <div class='font-weight-bold text-2xl font-bold text-ellipsis text-nowrap overflow-hidden pb-2'>{$searchStore.media ? title($searchStore.media) : ''}</div>
         <div class='flex items-center relative scale-parent'>
           <Input
+            autofocus={false}
             class='pl-9 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'
             placeholder='Filter by text, or paste a magnet link or torrent file to specify a torrent manually'
             bind:value={inputText} />

@@ -38,6 +38,7 @@
   const dispatch = createEventDispatcher<{
     seeking: null
     seeked: null
+    dblclick: MouseEvent
   }>()
   // state
   export let chapters: Chapter[] = []
@@ -125,6 +126,15 @@
   export let thumbnailer: Thumbnailer
 
   $: seekIndex = Math.max(0, Math.floor(seekTime / thumbnailer.interval))
+
+  let lastDbl = 0
+  function customDoubleClick (e: MouseEvent) {
+    const now = Date.now()
+    if (now - lastDbl < 300) {
+      dispatch('dblclick', e)
+    }
+    lastDbl = now
+  }
 </script>
 
 <div class='w-full flex cursor-pointer relative group/seekbar touch-none !transform-none' class:!cursor-grab={seeking}
@@ -132,8 +142,8 @@
   id='player-seekbar'
   data-down='#player-play-pause-button'
   data-up='#episode-list-button'
-  on:dblclick
   on:keydown
+  on:click={customDoubleClick}
   bind:this={seekbar}
   on:pointerdown={startSeeking}
   on:pointerup={endSeeking}

@@ -47,4 +47,6 @@
   <Online />
   <slot />
 </div>
-<Backplate {root} />
+{#if !SUPPORTS.isAndroid}
+  <Backplate {root} />
+{/if}

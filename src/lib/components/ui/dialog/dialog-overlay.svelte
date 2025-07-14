@@ -2,6 +2,7 @@
   import { Dialog as DialogPrimitive } from 'bits-ui'
   import { fade } from 'svelte/transition'
 
+  import { SUPPORTS } from '$lib/modules/settings'
   import { cn } from '$lib/utils.js'
 
   type $$Props = DialogPrimitive.OverlayProps
@@ -17,6 +18,6 @@
 <DialogPrimitive.Overlay
   {transition}
   {transitionConfig}
-  class={cn('custom-bg absolute inset-0 z-50 backdrop-blur-sm', className)}
+  class={cn('custom-bg absolute inset-0 z-50', !SUPPORTS.isUnderPowered && 'backdrop-blur-sm', className)}
   {...$$restProps}
 />

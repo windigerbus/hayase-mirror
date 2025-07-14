@@ -3,6 +3,7 @@ import { get } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
 
 import native from '../native'
+import { SUPPORTS } from '../settings'
 import { w2globby } from '../w2g/lobby'
 
 import type { Media } from '../anilist'
@@ -26,7 +27,7 @@ export const server = new class ServerClient {
   active = writable<Promise<{ media: Media, id: string, episode: number, files: TorrentFile[] } | null>>()
   downloaded = writable(this.cachedSet())
 
-  stats = this._timedSafeReadable(defaultTorrentInfo, native.torrentInfo, 200)
+  stats = this._timedSafeReadable(defaultTorrentInfo, native.torrentInfo, SUPPORTS.isUnderPowered ? 3000 : 200)
 
   protocol = this._timedSafeReadable(defaultProtocolStatus, native.protocolStatus)
 
@@ -36,7 +37,7 @@ export const server = new class ServerClient {
 
   library = this._timedSafeReadable([], native.library, 120_000)
 
-  _timedSafeReadable<T> (defaultData: T, fn: (id: string) => Promise<T>, duration = 5000) {
+  _timedSafeReadable<T> (defaultData: T, fn: (id: string) => Promise<T>, duration = SUPPORTS.isUnderPowered ? 15000 : 5000) {
     return readable<T>(defaultData, set => {
       let listener = 0
 

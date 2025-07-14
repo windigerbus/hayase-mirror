@@ -47,7 +47,7 @@
   }
 </script>
 
-<div class='space-y-6 p-3 md:p-10 mb:pb-0 pb-0 w-full h-full flex flex-col min-w-0'>
+<div class='space-y-6 p-3 md:p-10 md:pb-0 pb-0 w-full h-full flex flex-col min-w-0'>
   <div class='space-y-0.5'>
     <h2 class='text-2xl font-bold'>{overview.title}</h2>
     <p class='text-muted-foreground'>
