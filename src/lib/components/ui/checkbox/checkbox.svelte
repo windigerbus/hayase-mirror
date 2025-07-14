@@ -13,12 +13,9 @@
   export let checked: $$Props['checked'] = false
   export { className as class }
 
-  function check () {
-    const wr = keywrap(() => {
-      checked = !checked
-    })
-    return (e: unknown) => wr(e as KeyboardEvent)
-  }
+  const wr = keywrap(() => {
+    checked = !checked
+  })
 </script>
 
 <CheckboxPrimitive.Root
@@ -28,7 +25,7 @@
   )}
   bind:checked
   on:click
-  on:keydown={check()}
+  on:keydown={e => wr(e.detail.originalEvent)}
   {...$$restProps}
 >
   <CheckboxPrimitive.Indicator
