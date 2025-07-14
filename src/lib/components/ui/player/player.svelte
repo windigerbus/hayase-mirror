@@ -891,7 +891,7 @@
         </div>
       </div>
       <Seekbar {duration} {currentTime} buffer={buffer / duration * 100} {chapters} bind:seeking bind:seek={seekPercent} on:seeked={finishSeek} on:seeking={startSeek} {thumbnailer} on:keydown={seekBarKey} on:dblclick={fullscreen} />
-      <div class='justify-between gap-2 {$settings.minimalPlayerUI ? 'hidden' : 'mobile:hidden flex'}'>
+      <div class='justify-between gap-2 {($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'hidden' : 'mobile:hidden flex'}'>
         <div class='flex text-white gap-2'>
           <Button class='p-3 w-12 h-12' variant='ghost' on:click={playPause} on:keydown={keywrap(playPause)} id='player-play-pause-button' data-up='#player-seekbar'>
             {#if paused}
