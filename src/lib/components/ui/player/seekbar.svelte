@@ -130,7 +130,7 @@
   let lastDbl = 0
   function customDoubleClick (e: MouseEvent) {
     const now = Date.now()
-    if (now - lastDbl < 300) {
+    if (now - lastDbl < 100) {
       dispatch('dblclick', e)
     }
     lastDbl = now

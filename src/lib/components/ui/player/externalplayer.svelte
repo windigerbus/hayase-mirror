@@ -34,7 +34,7 @@
   function openPlayer () {
     if (isMiniplayer) goto('/app/player/')
   }
-  const player = native.spawnPlayer(mediaInfo.file.url)
+  const player = isMiniplayer ? Promise.resolve() : native.spawnPlayer(mediaInfo.file.url)
   const startTime = Date.now()
 
   const elapsed = writable(0, (set) => {

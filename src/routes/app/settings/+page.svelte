@@ -6,7 +6,7 @@
   import { Switch } from '$lib/components/ui/switch'
   import * as ToggleGroup from '$lib/components/ui/toggle-group'
   import native from '$lib/modules/native'
-  import { settings, languageCodes, subtitleResolutions } from '$lib/modules/settings'
+  import { settings, languageCodes, subtitleResolutions, SUPPORTS } from '$lib/modules/settings'
 
   async function selectPlayer () {
     $settings.playerPath = await native.selectPlayer()
@@ -93,10 +93,12 @@
   <SettingCard let:id title='Enable External Player' description='Opens a custom user-picked external video player to play video, instead of using the built-in one.'>
     <Switch {id} bind:checked={$settings.enableExternal} />
   </SettingCard>
-  <SettingCard let:id title='External Video Player' description='Executable for an external video player. Make sure the player supports HTTP sources.'>
-    <div class='flex'>
-      <Input type='url' bind:value={$settings.playerPath} readonly {id} class='w-32 shrink-0 bg-background rounded-r-none pointer-events-none' />
-      <Button class='rounded-l-none font-bold' on:click={selectPlayer} variant='secondary'>Select</Button>
-    </div>
-  </SettingCard>
+  {#if !SUPPORTS.isAndroid}
+    <SettingCard let:id title='External Video Player' description='Executable for an external video player. Make sure the player supports HTTP sources.'>
+      <div class='flex'>
+        <Input type='url' bind:value={$settings.playerPath} readonly {id} class='w-32 shrink-0 bg-background rounded-r-none pointer-events-none' />
+        <Button class='rounded-l-none font-bold' on:click={selectPlayer} variant='secondary'>Select</Button>
+      </div>
+    </SettingCard>
+  {/if}
 </div>

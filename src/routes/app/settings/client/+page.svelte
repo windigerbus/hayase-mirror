@@ -12,13 +12,17 @@
 </script>
 
 <div class='space-y-3 pb-10 lg:max-w-4xl'>
+  <div class='font-weight-bold text-xl font-bold'>Security Settings</div>
   {#if !SUPPORTS.isAndroid}
-    <div class='font-weight-bold text-xl font-bold'>Security Settings</div>
     <SettingCard let:id title='Use DNS Over HTTPS' description='Enables DNS Over HTTPS, useful if your ISP blocks certain domains.'>
       <Switch {id} bind:checked={$settings.enableDoH} />
     </SettingCard>
     <SettingCard let:id title='DNS Over HTTPS URL' description='What URL to use for querying DNS Over HTTPS.'>
       <Input type='url' bind:value={$settings.doHURL} {id} class='w-80 shrink-0 bg-background' />
+    </SettingCard>
+  {:else}
+    <SettingCard title='Use DNS Over HTTPS' description="Enables DNS Over HTTPS, useful if your ISP blocks certain domains. On Android this is a system setting, which cannot be changed here. It's usually named 'Private DNS' or 'DNS over HTTPs'.">
+      <Button class='font-bold' on:click={() => native.setDOH('')} variant='secondary'>Configure DoH</Button>
     </SettingCard>
   {/if}
 
