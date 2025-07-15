@@ -784,7 +784,7 @@
   {#if !isMiniplayer}
     <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
       {#if !$settings.minimalPlayerUI}
-        <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity gradient-to-bottom delay-75' class:opacity-0={immersed}>
+        <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity gradient-to-bottom delay-150' class:opacity-0={immersed}>
           <div class='flex justify-center items-center gap-2'>
             <Users size={18} />
             {$torrentstats.peers.seeders}
@@ -821,7 +821,7 @@
         </div>
       {/if}
       <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay id='player-options-button-top'
-        class='{($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-4 left-4 bg-black/20 pointer-events-auto transition-opacity select:opacity-100 delay-75 {immersed && 'opacity-0'}' />
+        class='{($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-4 left-4 bg-black/20 pointer-events-auto transition-opacity select:opacity-100 delay-150 {immersed && 'opacity-0'}' />
       {#if fastForwarding}
         <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
       {/if}
@@ -863,7 +863,7 @@
         {/each}
       {/if}
     </div>
-    <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity delay-75 select:opacity-100' class:opacity-0={immersed}>
+    <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity delay-150 select:opacity-100' class:opacity-0={immersed}>
       <div class='flex justify-between gap-12 items-end'>
         <div class='flex flex-col gap-2 text-left cursor-pointer'>
           <a class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300 hover:underline' href='/app/anime/{mediaInfo.media.id}' data-up='#player-options-button-top'>{mediaInfo.session.title}</a>
