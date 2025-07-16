@@ -330,7 +330,7 @@ class AnilistClient {
   continueIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
     return this.userlists.subscribe(values => {
-      if (!values.data?.MediaListCollection?.lists) return []
+      if (!values.data?.MediaListCollection?.lists) return
       const mediaList = values.data.MediaListCollection.lists.reduce<NonNullable<NonNullable<NonNullable<NonNullable<ResultOf<typeof UserLists>['MediaListCollection']>['lists']>[0]>['entries']>>((filtered, list) => {
         return (list?.status === 'CURRENT' || list?.status === 'REPEATING') ? filtered.concat(list.entries) : filtered
       }, [])
@@ -351,7 +351,7 @@ class AnilistClient {
   sequelIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
     return this.userlists.subscribe(values => {
-      if (!values.data?.MediaListCollection?.lists) return []
+      if (!values.data?.MediaListCollection?.lists) return
       const mediaList = values.data.MediaListCollection.lists.find(list => list?.status === 'COMPLETED')?.entries
       if (!mediaList) return []
 
@@ -368,7 +368,7 @@ class AnilistClient {
   planningIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
     return this.userlists.subscribe(userLists => {
-      if (!userLists.data?.MediaListCollection?.lists) return []
+      if (!userLists.data?.MediaListCollection?.lists) return
       const mediaList = userLists.data.MediaListCollection.lists.find(list => list?.status === 'PLANNING')?.entries
       if (!mediaList) return []
       const ids = mediaList.map(entry => entry?.media?.id) as number[]

@@ -337,6 +337,8 @@
     video.load()
   }, 10_000)
 
+  onDestroy(() => clearInterval(interval))
+
   $: if (readyState > 0) clearInterval(interval)
 
   let currentSkippable: string | null = null

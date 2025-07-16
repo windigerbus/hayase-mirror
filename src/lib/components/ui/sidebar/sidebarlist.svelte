@@ -59,9 +59,9 @@
 <SidebarButton href='/app/w2g/'>
   <Users size={18} />
 </SidebarButton>
-<SidebarButton href='/app/chat/'>
+<!-- <SidebarButton href='/app/chat/'>
   <MessagesSquare size={18} />
-</SidebarButton>
+</SidebarButton> -->
 <SidebarButton href='/app/client/' id='sidebar-client' data-down='#sidebar-donate'>
   <Download size={18} />
 </SidebarButton>
@@ -71,7 +71,8 @@
 <SidebarButton href='/app/settings/'>
   <Settings size={18} />
 </SidebarButton>
-<SidebarButton href='/app/profile/' class='hidden md:flex py-0'>
+<!-- <SidebarButton href='/app/profile/' class='hidden md:flex py-0'> -->
+<SidebarButton href='/app/profile/'>
   {#if hasAuth}
     {@const viewer = client.profile()}
     <Avatar.Root class='size-6 rounded-md'>
