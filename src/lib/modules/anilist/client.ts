@@ -214,7 +214,7 @@ class AnilistClient {
           MediaCoverImage: () => null,
           AiringSchedule: () => null,
           MediaListCollection: e => (e.user as {id: string | null}).id,
-          MediaListGroup: () => null,
+          MediaListGroup: e => e.status as string | null,
           UserAvatar: () => null,
           UserOptions: () => null,
           UserStatisticTypes: () => null,
@@ -329,7 +329,7 @@ class AnilistClient {
   // WARN: these 3 sections are hacky, i use oldvalue to prevent re-running loops, I DO NOT KNOW WHY THE LOOPS HAPPEN!
   continueIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
-    const sub = this.userlists.subscribe(values => {
+    return this.userlists.subscribe(values => {
       if (!values.data?.MediaListCollection?.lists) return []
       const mediaList = values.data.MediaListCollection.lists.reduce<NonNullable<NonNullable<NonNullable<NonNullable<ResultOf<typeof UserLists>['MediaListCollection']>['lists']>[0]>['entries']>>((filtered, list) => {
         return (list?.status === 'CURRENT' || list?.status === 'REPEATING') ? filtered.concat(list.entries) : filtered
@@ -338,6 +338,7 @@ class AnilistClient {
       const ids = mediaList.filter(entry => {
         if (entry?.media?.status === 'FINISHED') return true
         const progress = entry?.media?.mediaListEntry?.progress ?? 0
+        // +2 is for series that don't have the next airing episode scheduled, but are still some-how airing, AL likes to fuck this up a lot, -1 is because we care about the latest aired available episode, not the next aired episode
         return progress < (entry?.media?.nextAiringEpisode?.episode ?? (progress + 2)) - 1
       }).map(entry => entry?.media?.id) as number[]
 
@@ -345,12 +346,11 @@ class AnilistClient {
       oldvalue = ids
       set(ids)
     })
-    return sub
   })
 
   sequelIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
-    const sub = this.userlists.subscribe(values => {
+    return this.userlists.subscribe(values => {
       if (!values.data?.MediaListCollection?.lists) return []
       const mediaList = values.data.MediaListCollection.lists.find(list => list?.status === 'COMPLETED')?.entries
       if (!mediaList) return []
@@ -363,12 +363,11 @@ class AnilistClient {
       oldvalue = ids
       set(ids)
     })
-    return sub
   })
 
   planningIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
-    const sub = this.userlists.subscribe(userLists => {
+    return this.userlists.subscribe(userLists => {
       if (!userLists.data?.MediaListCollection?.lists) return []
       const mediaList = userLists.data.MediaListCollection.lists.find(list => list?.status === 'PLANNING')?.entries
       if (!mediaList) return []
@@ -378,7 +377,6 @@ class AnilistClient {
       oldvalue = ids
       set(ids)
     })
-    return sub
   })
 
   search (variables: VariablesOf<typeof Search>, pause?: boolean) {
