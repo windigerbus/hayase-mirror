@@ -59,6 +59,9 @@
     current = media
     timeout = schedule(currentIndex() + 1)
   }
+  function tabindex (node: HTMLElement) {
+    node.tabIndex = -1
+  }
 </script>
 
 <div class='pl-5 pb-5 justify-end flex flex-col h-full max-w-full'>
@@ -96,7 +99,7 @@
   <div class='flex'>
     {#each shuffled as media (media.id)}
       {@const active = current === media}
-      <div class='pt-2 pb-1' class:cursor-pointer={!active} use:click={() => setCurrent(media)}>
+      <div class='pt-2 pb-1' class:cursor-pointer={!active} use:click={() => setCurrent(media)} use:tabindex>
         <div class='bg-neutral-800 mr-2 progress-badge overflow-clip rounded' class:active style='height: 4px;' style:width={active ? '3rem' : '1.5rem'}>
           <div class='progress-content h-full transform-gpu w-full' class:bg-white={active} />
         </div>

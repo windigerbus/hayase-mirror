@@ -36,7 +36,7 @@
 </script>
 
 <svelte:head>
-  <meta name='viewport' content='width=device-width, initial-scale={SUPPORTS.isAndroidTV ? $settings.uiScale / devicePixelRatio : SUPPORTS.isAndroid ? $settings.uiScale : 1}, maximum-scale=2, user-scalable=0' />
+  <meta name='viewport' content='width=device-width, initial-scale={SUPPORTS.isAndroidTV ? $settings.uiScale / devicePixelRatio : SUPPORTS.isAndroid ? $settings.uiScale : 1}, maximum-scale=2, user-scalable=0, viewport-fit=cover' />
 </svelte:head>
 
 <div class='w-full h-full flex flex-col backface-hidden bg-black relative overflow-clip md:border-l-2 [border-image:linear-gradient(to_bottom,white_var(--progress),#2dcf58_var(--progress))_1] preserve-3d' bind:this={root} id='root' style:--progress='{100 - updateProgress}%'>

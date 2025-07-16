@@ -1,9 +1,9 @@
 {
 	"name": "ui",
-	"version": "6.4.44",
+	"version": "6.4.45",
 	"license": "BUSL-1.1",
 	"private": true,
-	"packageManager": "pnpm@9.14.4",
+	"packageManager": "pnpm@9.15.5",
 	"scripts": {
 		"dev": "vite dev --open",
 		"build": "vite build && scopy ./build/index.html ./build/offline.html",
