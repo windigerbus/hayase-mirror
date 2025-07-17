@@ -123,10 +123,13 @@ export default new class LocalSync {
         status: null
       }
 
-      const keys = ['status', 'score', 'repeat', 'progress'] as const
+      const keys = ['status', 'score', 'repeat', 'progress'] as Array<keyof typeof variables>
       for (const key of keys) {
+        let value = variables[key]
         // @ts-expect-error idk how to fix this tbf
-        entry.mediaListEntry[key] = variables[key] ?? entry.mediaListEntry[key] ?? null
+        if (key === 'score' && value != null) value /= 10
+        // @ts-expect-error idk how to fix this tbf
+        entry.mediaListEntry[key] = value ?? entry.mediaListEntry[key] ?? null
       }
       return { ...entries, [variables.id]: entry }
     })

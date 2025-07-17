@@ -440,7 +440,7 @@ export default new class MALSync {
     }
 
     if (variables.progress) body.num_watched_episodes = variables.progress
-    if (variables.score) body.score = variables.score
+    if (variables.score) body.score = variables.score / 10
     if (variables.repeat) body.num_times_rewatched = variables.repeat
 
     const res = await this._patch<MALStatus>(`${ENDPOINTS.API_ANIME}/${malId}/my_list_status`, body)

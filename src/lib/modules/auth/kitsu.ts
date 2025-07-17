@@ -455,7 +455,8 @@ export default new class KitsuSync {
     }
 
     if (variables.progress) kitsuEntryVariables.progress = variables.progress
-    if (variables.score) kitsuEntryVariables.rating = (variables.score < 2 ? undefined : variables.score.toString())
+    // kitsu's rating is 2-20... aka 2 = 10, 20 = 100, insane, normalize this
+    if (variables.score) kitsuEntryVariables.ratingTwenty = variables.score < 10 ? undefined : (variables.score / 5).toString()
     if (variables.repeat) kitsuEntryVariables.reconsumeCount = variables.repeat
 
     if (kitsuEntry) {

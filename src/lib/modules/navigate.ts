@@ -218,7 +218,10 @@ function getElementsInDesiredDirection (keyboardFocusable: ElementPosition[], cu
  */
 function navigateDPad (direction = 'up') {
   const keyboardFocusable = getFocusableElementPositions()
-  const currentElement = !document.activeElement || document.activeElement === document.body ? keyboardFocusable[0]! : getElementPosition(document.activeElement as HTMLElement)
+  const nofocus = !document.activeElement || document.activeElement === document.body
+  const currentElement = nofocus ? keyboardFocusable[0]! : getElementPosition(document.activeElement as HTMLElement)
+
+  if (nofocus) return focusElement(currentElement.element)
 
   // allow overrides via data attributes ex: <div data-up="#id, #id2"?> but order them, as querySelectorAll returns them in order of appearance rather than order of selectors
   for (const selector of currentElement.element.dataset[direction]?.split(',') ?? []) {

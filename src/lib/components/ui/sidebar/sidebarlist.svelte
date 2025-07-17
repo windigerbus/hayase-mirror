@@ -3,7 +3,7 @@
   import Heart from 'lucide-svelte/icons/heart'
   import House from 'lucide-svelte/icons/house'
   import LogIn from 'lucide-svelte/icons/log-in'
-  import MessagesSquare from 'lucide-svelte/icons/messages-square'
+  // import MessagesSquare from 'lucide-svelte/icons/messages-square'
   import Play from 'lucide-svelte/icons/play'
   import Search from 'lucide-svelte/icons/search'
   import Settings from 'lucide-svelte/icons/settings'

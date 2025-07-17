@@ -79,7 +79,7 @@ export interface KEntry {
   startedAt?: string // Date
   finishedAt?: string
   rating?: string
-  ratingTwenty?: null
+  ratingTwenty?: string
 }
 
 export interface Fav {
