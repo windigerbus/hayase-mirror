@@ -75,11 +75,14 @@ export function makeEpisodeList (count: number, media: Media, episodesRes?: Epis
     const hasCountMatch = (episodes(media) ?? 0) === (episodesRes?.episodeCount ?? 0)
 
     const needsValidation = !(!hasSpecial || (hasEpisode && hasCountMatch))
-    // handle special cases where anilist reports that 3 episodes aired at the same time because of pre-releases, simply don't allow the same episode to be re-used
-    // TODO: this needs to be improved so it doesnt walk backwards
-    // const filtered = Object.fromEntries(Object.entries(episodesRes?.episodes ?? {}).filter(([_, ep]) => !episodeList.some(e => e.anidbEid === ep.anidbEid && ep.anidbEid != null)))
+    // handle special cases where anilist reports that 3 episodes aired at the same time because of pre-releases, simply don't allow the same episode to be re-used, but only walk forwards in dates
+    const filtered = Object.fromEntries(Object.entries(episodesRes?.episodes ?? {}).filter(([_, ep]) => !episodeList.some(e => {
+      if (ep.anidbEid != null && e.anidbEid === ep.anidbEid) return true
+      if (ep.airdate != null && new Date(ep.airdate) < new Date(e.airdate ?? Date.now())) return true
+      return false
+    })))
 
-    const { image, summary, overview, rating, title, length, airdate, anidbEid } = (needsValidation ? episodeByAirDate(airingAt, episodesRes?.episodes ?? {}, episode) : episodesRes?.episodes?.[Number(episode)]) ?? {}
+    const { image, summary, overview, rating, title, length, airdate, anidbEid } = (needsValidation ? episodeByAirDate(airingAt, filtered, episode) : episodesRes?.episodes?.[Number(episode)]) ?? {}
     const res = {
       episode, image, summary: summary ?? overview, rating, title, length, airdate, airingAt, filler: !!fillerEpisodes[media.id]?.includes(i + 1), anidbEid
     }
