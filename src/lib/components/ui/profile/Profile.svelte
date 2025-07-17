@@ -24,7 +24,7 @@
 </script>
 
 <div class='flex'>
-  <Popover.Root>
+  <Popover.Root disableFocusTrap>
     <Popover.Trigger class='flex group/profile'>
       <Avatar.Root class={cn('group-focus-visible/profile:border border-white', className)}>
         <Avatar.Image src={avatar} alt={name} />
