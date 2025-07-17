@@ -29,7 +29,7 @@
 
   function checkNext () {
     if (step === 2) localStorage.setItem('setup-finished', SETUP_VERSION.toString())
-    goto(`../${NEXT[step]}`)
+    goto(`../${NEXT[step]}`, { replaceState: true })
   }
 </script>
 

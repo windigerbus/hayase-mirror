@@ -162,7 +162,9 @@
 </script>
 
 <Dialog.Root bind:open onOpenChange={close} portal='#episodeListTarget'>
-  <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex lg:rounded-t-xl overflow-hidden z-[100]'>
+  <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex-col flex lg:rounded-t-xl overflow-hidden z-[100]'>
+    <!-- this hacky thing is required for dialog root focus trap... pitiful -->
+    <div class='size-0' tabindex='0' />
     {#if $searchStore}
       <div class='absolute top-0 left-0 w-full h-full max-h-28 overflow-hidden'>
         <Banner media={$searchStore.media} class='object-cover w-full h-full absolute bottom-[0.5px] left-0 -z-10' />
@@ -173,7 +175,6 @@
           <div class='font-weight-bold text-2xl font-bold text-ellipsis text-nowrap overflow-hidden pb-2'>{title($searchStore.media) ?? ''}</div>
           <div class='flex items-center relative scale-parent'>
             <Input
-              autofocus={false}
               class='pl-9 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'
               placeholder='Filter by text, or paste a magnet link or torrent file to specify a torrent manually'
               bind:value={inputText} />
@@ -197,7 +198,7 @@
             Auto Select Torrent
           </ProgressButton>
         </div>
-        <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation} use:dragScroll>
+        <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:focusin={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation} use:dragScroll>
           {#await Promise.all([searchResult, $downloaded])}
             {#each Array.from({ length: 12 }) as _, i (i)}
               <div class='p-3 h-[104px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border flex-col justify-between'>

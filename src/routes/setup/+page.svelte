@@ -23,5 +23,5 @@
       I agree to the <a use:click={() => native.openURL(`${WEB_URL}/terms`)} class='text-primary underline'>Terms of Service</a> and <a use:click={() => native.openURL(`${WEB_URL}/privacy`)} class='text-primary underline'>Privacy Policy</a>
     </Label>
   </div>
-  <Button class='text-lg font-bold shrink-0' disabled={!checked} size='lg' href={checked ? './storage' : undefined}>Start Setup</Button>
+  <Button class='text-lg font-bold shrink-0' disabled={!checked} size='lg' href={checked ? './storage' : undefined} data-sveltekit-replacestate>Start Setup</Button>
 </div>

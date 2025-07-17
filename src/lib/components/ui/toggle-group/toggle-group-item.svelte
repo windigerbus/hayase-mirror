@@ -27,6 +27,7 @@
     className
   )}
   {value}
+  tabindex={0}
   {...$$restProps}
 >
   <slot />

@@ -21,7 +21,7 @@
   import { Button } from '$lib/components/ui/button'
   import * as Command from '$lib/components/ui/command'
   import * as Popover from '$lib/components/ui/popover'
-  import { inputType } from '$lib/modules/navigate'
+  import { inputType, navigate } from '$lib/modules/navigate'
   import { cn } from '$lib/utils.js'
 
   export let items: readonly value[] = []
@@ -84,8 +84,10 @@
     </Button>
   </Popover.Trigger>
   <Popover.Content class={cn('p-0 border-0 z-[1000]')} sameWidth={true}>
-    <Command.Root>
-      <Command.Input {placeholder} class='h-9 placeholder:opacity-50' />
+    <Command.Root onKeydown={navigate}>
+      <!-- this hacky thing is required for dialog root focus trap... pitiful -->
+      <div class='h-0 w-full' tabindex='0' />
+      <Command.Input {placeholder} autofocus={false} class='h-9 placeholder:opacity-50' />
       <Command.Empty>No results found.</Command.Empty>
       {#if $inputType === 'dpad'}
         <Command.Group class='shrink-0' alwaysRender={true}>

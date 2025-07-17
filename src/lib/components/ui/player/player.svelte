@@ -829,7 +829,7 @@
       {/if}
       {#if !SUPPORTS.isAndroidTV}
         <div class='mobile:flex hidden gap-10 absolute items-center transition-opacity select:opacity-100' class:opacity-0={immersed || seeking}>
-          <Button class='p-3 size-10 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' disabled={!prev}>
+          <Button class='p-3 size-10 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' disabled={!prev} on:click={() => prev?.()}>
             <SkipBack fill='currentColor' strokeWidth='1' />
           </Button>
           <Button class='p-2.5 size-12 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' on:click={playPause}>
@@ -839,7 +839,7 @@
               <Pause fill='currentColor' strokeWidth='1' />
             {/if}
           </Button>
-          <Button class='p-3 size-10 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' disabled={!next}>
+          <Button class='p-3 size-10 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' disabled={!next} on:click={() => next?.()}>
             <SkipForward fill='currentColor' strokeWidth='1' />
           </Button>
         </div>
@@ -871,7 +871,7 @@
           <a class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300 hover:underline' href='/app/anime/{mediaInfo.media.id}' data-up='#player-options-button-top'>{mediaInfo.session.title}</a>
           <Sheet.Root portal={wrapper} bind:open={episodeListOpen}>
             <Sheet.Trigger id='episode-list-button' data-down='#player-seekbar' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left hover:underline'>{mediaInfo.session.description}</Sheet.Trigger>
-            <Sheet.Content class='w-full sm:w-[550px] p-3 sm:p-6 max-w-full sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black justify-between'>
+            <Sheet.Content class='w-full sm:w-[550px] p-3 sm:p-6 max-w-full sm:max-w-full h-full overflow-y-scroll flex flex-col pb-0 shrink-0 gap-0 bg-black justify-between overflow-x-clip'>
               {#if mediaInfo.media}
                 {#await Promise.all([episodes(mediaInfo.media.id), client.single(mediaInfo.media.id)]) then [eps, media]}
                   {#if media.data?.Media}

@@ -276,14 +276,16 @@ function focusElement (element?: HTMLElement | null) {
 
 // hacky, but make sure keybinds system loads first so it can prevent this from running
 
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', navigate)
+
+export function navigate (e: KeyboardEvent) {
   if (e.key in DirectionKeyMap) {
     e.preventDefault()
     e.stopPropagation()
     inputType.value = 'dpad'
     navigateDPad(DirectionKeyMap[e.key as 'ArrowDown' | 'ArrowUp' | 'ArrowLeft' | 'ArrowRight'])
   }
-})
+}
 
 export function dragScroll (node: HTMLElement) {
   let x = 0
