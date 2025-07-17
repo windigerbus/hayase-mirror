@@ -1,11 +1,3 @@
-<script context='module' lang='ts'>
-  export let fillerEpisodes: Record<number, number[] | undefined> = {}
-
-  fetch('https://raw.githubusercontent.com/ThaUnknown/filler-scrape/master/filler.json').then(async res => {
-    fillerEpisodes = await res.json()
-  })
-</script>
-
 <script lang='ts'>
   import ChevronLeft from 'lucide-svelte/icons/chevron-left'
   import ChevronRight from 'lucide-svelte/icons/chevron-right'
@@ -19,8 +11,9 @@
 
   import type { EpisodesResponse } from '$lib/modules/anizip/types'
 
-  import { episodes as _episodes, dedupeAiring, episodeByAirDate, notes, type Media } from '$lib/modules/anilist'
+  import { episodes as _episodes, dedupeAiring, notes, type Media } from '$lib/modules/anilist'
   import { authAggregator, list, progress } from '$lib/modules/auth'
+  import { makeEpisodeList } from '$lib/modules/extensions'
   import { click, dragScroll } from '$lib/modules/navigate'
   import { liveAnimeProgress } from '$lib/modules/watchProgress'
   import { breakpoints, cn, since } from '$lib/utils'
@@ -28,9 +21,7 @@
   export let eps: EpisodesResponse | null
   export let media: Media
 
-  $: episodeCount = Math.max(_episodes(media) ?? 0, eps?.episodeCount ?? 0)
-
-  $: ({ episodes, specialCount } = eps ?? {})
+  $: episodeCount = _episodes(media) ?? eps?.episodeCount ?? 0
 
   const alSchedule: Record<number, Date | undefined> = {}
 
@@ -40,22 +31,7 @@
     }
   }
 
-  $: episodeList = media && Array.from({ length: episodeCount }, (_, i) => {
-    const episode = i + 1
-
-    const airingAt = alSchedule[episode]
-    // TODO handle special cases where anilist reports that 3 episodes aired at the same time because of pre-releases, simply don't allow the same episode to be re-used
-
-    const hasSpecial = !!specialCount
-    const hasEpisode = episodes?.[Number(episode)]
-    const hasCountMatch = (_episodes(media) ?? 0) === (eps?.episodeCount ?? 0)
-
-    const needsValidation = !(!hasSpecial || (hasEpisode && hasCountMatch))
-    const { image, summary, overview, rating, title, length, airdate } = (needsValidation ? episodeByAirDate(airingAt, episodes ?? {}, episode) : episodes?.[Number(episode)]) ?? {}
-    return {
-      episode, image, summary: summary ?? overview, rating, title, length, airdate, airingAt, filler: !!fillerEpisodes[media.id]?.includes(i + 1)
-    }
-  })
+  $: episodeList = media && makeEpisodeList(episodeCount, media, eps)
 
   const perPage = 16
 

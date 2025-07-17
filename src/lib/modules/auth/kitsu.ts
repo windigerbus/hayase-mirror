@@ -433,13 +433,14 @@ export default new class KitsuSync {
   following (id: number) {
     return null
     // TODO: this doesnt work
+    // const viewer = get(this.viewer)
     // this._get<Res<KEntry, Anime | Mapping>>(
     //   ENDPOINTS.API_USER_LIBRARY,
     //   {
-    //     'filter[following]': true,
-    //     'filter[user_id]': this.viewer.value?.id,
-    //     'filter[animeId]': 42765,
-    //     include: 'anime.mappings,user'
+    //     'filter[following]': viewer?.id,
+    //     // 'filter[user_id]': viewer?.id,
+    //     'filter[animeId]': 42765
+    //     // include: 'anime.mappings,user'
     //   }
     // )
   }

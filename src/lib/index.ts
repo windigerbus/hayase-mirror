@@ -8,4 +8,4 @@ export const DEFAULT_EXTENSIONS = 'gh:hayase-app/extensions'
 export const SETUP_VERSION = 3
 
 // episode is optional here, but is actually always defined
-export const searchStore = writable<{episode?: number, media?: Media}>({})
+export const searchStore = writable<{episode: number, media: Media} | undefined>(undefined)

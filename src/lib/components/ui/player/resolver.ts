@@ -230,8 +230,6 @@ const AnimeResolver = new class AnimeResolver {
     if (!fileName.length) return []
     const parseObjs = await anitomyscript(fileName)
 
-    const TYPE_EXCLUSIONS = ['ED', 'ENDING', 'NCED', 'NCOP', 'OP', 'OPENING', 'PREVIEW', 'PV']
-
     const uniq: Record<string, AnitomyResult> = {}
     for (const obj of parseObjs) {
       const key = this.getCacheKeyForTitle(obj)

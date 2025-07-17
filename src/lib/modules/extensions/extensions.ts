@@ -1,14 +1,14 @@
 import anitomyscript, { type AnitomyResult } from 'anitomyscript'
 import { get } from 'svelte/store'
 
-import { dedupeAiring, episodeByAirDate, episodes, isMovie, type Media, type MediaEdge } from '../anilist'
+import { dedupeAiring, episodeByAirDate, episodes, isMovie, type Media, getParentForSpecial, isSingleEpisode } from '../anilist'
 import { episodes as _episodes } from '../anizip'
 import native from '../native'
 import { settings, type videoResolutions } from '../settings'
 
 import { storage } from './storage'
 
-import type { EpisodesResponse } from '../anizip/types'
+import type { EpisodesResponse, Titles } from '../anizip/types'
 import type { TorrentResult } from 'hayase-extensions'
 
 import { dev } from '$app/environment'
@@ -31,6 +31,61 @@ if (!('audioTracks' in HTMLVideoElement.prototype)) {
 video.remove()
 
 const debug = console.log
+
+export let fillerEpisodes: Record<number, number[] | undefined> = {}
+
+fetch('https://raw.githubusercontent.com/ThaUnknown/filler-scrape/master/filler.json').then(async res => {
+  fillerEpisodes = await res.json()
+})
+
+// TODO: these 2 exports need to be moved to a better place
+export interface SingleEpisode {
+  episode: number
+  image?: string
+  summary?: string
+  rating?: string
+  title?: Titles
+  length?: number
+  airdate?: string
+  airingAt?: Date
+  filler: boolean
+  anidbEid?: number
+}
+
+// TODO: https://anilist.co/anime/13055/
+export function makeEpisodeList (count: number, media: Media, episodesRes?: EpisodesResponse | null) {
+  const alSchedule: Record<number, Date | undefined> = {}
+
+  for (const { a: airingAt, e: episode } of dedupeAiring(media)) {
+    alSchedule[episode] = new Date(airingAt * 1000)
+  }
+
+  if (!alSchedule[1] && isSingleEpisode(media) && media.startDate) {
+    alSchedule[1] = new Date(media.startDate.year ?? 0, (media.startDate.month ?? 1) - 1, media.startDate.day ?? 1)
+  }
+
+  const episodeList: SingleEpisode[] = []
+  for (let i = 0; i < count; i++) {
+    const episode = i + 1
+
+    const airingAt = alSchedule[episode]
+
+    const hasSpecial = !!episodesRes?.specialCount
+    const hasEpisode = episodesRes?.episodes?.[Number(episode)]
+    const hasCountMatch = (episodes(media) ?? 0) === (episodesRes?.episodeCount ?? 0)
+
+    const needsValidation = !(!hasSpecial || (hasEpisode && hasCountMatch))
+    // handle special cases where anilist reports that 3 episodes aired at the same time because of pre-releases, simply don't allow the same episode to be re-used
+    const filtered = Object.fromEntries(Object.entries(episodesRes?.episodes ?? {}).filter(([_, ep]) => !episodeList.some(e => e.anidbEid === ep.anidbEid && ep.anidbEid != null)))
+
+    const { image, summary, overview, rating, title, length, airdate, anidbEid } = (needsValidation ? episodeByAirDate(airingAt, filtered, episode) : episodesRes?.episodes?.[Number(episode)]) ?? {}
+    const res = {
+      episode, image, summary: summary ?? overview, rating, title, length, airdate, airingAt, filler: !!fillerEpisodes[media.id]?.includes(i + 1), anidbEid
+    }
+    episodeList.push(res)
+  }
+  return episodeList
+}
 
 export const extensions = new class Extensions {
   // this is for the most part useless, but some extensions might need it
@@ -64,7 +119,7 @@ export const extensions = new class Extensions {
     return titles
   }
 
-  async getResultsFromExtensions ({ media, episode, resolution }: { media: Media, episode?: number, resolution: keyof typeof videoResolutions }) {
+  async getResultsFromExtensions ({ media, episode, resolution }: { media: Media, episode: number, resolution: keyof typeof videoResolutions }) {
     await storage.modules
     const workers = storage.workers
     if (!Object.values(workers).length) {
@@ -73,6 +128,7 @@ export const extensions = new class Extensions {
     }
 
     const movie = isMovie(media)
+    const singleEp = isSingleEpisode(media)
 
     debug(`Fetching sources for ${media.id}:${media.title?.userPreferred} ${episode} ${movie} ${resolution}`)
 
@@ -104,7 +160,7 @@ export const extensions = new class Extensions {
       try {
         const promises: Array<Promise<TorrentResult[]>> = []
         promises.push(worker.single(options))
-        promises.push(movie ? worker.movie(options) : worker.batch(options))
+        if (!singleEp && (movie || media.status === 'FINISHED')) promises.push(movie ? worker.movie(options) : worker.batch(options))
 
         for (const result of await Promise.allSettled(promises)) {
           if (result.status === 'fulfilled') {
@@ -167,39 +223,14 @@ export const extensions = new class Extensions {
     const json = await _episodes(media.id)
     if (json?.mappings?.anidb_id) return json
 
-    const parentID = this.getParentForSpecial(media)
+    const parentID = getParentForSpecial(media)
     if (!parentID) return
 
     return await _episodes(parentID)
   }
 
-  getParentForSpecial (media: Media) {
-    if (!['SPECIAL', 'OVA', 'ONA'].some(format => media.format === format)) return false
-    const animeRelations = (media.relations?.edges?.filter(edge => edge?.node?.type === 'ANIME') ?? []) as MediaEdge[]
-
-    return this.getRelation(animeRelations, 'PARENT') ?? this.getRelation(animeRelations, 'PREQUEL') ?? this.getRelation(animeRelations, 'SEQUEL')
-  }
-
-  getRelation (list: MediaEdge[], type: MediaEdge['relationType']) {
-    return list.find(edge => edge.relationType === type)?.node?.id
-  }
-
-  // TODO: https://anilist.co/anime/13055/
-  async ALtoAniDBEpisode ({ media, episode }: {media: Media, episode?: number}, { episodes, episodeCount, specialCount }: EpisodesResponse) {
-    debug(`Fetching AniDB episode for ${media.id}:${media.title?.userPreferred} ${episode}`)
-    if (!episode || !Object.values(episodes!).length) return
-    // if media has no specials or their episode counts don't match
-    if (!specialCount || (media.episodes && media.episodes === episodeCount && (Number(episode) in episodes!))) {
-      debug('No specials found, or episode count matches between AL and AniDB')
-      return episodes![Number(episode)]
-    }
-    debug(`Episode count mismatch between AL and AniDB for ${media.id}:${media.title?.userPreferred}`)
-    const date = dedupeAiring(media).find(({ e }) => e === episode)?.a
-    // TODO: if media only has one episode, and airdate doesn't exist use start/release/end dates
-    const alDate = date ? new Date(date * 1000) : undefined
-    debug(`AL Airdate: ${alDate?.toString()}`)
-
-    return episodeByAirDate(alDate, episodes!, episode)
+  async ALtoAniDBEpisode ({ media, episode }: {media: Media, episode: number}, episodesRes: EpisodesResponse) {
+    return makeEpisodeList(Math.max(episodes(media) ?? 0, episodesRes.episodeCount ?? 0), media, episodesRes)[episode - 1] ?? undefined
   }
 
   dedupe <T extends TorrentResult & { extension: Set<string> }> (entries: T[]): T[] {

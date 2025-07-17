@@ -15,8 +15,8 @@
   import type { resolveFilesPoorly, ResolvedFile } from './resolver'
 
   import { goto } from '$app/navigation'
-  import { fillerEpisodes } from '$lib/components/EpisodesList.svelte'
   import { cover, episodes, title, type Media } from '$lib/modules/anilist'
+  import { fillerEpisodes } from '$lib/modules/extensions'
   import { settings } from '$lib/modules/settings'
   import { server } from '$lib/modules/torrent'
   import { w2globby } from '$lib/modules/w2g/lobby'

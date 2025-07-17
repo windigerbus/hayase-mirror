@@ -64,13 +64,13 @@
   import { saved } from '$lib/modules/extensions'
   import { server } from '$lib/modules/torrent'
 
-  $: open = !!$searchStore.media
+  $: open = !!$searchStore?.media
 
-  $: searchResult = !!$searchStore.media && extensions.getResultsFromExtensions({ media: $searchStore.media, episode: $searchStore.episode, resolution: $settings.searchQuality })
+  $: searchResult = !!$searchStore?.media && extensions.getResultsFromExtensions({ media: $searchStore.media, episode: $searchStore.episode, resolution: $settings.searchQuality })
 
   function close (state = false) {
     if (!state) {
-      searchStore.set({})
+      searchStore.set(undefined)
       open = false
       inputText = ''
     }
@@ -79,7 +79,7 @@
   let inputText = ''
 
   function play (result: Pick<TorrentResult, 'hash'>) {
-    server.play(result.hash, $searchStore.media!, $searchStore.episode!)
+    server.play(result.hash, $searchStore!.media, $searchStore!.episode)
     goto('/app/player/')
     close()
   }
@@ -163,153 +163,153 @@
 
 <Dialog.Root bind:open onOpenChange={close} portal='#episodeListTarget'>
   <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex lg:rounded-t-xl overflow-hidden z-[100]'>
-    <div class='absolute top-0 left-0 w-full h-full max-h-28 overflow-hidden'>
-      {#if $searchStore.media}
+    {#if $searchStore}
+      <div class='absolute top-0 left-0 w-full h-full max-h-28 overflow-hidden'>
         <Banner media={$searchStore.media} class='object-cover w-full h-full absolute bottom-[0.5px] left-0 -z-10' />
-      {/if}
-      <div class='w-full h-full banner-2' />
-    </div>
-    <div class='gap-4 w-full relative h-full flex flex-col pt-6'>
-      <div class='px-4 sm:px-6 space-y-4'>
-        <div class='font-weight-bold text-2xl font-bold text-ellipsis text-nowrap overflow-hidden pb-2'>{$searchStore.media ? title($searchStore.media) : ''}</div>
-        <div class='flex items-center relative scale-parent'>
-          <Input
-            autofocus={false}
-            class='pl-9 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'
-            placeholder='Filter by text, or paste a magnet link or torrent file to specify a torrent manually'
-            bind:value={inputText} />
-          <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
-        </div>
-        <div class='flex items-center gap-4 justify-around flex-wrap'>
-          <div class='flex items-center space-x-2 grow'>
-            <span>Episode</span>
-            <Input type='number' inputmode='numeric' pattern='[0-9]*' min='0' max='65536' bind:value={$searchStore.episode} class='w-32 shrink-0 bg-background grow' />
-          </div>
-          <div class='flex items-center space-x-2 grow'>
-            <span>Resolution</span>
-            <SingleCombo bind:value={$settings.searchQuality} items={videoResolutions} portal='#episodeListTarget' class='w-32 shrink-0 grow border-border border' />
-          </div>
-        </div>
-        <ProgressButton
-          onclick={playBest}
-          size='default'
-          class='w-full font-bold'
-          bind:animating>
-          Auto Select Torrent
-        </ProgressButton>
+        <div class='w-full h-full banner-2' />
       </div>
-      <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation} use:dragScroll>
-        {#await Promise.all([searchResult, $downloaded])}
-          {#each Array.from({ length: 12 }) as _, i (i)}
-            <div class='p-3 h-[104px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border flex-col justify-between'>
-              <div class='h-4 w-40 bg-primary/5 animate-pulse rounded mt-2' />
-              <div class='bg-primary/5 animate-pulse rounded h-2 w-28 mt-1' />
-              <div class='flex justify-between mb-1'>
-                <div class='flex gap-2'>
-                  <div class='mt-2 bg-primary/5 animate-pulse rounded h-2 w-20' />
+      <div class='gap-4 w-full relative h-full flex flex-col pt-6'>
+        <div class='px-4 sm:px-6 space-y-4'>
+          <div class='font-weight-bold text-2xl font-bold text-ellipsis text-nowrap overflow-hidden pb-2'>{title($searchStore.media) ?? ''}</div>
+          <div class='flex items-center relative scale-parent'>
+            <Input
+              autofocus={false}
+              class='pl-9 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'
+              placeholder='Filter by text, or paste a magnet link or torrent file to specify a torrent manually'
+              bind:value={inputText} />
+            <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
+          </div>
+          <div class='flex items-center gap-4 justify-around flex-wrap'>
+            <div class='flex items-center space-x-2 grow'>
+              <span>Episode</span>
+              <Input type='number' inputmode='numeric' pattern='[0-9]*' min='0' max='65536' bind:value={$searchStore.episode} class='w-32 shrink-0 bg-background grow' />
+            </div>
+            <div class='flex items-center space-x-2 grow'>
+              <span>Resolution</span>
+              <SingleCombo bind:value={$settings.searchQuality} items={videoResolutions} portal='#episodeListTarget' class='w-32 shrink-0 grow border-border border' />
+            </div>
+          </div>
+          <ProgressButton
+            onclick={playBest}
+            size='default'
+            class='w-full font-bold'
+            bind:animating>
+            Auto Select Torrent
+          </ProgressButton>
+        </div>
+        <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation} use:dragScroll>
+          {#await Promise.all([searchResult, $downloaded])}
+            {#each Array.from({ length: 12 }) as _, i (i)}
+              <div class='p-3 h-[104px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border flex-col justify-between'>
+                <div class='h-4 w-40 bg-primary/5 animate-pulse rounded mt-2' />
+                <div class='bg-primary/5 animate-pulse rounded h-2 w-28 mt-1' />
+                <div class='flex justify-between mb-1'>
+                  <div class='flex gap-2'>
+                    <div class='mt-2 bg-primary/5 animate-pulse rounded h-2 w-20' />
+                    <div class='mt-2 bg-primary/5 animate-pulse rounded h-2 w-20' />
+                  </div>
                   <div class='mt-2 bg-primary/5 animate-pulse rounded h-2 w-20' />
                 </div>
-                <div class='mt-2 bg-primary/5 animate-pulse rounded h-2 w-20' />
               </div>
-            </div>
-          {/each}
-        {:then [search, downloaded]}
-          {@const media = $searchStore.media}
-          {#if search && media}
-            {@const { results, errors } = search}
-            {#each filterAndSortResults(results, inputText, downloaded) as result (result.hash)}
-              <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border select:ring-1 select:ring-ring select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name[0]}>
-                {#if result.accuracy === 'high'}
-                  <div class='absolute top-0 left-0 w-full h-full -z-10'>
-                    <Banner {media} class='object-cover w-full h-full' />
-                    <div class='absolute top-0 left-0 w-full h-full banner' />
-                  </div>
-                {/if}
-                <div class='flex pl-2 flex-col justify-between w-full h-20 relative min-w-0 text-[.7rem]'>
-                  <div class='flex w-full items-center'>
-                    {#if downloaded.has(result.hash)}
-                      <Download class='mr-2 text-[#53da33]' size='1.2rem' />
-                    {:else if result.type === 'batch'}
-                      <Database class='mr-2' size='1.2rem' />
-                    {:else if result.accuracy === 'high'}
-                      <BadgeCheck class='mr-2 text-[#53da33]' size='1.2rem' />
-                    {/if}
-                    <div class='text-xl font-bold text-nowrap'>{result.parseObject.release_group[0] && result.parseObject.release_group[0].length < 20 ? result.parseObject.release_group[0] : 'No Group'}</div>
-                    <div class='ml-auto flex gap-2 self-start'>
-                      {#each result.extension as id (id)}
-                        {#if $saved[id]}
-                          <img src={$saved[id].icon} alt={id} class='size-4' title='Provided by {id}' decoding='async' loading='lazy' />
-                        {/if}
-                      {/each}
+            {/each}
+          {:then [search, downloaded]}
+            {@const media = $searchStore.media}
+            {#if search && media}
+              {@const { results, errors } = search}
+              {#each filterAndSortResults(results, inputText, downloaded) as result (result.hash)}
+                <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border select:ring-1 select:ring-ring select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name[0]}>
+                  {#if result.accuracy === 'high'}
+                    <div class='absolute top-0 left-0 w-full h-full -z-10'>
+                      <Banner {media} class='object-cover w-full h-full' />
+                      <div class='absolute top-0 left-0 w-full h-full banner' />
                     </div>
-                  </div>
-                  <div class='text-muted-foreground text-ellipsis text-nowrap overflow-hidden'>{simplifyFilename(result.parseObject)}</div>
-                  <div class='flex flex-row leading-none'>
-                    <div class='details text-light flex'>
-                      <span class='text-nowrap flex items-center'>{fastPrettyBytes(result.size)}</span>
-                      <span class='text-nowrap flex items-center'>{result.seeders} Seeders</span>
-                      <span class='text-nowrap flex items-center'>{since(new Date(result.date))}</span>
-                    </div>
-                    <div class='flex ml-auto flex-row-reverse'>
-                      {#if result.type === 'best'}
-                        <div class='rounded px-3 py-1 ml-2 border text-nowrap flex items-center' style='background: #1d2d1e; border-color: #53da33 !important; color: #53da33'>
-                          Best Release
-                        </div>
-                      {:else if result.type === 'alt'}
-                        <div class='rounded px-3 py-1 ml-2 border text-nowrap flex items-center' style='background: #391d20; border-color: #c52d2d !important; color: #c52d2d'>
-                          Alt Release
-                        </div>
+                  {/if}
+                  <div class='flex pl-2 flex-col justify-between w-full h-20 relative min-w-0 text-[.7rem]'>
+                    <div class='flex w-full items-center'>
+                      {#if downloaded.has(result.hash)}
+                        <Download class='mr-2 text-[#53da33]' size='1.2rem' />
+                      {:else if result.type === 'batch'}
+                        <Database class='mr-2' size='1.2rem' />
+                      {:else if result.accuracy === 'high'}
+                        <BadgeCheck class='mr-2 text-[#53da33]' size='1.2rem' />
                       {/if}
-                      {#each sanitiseTerms(result.parseObject) as { text, color }, i (i)}
-                        <div class='rounded px-3 py-1 ml-2 text-nowrap font-bold flex items-center' style:background={color}>
-                          <div class='text-contrast'>
-                            {text}
+                      <div class='text-xl font-bold text-nowrap'>{result.parseObject.release_group[0] && result.parseObject.release_group[0].length < 20 ? result.parseObject.release_group[0] : 'No Group'}</div>
+                      <div class='ml-auto flex gap-2 self-start'>
+                        {#each result.extension as id (id)}
+                          {#if $saved[id]}
+                            <img src={$saved[id].icon} alt={id} class='size-4' title='Provided by {id}' decoding='async' loading='lazy' />
+                          {/if}
+                        {/each}
+                      </div>
+                    </div>
+                    <div class='text-muted-foreground text-ellipsis text-nowrap overflow-hidden'>{simplifyFilename(result.parseObject)}</div>
+                    <div class='flex flex-row leading-none'>
+                      <div class='details text-light flex'>
+                        <span class='text-nowrap flex items-center'>{fastPrettyBytes(result.size)}</span>
+                        <span class='text-nowrap flex items-center'>{result.seeders} Seeders</span>
+                        <span class='text-nowrap flex items-center'>{since(new Date(result.date))}</span>
+                      </div>
+                      <div class='flex ml-auto flex-row-reverse'>
+                        {#if result.type === 'best'}
+                          <div class='rounded px-3 py-1 ml-2 border text-nowrap flex items-center' style='background: #1d2d1e; border-color: #53da33 !important; color: #53da33'>
+                            Best Release
                           </div>
-                        </div>
-                      {/each}
+                        {:else if result.type === 'alt'}
+                          <div class='rounded px-3 py-1 ml-2 border text-nowrap flex items-center' style='background: #391d20; border-color: #c52d2d !important; color: #c52d2d'>
+                            Alt Release
+                          </div>
+                        {/if}
+                        {#each sanitiseTerms(result.parseObject) as { text, color }, i (i)}
+                          <div class='rounded px-3 py-1 ml-2 text-nowrap font-bold flex items-center' style:background={color}>
+                            <div class='text-contrast'>
+                              {text}
+                            </div>
+                          </div>
+                        {/each}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            {:else}
-              <div class='p-5 flex items-center justify-center w-full h-80'>
-                <div>
-                  <div class='mb-3 font-bold text-4xl text-center '>
-                    Ooops!
-                  </div>
-                  <div class='text-lg text-center text-muted-foreground'>
-                    No results found.<br />Try specifying a torrent manually by pasting a magnet link or torrent file into the filter bar.
-                  </div>
-                </div>
-              </div>
-            {/each}
-            {#each errors as error, i (i)}
-              <div class='p-5 flex items-center justify-center w-full h-80'>
-                <div>
-                  <div class='mb-1 font-bold text-2xl text-center '>
-                    Extensions {error.extension} encountered an error
-                  </div>
-                  <div class='text-md text-center text-muted-foreground whitespace-pre-wrap'>
-                    {error.error.stack}
+              {:else}
+                <div class='p-5 flex items-center justify-center w-full h-80'>
+                  <div>
+                    <div class='mb-3 font-bold text-4xl text-center '>
+                      Ooops!
+                    </div>
+                    <div class='text-lg text-center text-muted-foreground'>
+                      No results found.<br />Try specifying a torrent manually by pasting a magnet link or torrent file into the filter bar.
+                    </div>
                   </div>
                 </div>
-              </div>
-            {/each}
-          {/if}
-        {:catch error}
-          <div class='p-5 flex items-center justify-center w-full h-80'>
-            <div>
-              <div class='mb-3 font-bold text-4xl text-center '>
-                Ooops!
-              </div>
-              <div class='text-lg text-center text-muted-foreground whitespace-pre-wrap'>
-                {error.message}
+              {/each}
+              {#each errors as error, i (i)}
+                <div class='p-5 flex items-center justify-center w-full h-80'>
+                  <div>
+                    <div class='mb-1 font-bold text-2xl text-center '>
+                      Extensions {error.extension} encountered an error
+                    </div>
+                    <div class='text-md text-center text-muted-foreground whitespace-pre-wrap'>
+                      {error.error.stack}
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            {/if}
+          {:catch error}
+            <div class='p-5 flex items-center justify-center w-full h-80'>
+              <div>
+                <div class='mb-3 font-bold text-4xl text-center '>
+                  Ooops!
+                </div>
+                <div class='text-lg text-center text-muted-foreground whitespace-pre-wrap'>
+                  {error.message}
+                </div>
               </div>
             </div>
-          </div>
-        {/await}
+          {/await}
+        </div>
       </div>
-    </div>
+    {/if}
   </Dialog.Content>
 </Dialog.Root>
 

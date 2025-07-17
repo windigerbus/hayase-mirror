@@ -1,5 +1,5 @@
 import type { ScheduleMedia } from './queries'
-import type { Media } from './types'
+import type { Media, MediaEdge } from './types'
 import type { Episode, Episodes } from '../anizip/types'
 import type { ResultOf } from 'gql.tada'
 
@@ -32,6 +32,17 @@ export function coverSmall (media: Pick<Media, 'trailer' | 'bannerImage' | 'cove
 
 export function title (media: Pick<Media, 'title'>): string {
   return media.title?.userPreferred ?? 'TBA'
+}
+
+export function getParentForSpecial (media: Media) {
+  if (!['SPECIAL', 'OVA', 'ONA'].some(format => media.format === format)) return false
+  const animeRelations = (media.relations?.edges?.filter(edge => edge?.node?.type === 'ANIME') ?? []) as MediaEdge[]
+
+  return getRelation(animeRelations, 'PARENT') ?? getRelation(animeRelations, 'PREQUEL') ?? getRelation(animeRelations, 'SEQUEL')
+}
+
+export function getRelation (list: MediaEdge[], type: MediaEdge['relationType']) {
+  return list.find(edge => edge.relationType === type)?.node?.id
 }
 
 const STATUS_MAP = {
@@ -120,6 +131,10 @@ export function isMovie (media: Pick<Media, 'format' | 'title' | 'synonyms' | 'd
   if ([...Object.values(media.title ?? {}), ...media.synonyms ?? []].some(title => title?.toLowerCase().includes('movie'))) return true
   // if (!getParentForSpecial(media)) return true // this is good for checking movies, but false positives with normal TV shows
   return (media.duration ?? 0) > 80 && media.episodes === 1
+}
+
+export function isSingleEpisode (media: Pick<Media, 'format' | 'title' | 'synonyms' | 'duration' | 'episodes'>) {
+  return media.episodes === 1 || (isMovie(media) && !media.episodes)
 }
 
 const date = new Date()
