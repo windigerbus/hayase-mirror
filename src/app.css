@@ -162,7 +162,7 @@ a {
 
 *:focus-visible {
   outline: none;
-  border-image: fill 0 linear-gradient(#8883, #8883);
+  border-image: fill 0 linear-gradient(#8885, #8885);
 }
 
 *::-webkit-scrollbar {
