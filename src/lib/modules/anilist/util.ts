@@ -163,6 +163,8 @@ export function episodeByAirDate (alDate: Date | undefined, episodes: Episodes, 
     return prev
   }, [])
 
+  if (!closestEpisodes.length) return episodes[Number(episode)] ?? episodes[episode]
+
   return closestEpisodes.reduce((prev, curr) => {
     return Math.abs(Number(curr.episode) - episode) < Math.abs(Number(prev.episode) - episode) ? curr : prev
   })
