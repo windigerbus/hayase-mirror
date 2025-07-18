@@ -1,6 +1,6 @@
 {
 	"name": "ui",
-	"version": "6.4.57",
+	"version": "6.4.58",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.15.5",
@@ -85,7 +85,7 @@
 		"tailwind-variants": "^1.0.0",
 		"uint8-util": "^2.2.5",
 		"urql": "^4.2.2",
-		"video-deband": "^1.0.8",
+		"video-deband": "^1.0.9",
 		"wonka": "^6.3.5",
 		"workbox-core": "^7.3.0",
 		"workbox-precaching": "^7.3.0",

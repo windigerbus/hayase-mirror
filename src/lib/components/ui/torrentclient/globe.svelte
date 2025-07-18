@@ -66,36 +66,43 @@
   const oneOverScale = 1 / scale
 
   function makeGlobe (canvas: HTMLCanvasElement) {
-    const globe = createGlobe(canvas, {
-      devicePixelRatio: window.devicePixelRatio,
-      width: size,
-      height: size,
-      phi: 0,
-      theta: 0.1,
-      dark: 1,
-      diffuse: 1.4,
-      mapSamples: 19000,
-      mapBrightness: 6,
-      opacity: 0.8,
-      baseColor: [0.23, 0.23, 0.23],
-      markerColor: [0.05, 1, 0],
-      glowColor: [0, 0, 0],
-      markers: [],
-      scale,
-      offset: [size * 0.8 * oneOverScale, size * oneOverScale * 0.4],
-      onRender: state => {
-        state.phi = Date.now() * 0.0002 % (Math.PI * 2)
-        state.width = size
-        state.height = size
-        state.offset = [size * 0.8 * oneOverScale, size * oneOverScale * 0.4]
+    try {
+      const globe = createGlobe(canvas, {
+        devicePixelRatio: window.devicePixelRatio,
+        width: size,
+        height: size,
+        phi: 0,
+        theta: 0.1,
+        dark: 1,
+        diffuse: 1.4,
+        mapSamples: 19000,
+        mapBrightness: 6,
+        opacity: 0.8,
+        baseColor: [0.23, 0.23, 0.23],
+        markerColor: [0.05, 1, 0],
+        glowColor: [0, 0, 0],
+        markers: [],
+        scale,
+        offset: [size * 0.8 * oneOverScale, size * oneOverScale * 0.4],
+        onRender: state => {
+          state.phi = Date.now() * 0.0002 % (Math.PI * 2)
+          state.width = size
+          state.height = size
+          state.offset = [size * 0.8 * oneOverScale, size * oneOverScale * 0.4]
 
-        state.markers = Object.values(markers).filter(m => m)
+          state.markers = Object.values(markers).filter(m => m)
+        }
+      })
+
+      return {
+        destroy () {
+          globe.destroy()
+        }
       }
-    })
-
-    return {
-      destroy () {
-        globe.destroy()
+    } catch (e) {
+      console.error('Failed to create globe', e)
+      return {
+        destroy () {}
       }
     }
   }

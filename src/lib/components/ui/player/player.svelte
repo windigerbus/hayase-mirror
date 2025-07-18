@@ -273,9 +273,14 @@
   function createDeband (video: HTMLVideoElement, playerDeband: boolean) {
     const create = () => {
       destroy()
-      deband = new VideoDeband(video)
-      deband.canvas.classList.add('deband-canvas', 'w-full', 'h-full', 'pointer-events-none', 'object-contain')
-      video.before(deband.canvas)
+      try {
+        deband = new VideoDeband(video)
+        deband.canvas.classList.add('deband-canvas', 'w-full', 'h-full', 'pointer-events-none', 'object-contain')
+        video.before(deband.canvas)
+      } catch (e) {
+        console.error('Failed to create video deband:', e)
+        destroy()
+      }
     }
 
     const destroy = () => {
