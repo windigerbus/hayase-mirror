@@ -57,7 +57,7 @@ export function episodeByAirDate (alDate: Date | undefined, episodes: Map<string
   // 1 is key for episod 1, not index
 
   // find closest episodes by air date, multiple episodes can have the same air date distance
-  const closestEpisodes: Episode[] = Object.values(episodes).reduce<Episode[]>((prev, curr) => {
+  const closestEpisodes: Episode[] = episodes.values().reduce<Episode[]>((prev, curr) => {
     if (!prev[0]) return [curr]
     const prevDate = Math.abs(+new Date(prev[0].airdate ?? 0) - +alDate)
     const currDate = Math.abs(+new Date(curr.airdate ?? 0) - +alDate)
@@ -77,7 +77,6 @@ export function episodeByAirDate (alDate: Date | undefined, episodes: Map<string
   })
 }
 
-// TODO: https://anilist.co/anime/13055/
 export function makeEpisodeList (media: Media, episodesRes?: EpisodesResponse | null) {
   const count = episodes(media) ?? episodesRes?.episodeCount ?? 0
   const alSchedule: Record<number, Date | undefined> = {}
@@ -99,7 +98,6 @@ export function makeEpisodeList (media: Media, episodesRes?: EpisodesResponse | 
 
   const hasSpecial = !!episodesRes?.specialCount
   const hasCountMatch = (episodes(media) ?? 0) === (episodesRes?.episodeCount ?? 0)
-  // this code... doesn't scale well into the thousands, it takes almost a second or two to run for one piece
   for (let episode = 1; episode <= count; episode++) {
     const airingAt = alSchedule[episode]
 
@@ -108,14 +106,8 @@ export function makeEpisodeList (media: Media, episodesRes?: EpisodesResponse | 
     // If there are special episodes AND (no episode data exists OR episode count doesn't match),
     // then we need to validate by matching episodes with air dates
     const needsValidation = !(!hasSpecial || (hasEpisode && hasCountMatch))
-    // handle special cases where anilist reports that 3 episodes aired at the same time because of pre-releases, simply don't allow the same episode to be re-used, but only walk forwards in dates
-    // const filtered = Object.fromEntries(Object.entries(episodesRes?.episodes ?? {}).filter(([_, ep]) => !episodeList.some(e => {
-    //   if (ep.anidbEid != null && e.anidbEid === ep.anidbEid) return true
-    //   if (ep.airdate != null && new Date(ep.airdate) < new Date(e.airdate ?? Date.now())) return true
-    //   return false
-    // })))
-
     const resolvedEpisode = needsValidation ? episodeByAirDate(airingAt, filtered, episode) : filtered.get('' + episode)
+    // handle special cases where anilist reports that 3 episodes aired at the same time because of pre-releases, simply don't allow the same episode to be re-used, but only walk forwards in dates
     // we want to exclude episodes which were previously consumed
     if (needsValidation && resolvedEpisode) {
       for (const [key, value] of filtered.entries()) {
