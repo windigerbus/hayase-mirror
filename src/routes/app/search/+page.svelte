@@ -1,5 +1,6 @@
 <script lang='ts'>
   import FileImage from 'lucide-svelte/icons/file-image'
+  import Settings from 'lucide-svelte/icons/settings'
   import Trash from 'lucide-svelte/icons/trash'
   import X from 'lucide-svelte/icons/x'
   import { onDestroy, tick } from 'svelte'
@@ -18,9 +19,10 @@
   import { QueryCard, TraceCards } from '$lib/components/ui/cards'
   import { ComboBox } from '$lib/components/ui/combobox'
   import { Input, type FormInputEvent } from '$lib/components/ui/input'
+  import { Toggle } from '$lib/components/ui/toggle'
   import { client } from '$lib/modules/anilist'
   import { click, dragScroll } from '$lib/modules/navigate'
-  import { cn, debounce, sleep, traceAnime, type TraceAnime } from '$lib/utils'
+  import { breakpoints, cn, debounce, sleep, traceAnime, type TraceAnime } from '$lib/utils'
 
   // util
 
@@ -228,12 +230,14 @@
   }
 
   const viewer = client.viewer
+
+  let pressed = false
 </script>
 
 <div class='flex flex-col h-full overflow-y-auto overflow-x-clip -ml-14 pl-14 z-20 min-w-0 grow pointer-events-none' use:dragScroll use:infiniteScroll>
   <div class='sticky top-0 z-20 px-2 sm:px-10 pointer-events-auto shrink-0 overflow-clip bg-black'>
     <div class='flex flex-wrap pt-5'>
-      <div class='grid items-center min-w-40 flex-1 md:basis-auto md:w-1/4 p-2'>
+      <div class='grid items-center min-w-44 flex-1 md:basis-auto md:w-1/4 p-2'>
         <div class='text-xl font-bold mb-1 ml-1'>
           Title
         </div>
@@ -246,51 +250,53 @@
           <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
         </div>
       </div>
-      <div class='grid items-center min-w-40 flex-1 md:basis-auto md:w-1/4 p-2'>
+      <div class='grid items-center min-w-44 flex-1 md:basis-auto md:w-1/4 p-2'>
         <div class='text-xl font-bold mb-1 ml-1'>
-          Genre
+          Genres
         </div>
         <ComboBox items={genres} multiple={true} bind:value={search.genres} class='w-full' />
       </div>
-      <div class='grid items-center min-w-40 flex-1 md:basis-auto md:w-1/4 p-2'>
+      <div class='grid items-center min-w-44 flex-1 md:basis-auto md:w-1/4 p-2'>
         <div class='text-xl font-bold mb-1 ml-1'>
           Year
         </div>
         <ComboBox items={years} bind:value={search.years} class='w-full' />
       </div>
-      <div class='grid items-center min-w-40 flex-1 md:basis-auto md:w-1/4 p-2'>
+      <div class='grid items-center min-w-44 flex-1 md:basis-auto md:w-1/4 p-2'>
         <div class='text-xl font-bold mb-1 ml-1'>
           Season
         </div>
         <ComboBox items={seasons} bind:value={search.seasons} class='w-full' />
       </div>
-      <div class='grid items-center p-2 min-w-40 flex-1'>
+      <div class='grid items-center p-2 min-w-44 flex-1'>
         <div class='text-xl font-bold mb-1 ml-1'>
-          Format
+          Formats
         </div>
         <ComboBox items={formats} multiple={true} bind:value={search.formats} class='w-full' />
       </div>
-      <div class='grid items-center p-2 min-w-40 flex-1'>
-        <div class='text-xl font-bold mb-1 ml-1'>
-          Status
-        </div>
-        <ComboBox items={status} multiple={true} bind:value={search.status} class='w-full' />
-      </div>
-      <div class='grid items-center p-2 min-w-40 flex-1'>
-        <div class='text-xl font-bold mb-1 ml-1'>
-          Sort
-        </div>
-        <ComboBox items={sort} bind:value={search.sort} class='w-full' placeholder='Accuracy' />
-      </div>
-      {#if $viewer?.viewer?.id}
-        <div class='grid items-center p-2 min-w-36 flex-1'>
-          <div class='text-xl font-bold mb-1 ml-1 text-nowrap'>
-            My List
+      {#if pressed || $breakpoints.md}
+        <div class='grid items-center p-2 min-w-44 flex-1'>
+          <div class='text-xl font-bold mb-1 ml-1'>
+            Status
           </div>
-          <ComboBox items={onlist} bind:value={search.onList} class='w-full' placeholder='List' />
+          <ComboBox items={status} multiple={true} bind:value={search.status} class='w-full' />
         </div>
+        <div class='grid items-center p-2 min-w-44 flex-1'>
+          <div class='text-xl font-bold mb-1 ml-1'>
+            Sort
+          </div>
+          <ComboBox items={sort} bind:value={search.sort} class='w-full' placeholder='Accuracy' />
+        </div>
+        {#if $viewer?.viewer?.id}
+          <div class='grid items-center p-2 min-w-36 flex-1'>
+            <div class='text-xl font-bold mb-1 ml-1 text-nowrap'>
+              My List
+            </div>
+            <ComboBox items={onlist} bind:value={search.onList} class='w-full' placeholder='List' />
+          </div>
+        {/if}
       {/if}
-      <div class='w-auto p-2 gap-4 grid grid-cols-2 items-end'>
+      <div class='w-auto p-2 gap-4 flex items-end'>
         <Button variant='outline' size='icon' class='border-0'>
           <label for='search-image' class='contents'>
             <FileImage class='h-4 w-full cursor-pointer' />
@@ -300,9 +306,12 @@
         <Button variant='outline' size='icon' on:click={clear} class='border-0'>
           <Trash class={cn('h-4 w-4', empty(search) ? 'text-muted-foreground opacity-50' : 'text-blue-400')} />
         </Button>
+        <Toggle variant='outline' size='icon' class='border-0 md:hidden' bind:pressed>
+          <Settings size={18} />
+        </Toggle>
       </div>
     </div>
-    <div class='flex flex-row flex-wrap mt-2 min-h-11 pb-3 px-1'>
+    <div class='flex flex-row flex-wrap mt-2 min-h-9 pb-1 px-1'>
       {#each list(search) as item (item)}
         <button class={cn(badgeVariants(), 'mx-1.5 my-1 group capitalize text-nowrap')} use:click={() => remove(item)}>
           {item}

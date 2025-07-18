@@ -30,20 +30,20 @@
   </SettingCard>
 
   <SettingCard class='md:flex-col md:items-start' title='Subtitle Dialogue Style Overrides' description={'Selectively override the default dialogue style for subtitles. This will not change the style of typesetting [Fancy 3D Signs and Songs].\n\nWarning: the heuristic used for deciding when to override the style is rather rough, and enabling this option can lead to incorrectly rendered subtitles.'}>
-    <ToggleGroup.Root type='single' bind:value={$settings.subtitleStyle} asChild let:builder>
+    <ToggleGroup.Root type='single' bind:value={$settings.subtitleStyle} asChild let:builder variant='ghost'>
       <div class='grid sm:grid-cols-2 gap-3' use:builder.action {...builder} on:keydown|capture|stopPropagation={navigate}>
         <ToggleGroup.Item value='none' class='h-auto aspect-video text-4xl px-0 relative'>
           <div class='absolute top-4 text-xl font-bold'>None</div>🚫
         </ToggleGroup.Item>
-        <ToggleGroup.Item value='gandhisans' class='h-auto px-0 relative'>
+        <ToggleGroup.Item value='gandhisans' class='h-auto p-0 relative'>
           <div class='absolute top-4 text-xl font-bold'>Gandhi Sans Bold</div>
           <img src='/gandhisans.png' class='w-full' />
         </ToggleGroup.Item>
-        <ToggleGroup.Item value='notosans' class='h-auto px-0 relative'>
+        <ToggleGroup.Item value='notosans' class='h-auto p-0 relative'>
           <div class='absolute top-4 text-xl font-bold'>Noto Sans Bold</div>
           <img src='/notosans.png' class='w-full' />
         </ToggleGroup.Item>
-        <ToggleGroup.Item value='roboto' class='h-auto px-0 relative'>
+        <ToggleGroup.Item value='roboto' class='h-auto p-0 relative'>
           <div class='absolute top-4 text-xl font-bold'>Roboto Bold</div>
           <img src='/roboto.png' class='w-full' />
         </ToggleGroup.Item>
