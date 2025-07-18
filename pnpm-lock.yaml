@@ -123,8 +123,8 @@ importers:
         specifier: ^4.2.2
         version: 4.2.2(@urql/core@5.2.0(graphql@16.10.0))(react@19.0.0)
       video-deband:
-        specifier: ^1.0.8
-        version: 1.0.8
+        specifier: ^1.0.9
+        version: 1.0.9
       wonka:
         specifier: ^6.3.5
         version: 6.3.5
@@ -2607,8 +2607,8 @@ packages:
     peerDependencies:
       svelte: ^4.0.0 || ^5.0.0-next.1
 
-  video-deband@1.0.8:
-    resolution: {integrity: sha512-QdEVDl29WWSb/HkGuLmdExto7x90WYqz1DdljT7IiCVH/zqepuCS2OnGX/C3kHDIIOiumtFWEj7z9wUiVojiSA==}
+  video-deband@1.0.9:
+    resolution: {integrity: sha512-WDFy0jhd8phsPw1oirtLLCsjJ1YBiUmMKzAj947o7T2sMX5bMAewDfQ8nwPDM9Z3NQ51Wr/jWB/QyOLNJD3wzQ==}
 
   vite-plugin-static-copy@3.0.2:
     resolution: {integrity: sha512-/seLvhUg44s1oU9RhjTZZy/0NPbfNctozdysKcvPovxxXZdI5l19mGq6Ri3IaTf1Dy/qChS4BSR7ayxeu8o9aQ==}
@@ -5355,7 +5355,7 @@ snapshots:
       bits-ui: 0.21.16(svelte@4.2.19)
       svelte: 4.2.19
 
-  video-deband@1.0.8:
+  video-deband@1.0.9:
     dependencies:
       rvfc-polyfill: 1.0.7
       twgl.js: 5.5.4
