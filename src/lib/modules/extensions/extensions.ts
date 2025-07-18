@@ -53,7 +53,8 @@ export interface SingleEpisode {
 }
 
 // TODO: https://anilist.co/anime/13055/
-export function makeEpisodeList (count: number, media: Media, episodesRes?: EpisodesResponse | null) {
+export function makeEpisodeList (media: Media, episodesRes?: EpisodesResponse | null) {
+  const count = episodes(media) ?? episodesRes?.episodeCount ?? 0
   const alSchedule: Record<number, Date | undefined> = {}
 
   for (const { a: airingAt, e: episode } of dedupeAiring(media)) {
@@ -65,26 +66,42 @@ export function makeEpisodeList (count: number, media: Media, episodesRes?: Epis
   }
 
   const episodeList: SingleEpisode[] = []
-  for (let i = 0; i < count; i++) {
-    const episode = i + 1
-
+  const filtered = { ...episodesRes?.episodes ?? {} }
+  const hasSpecial = !!episodesRes?.specialCount
+  const hasCountMatch = (episodes(media) ?? 0) === (episodesRes?.episodeCount ?? 0)
+  // this code... doesn't scale well into the thousands, it takes almost a second or two to run for one piece
+  for (let episode = 1; episode <= count; episode++) {
     const airingAt = alSchedule[episode]
 
-    const hasSpecial = !!episodesRes?.specialCount
     const hasEpisode = episodesRes?.episodes?.[Number(episode)]
-    const hasCountMatch = (episodes(media) ?? 0) === (episodesRes?.episodeCount ?? 0)
 
+    // If there are special episodes AND (no episode data exists OR episode count doesn't match),
+    // then we need to validate by matching episodes with air dates
     const needsValidation = !(!hasSpecial || (hasEpisode && hasCountMatch))
     // handle special cases where anilist reports that 3 episodes aired at the same time because of pre-releases, simply don't allow the same episode to be re-used, but only walk forwards in dates
-    const filtered = Object.fromEntries(Object.entries(episodesRes?.episodes ?? {}).filter(([_, ep]) => !episodeList.some(e => {
-      if (ep.anidbEid != null && e.anidbEid === ep.anidbEid) return true
-      if (ep.airdate != null && new Date(ep.airdate) < new Date(e.airdate ?? Date.now())) return true
-      return false
-    })))
+    // const filtered = Object.fromEntries(Object.entries(episodesRes?.episodes ?? {}).filter(([_, ep]) => !episodeList.some(e => {
+    //   if (ep.anidbEid != null && e.anidbEid === ep.anidbEid) return true
+    //   if (ep.airdate != null && new Date(ep.airdate) < new Date(e.airdate ?? Date.now())) return true
+    //   return false
+    // })))
 
-    const { image, summary, overview, rating, title, length, airdate, anidbEid } = (needsValidation ? episodeByAirDate(airingAt, filtered, episode) : episodesRes?.episodes?.[Number(episode)]) ?? {}
+    const resolvedEpisode = (needsValidation ? episodeByAirDate(airingAt, filtered, episode) : episodesRes?.episodes?.[Number(episode)])
+    // we want to exclude episodes which were previously consumed
+    if (needsValidation && resolvedEpisode) {
+      for (const [key, value] of Object.entries(filtered)) {
+        if (
+          (value.anidbEid != null && value.anidbEid === resolvedEpisode.anidbEid) ||
+          (value.airdate != null && new Date(value.airdate) < new Date(resolvedEpisode.airdate ?? Date.now()))
+        ) {
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+          delete filtered[key as keyof typeof filtered]
+        }
+      }
+    }
+
+    const { image, summary, overview, rating, title, length, airdate, anidbEid } = resolvedEpisode ?? {}
     const res = {
-      episode, image, summary: summary ?? overview, rating, title, length, airdate, airingAt, filler: !!fillerEpisodes[media.id]?.includes(i + 1), anidbEid
+      episode, image, summary: summary ?? overview, rating, title, length, airdate, airingAt, filler: !!fillerEpisodes[media.id]?.includes(episode + 1), anidbEid
     }
     episodeList.push(res)
   }
@@ -234,7 +251,7 @@ export const extensions = new class Extensions {
   }
 
   async ALtoAniDBEpisode ({ media, episode }: {media: Media, episode: number}, episodesRes: EpisodesResponse) {
-    return makeEpisodeList(Math.max(episodes(media) ?? 0, episodesRes.episodeCount ?? 0), media, episodesRes)[episode - 1] ?? undefined
+    return makeEpisodeList(media, episodesRes)[episode - 1] ?? undefined
   }
 
   dedupe <T extends TorrentResult & { extension: Set<string> }> (entries: T[]): T[] {

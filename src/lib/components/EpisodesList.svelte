@@ -31,7 +31,7 @@
     }
   }
 
-  $: episodeList = media && makeEpisodeList(episodeCount, media, eps)
+  $: episodeList = media && makeEpisodeList(media, eps)
 
   const perPage = 16
 

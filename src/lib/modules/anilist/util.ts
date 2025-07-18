@@ -150,7 +150,6 @@ export function episodeByAirDate (alDate: Date | undefined, episodes: Episodes, 
   // 1 is key for episod 1, not index
 
   // find closest episodes by air date, multiple episodes can have the same air date distance
-  // ineffcient but reliable
   const closestEpisodes: Episode[] = Object.values(episodes).reduce<Episode[]>((prev, curr) => {
     if (!prev[0]) return [curr]
     const prevDate = Math.abs(+new Date(prev[0].airdate ?? 0) - +alDate)
@@ -165,6 +164,7 @@ export function episodeByAirDate (alDate: Date | undefined, episodes: Episodes, 
 
   if (!closestEpisodes.length) return episodes[Number(episode)] ?? episodes[episode]
 
+  // if multiple episodes have the same air date, return the one closest to the requested episode number
   return closestEpisodes.reduce((prev, curr) => {
     return Math.abs(Number(curr.episode) - episode) < Math.abs(Number(prev.episode) - episode) ? curr : prev
   })
