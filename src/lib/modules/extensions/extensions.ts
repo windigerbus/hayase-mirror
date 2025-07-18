@@ -1,14 +1,14 @@
 import anitomyscript, { type AnitomyResult } from 'anitomyscript'
 import { get } from 'svelte/store'
 
-import { dedupeAiring, episodeByAirDate, episodes, isMovie, type Media, getParentForSpecial, isSingleEpisode } from '../anilist'
+import { dedupeAiring, episodes, isMovie, type Media, getParentForSpecial, isSingleEpisode } from '../anilist'
 import { episodes as _episodes } from '../anizip'
 import native from '../native'
 import { settings, type videoResolutions } from '../settings'
 
 import { storage } from './storage'
 
-import type { EpisodesResponse, Titles } from '../anizip/types'
+import type { EpisodesResponse, Titles, Episode } from '../anizip/types'
 import type { TorrentResult } from 'hayase-extensions'
 
 import { dev } from '$app/environment'
@@ -52,6 +52,31 @@ export interface SingleEpisode {
   anidbEid?: number
 }
 
+export function episodeByAirDate (alDate: Date | undefined, episodes: Map<string, Episode & { airdatems?: number }>, episode: number): Episode & { airdatems?: number } | undefined {
+  if (!alDate || !+alDate) return episodes.get('' + episode)
+  // 1 is key for episod 1, not index
+
+  // find closest episodes by air date, multiple episodes can have the same air date distance
+  const closestEpisodes: Episode[] = Object.values(episodes).reduce<Episode[]>((prev, curr) => {
+    if (!prev[0]) return [curr]
+    const prevDate = Math.abs(+new Date(prev[0].airdate ?? 0) - +alDate)
+    const currDate = Math.abs(+new Date(curr.airdate ?? 0) - +alDate)
+    if (prevDate === currDate) {
+      prev.push(curr)
+      return prev
+    }
+    if (currDate < prevDate) return [curr]
+    return prev
+  }, [])
+
+  if (!closestEpisodes.length) return episodes.get('' + episode)
+
+  // if multiple episodes have the same air date, return the one closest to the requested episode number
+  return closestEpisodes.reduce((prev, curr) => {
+    return Math.abs(Number(curr.episode) - episode) < Math.abs(Number(prev.episode) - episode) ? curr : prev
+  })
+}
+
 // TODO: https://anilist.co/anime/13055/
 export function makeEpisodeList (media: Media, episodesRes?: EpisodesResponse | null) {
   const count = episodes(media) ?? episodesRes?.episodeCount ?? 0
@@ -66,7 +91,12 @@ export function makeEpisodeList (media: Media, episodesRes?: EpisodesResponse | 
   }
 
   const episodeList: SingleEpisode[] = []
-  const filtered = { ...episodesRes?.episodes ?? {} }
+  const filtered = new Map<string, Episode & { airdatems?: number }>()
+  const now = Date.now()
+  for (const [key, value] of Object.entries(episodesRes?.episodes ?? {})) {
+    filtered.set(key, { ...value, airdatems: value.airdate ? +new Date(value.airdate) : undefined })
+  }
+
   const hasSpecial = !!episodesRes?.specialCount
   const hasCountMatch = (episodes(media) ?? 0) === (episodesRes?.episodeCount ?? 0)
   // this code... doesn't scale well into the thousands, it takes almost a second or two to run for one piece
@@ -85,16 +115,15 @@ export function makeEpisodeList (media: Media, episodesRes?: EpisodesResponse | 
     //   return false
     // })))
 
-    const resolvedEpisode = (needsValidation ? episodeByAirDate(airingAt, filtered, episode) : episodesRes?.episodes?.[Number(episode)])
+    const resolvedEpisode = needsValidation ? episodeByAirDate(airingAt, filtered, episode) : filtered.get('' + episode)
     // we want to exclude episodes which were previously consumed
     if (needsValidation && resolvedEpisode) {
-      for (const [key, value] of Object.entries(filtered)) {
+      for (const [key, value] of filtered.entries()) {
         if (
           (value.anidbEid != null && value.anidbEid === resolvedEpisode.anidbEid) ||
-          (value.airdate != null && new Date(value.airdate) < new Date(resolvedEpisode.airdate ?? Date.now()))
+          (value.airdatems != null && value.airdatems < (resolvedEpisode.airdatems ?? now))
         ) {
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-          delete filtered[key as keyof typeof filtered]
+          filtered.delete(key)
         }
       }
     }

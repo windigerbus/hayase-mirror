@@ -11,7 +11,7 @@
 
   import type { EpisodesResponse } from '$lib/modules/anizip/types'
 
-  import { episodes as _episodes, dedupeAiring, notes, type Media } from '$lib/modules/anilist'
+  import { episodes as _episodes, notes, type Media } from '$lib/modules/anilist'
   import { authAggregator, list, progress } from '$lib/modules/auth'
   import { makeEpisodeList } from '$lib/modules/extensions'
   import { click, dragScroll } from '$lib/modules/navigate'
@@ -23,19 +23,11 @@
 
   $: episodeCount = _episodes(media) ?? eps?.episodeCount ?? 0
 
-  const alSchedule: Record<number, Date | undefined> = {}
-
-  $: {
-    for (const { a: airingAt, e: episode } of dedupeAiring(media)) {
-      alSchedule[episode] = new Date(airingAt * 1000)
-    }
-  }
-
   $: episodeList = media && makeEpisodeList(media, eps)
 
   const perPage = 16
 
-  function getPage (page: number, list: typeof episodeList = episodeList) {
+  function getPage (page: number, list = episodeList) {
     return list.slice((page - 1) * perPage, page * perPage)
   }
 
