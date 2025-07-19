@@ -26,6 +26,14 @@
     font-family: "Geist Mono", ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, Liberation Mono, DejaVu Sans Mono, Courier New, monospace !important;
   }
 
+  .exclude-transition {
+    view-transition-class: disabled;
+  }
+
+  ::view-transition-group(.disabled) {
+    animation-duration: 0s !important;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -267,6 +275,76 @@ body {
 #root {
   transition: transform 0.5s;
   transform: perspective(100vw) translate3d(0, 0, 0vw) rotateY(0deg) rotateX(0deg);
+}
+
+::view-transition-old(my-root),
+::view-transition-new(my-root) {
+  animation-duration: 200ms;
+  animation-timing-function: ease-in-out;
+}
+
+::view-transition-old(my-root) {
+  animation-name: fade-out;
+}
+
+::view-transition-new(my-root) {
+  animation-name: fade-in;
+}
+
+@media (prefers-reduced-motion) {
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* @media (max-width: 768px) {
+
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 600ms !important;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  ::view-transition-old(*) {
+    animation-name: slide-out-left !important;
+  }
+
+  ::view-transition-new(*) {
+    animation-name: slide-in-right !important;
+  }
+} */
+
+/* @keyframes slide-in-right {
+  from {
+    transform: translateX(40%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-10%);
+  }
+} */
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes fade-in {

@@ -7,6 +7,7 @@
   import { setContext } from 'svelte'
   import { toast } from 'svelte-sonner'
 
+  import { onNavigate } from '$app/navigation'
   import Backplate from '$lib/components/Backplate.svelte'
   import Online from '$lib/components/Online.svelte'
   import { Menubar } from '$lib/components/ui/menubar'
@@ -33,6 +34,17 @@
     setTimeout(() => {
       complete?.(0)
     }, displayThresholdMs)
+  })
+
+  onNavigate((navigation) => {
+    if (!document.startViewTransition) return
+
+    return new Promise((resolve) => {
+      document.startViewTransition(async () => {
+        resolve()
+        await navigation.complete
+      })
+    })
   })
 </script>
 

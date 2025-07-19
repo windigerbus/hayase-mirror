@@ -31,6 +31,17 @@ const config: Config = {
         { values: { DEFAULT: undefined } }
       )
       api.addVariant('mobile', '@media (pointer: none), (pointer: coarse)')
+      api.matchUtilities(
+        {
+          'view-transition': (value) => ({
+            'view-transition-name': value
+          })
+        },
+        {
+          values: { DEFAULT: 'auto' },
+          type: 'any'
+        }
+      )
     })
   ],
   darkMode: ['class'],
