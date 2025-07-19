@@ -551,7 +551,10 @@
       desc: 'Toggle Mute'
     },
     KeyP: {
-      fn: () => pip.pip(),
+      fn: () => {
+        goto('/app/player')
+        pip.pip()
+      },
       id: 'picture_in_picture',
       icon: PictureInPicture2,
       type: 'icon',
