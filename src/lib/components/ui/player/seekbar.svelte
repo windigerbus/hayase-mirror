@@ -34,7 +34,6 @@
   import type Thumbnailer from './thumbnailer'
 
   import { SUPPORTS } from '$lib/modules/settings'
-  import supports from '$lib/modules/settings/supports'
   import { toTS } from '$lib/utils'
 
   const dispatch = createEventDispatcher<{

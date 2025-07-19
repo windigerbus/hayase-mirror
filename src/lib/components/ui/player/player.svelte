@@ -709,6 +709,7 @@
     document.addEventListener(type + 'down' as 'keydown' | 'pointerdown', (event) => {
       if (isMiniplayer) return
       if ('code' in event && (event.code !== 'Space')) return
+      if ('button' in event && event.button !== 0) return
       if ('pointerId' in event) document.setPointerCapture(event.pointerId)
       startFF()
     }, { signal: ctrl.signal })
