@@ -33,6 +33,8 @@
 
   import type Thumbnailer from './thumbnailer'
 
+  import { SUPPORTS } from '$lib/modules/settings'
+  import supports from '$lib/modules/settings/supports'
   import { toTS } from '$lib/utils'
 
   const dispatch = createEventDispatcher<{
@@ -130,7 +132,7 @@
   let lastDbl = 0
   function customDoubleClick (e: MouseEvent) {
     const now = Date.now()
-    if (now - lastDbl < 100) {
+    if (now - lastDbl < (SUPPORTS.isAndroid ? 400 : 100)) {
       dispatch('dblclick', e)
     }
     lastDbl = now
