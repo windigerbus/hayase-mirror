@@ -101,7 +101,7 @@ export const flyAndScale = (
 
 export const sleep = (t: number) => new Promise<void>(resolve => setTimeout(resolve, t))
 
-export const highEntropyValues = 'userAgentData' in navigator && navigator.userAgentData.getHighEntropyValues(['architecture', 'platform', 'platformVersion'])
+export const highEntropyValues = 'userAgentData' in navigator && navigator.userAgentData?.getHighEntropyValues?.(['architecture', 'platform', 'platformVersion'])
 
 export function safeLocalStorage<T> (key: string): T | undefined {
   try {

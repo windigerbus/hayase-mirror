@@ -17,7 +17,6 @@
       <div class='text-6xl text-center font-bold'>Update Required</div>
       <Separator class='my-6 w-40' />
       <div class='text-xl text-wrap max-w-full text-center mb-6'>A mandatory update is available for the {#await outdatedComponent then name}{name}{/await}.<br />Please update to continue.</div>
-
       {#await outdatedComponent then name}
         {#if name === 'client'}
           {#await native.updateReady()}

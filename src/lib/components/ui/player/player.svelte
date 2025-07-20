@@ -154,10 +154,10 @@
   })
 
   function checkAudio () {
-    if (video.audioTracks) {
+    if ('audioTracks' in HTMLVideoElement.prototype && video.audioTracks) {
       if (!video.audioTracks.length) {
         toast.error('Audio Codec Unsupported', {
-          description: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in RSS settings."
+          description: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in Torrent settings. You can also use external players like MPV."
         })
       } else if (video.audioTracks.length > 1) {
         const preferredTrack = [...video.audioTracks].find(({ language }) => language === $settings.audioLanguage)
@@ -166,6 +166,15 @@
         const japaneseTrack = [...video.audioTracks].find(({ language }) => language === 'jpn')
         if (japaneseTrack) return selectAudio(japaneseTrack.id)
       }
+    } else {
+      video.requestVideoFrameCallback(() => {
+        // using capturestream.getAudioTracks() could work too
+        if ('webkitAudioDecodedByteCount' in video && video.webkitAudioDecodedByteCount === 0) {
+          toast.error('Audio Codec Unsupported', {
+            description: "This torrent's audio codec is not supported, try a different release by disabling Autoplay Torrents in Torrent settings. You can also use external players like MPV."
+          })
+        }
+      })
     }
   }
   function selectAudio (id: string) {
@@ -691,7 +700,9 @@
     let timeout = 0
     let oldPlaybackRate = playbackRate
     const startFF = () => {
+      clearTimeout(timeout)
       timeout = setTimeout(() => {
+        if (fastForwarding) return
         paused = false
         fastForwarding = true
         oldPlaybackRate = playbackRate
@@ -700,23 +711,29 @@
     }
     const endFF = () => {
       clearTimeout(timeout)
-      if (fastForwarding) {
-        fastForwarding = false
-        playbackRate = oldPlaybackRate
-        paused = true
-      }
+      if (!fastForwarding) return
+      fastForwarding = false
+      playbackRate = oldPlaybackRate
+      paused = true
     }
-    document.addEventListener(type + 'down' as 'keydown' | 'pointerdown', (event) => {
+    document.addEventListener(type + 'down' as 'keydown' | 'pointerdown', event => {
       if (isMiniplayer) return
       if ('code' in event && (event.code !== 'Space')) return
       if ('button' in event && event.button !== 0) return
-      if ('pointerId' in event) document.setPointerCapture(event.pointerId)
+      if ('pointerId' in event) {
+        document.setPointerCapture(event.pointerId)
+      }
       startFF()
     }, { signal: ctrl.signal })
-    document.addEventListener(type + 'up' as 'keyup' | 'pointerup', (event) => {
+    document.addEventListener(type + 'up' as 'keyup' | 'pointerup', event => {
       if (isMiniplayer) return
       if ('code' in event && event.code !== 'Space') return
       if ('pointerId' in event) document.releasePointerCapture(event.pointerId)
+      endFF()
+    }, { signal: ctrl.signal })
+
+    document.addEventListener('pointercancel', event => {
+      document.releasePointerCapture(event.pointerId)
       endFF()
     }, { signal: ctrl.signal })
 

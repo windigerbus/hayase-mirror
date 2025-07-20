@@ -149,7 +149,8 @@
   on:pointerdown={startSeeking}
   on:pointerup={endSeeking}
   on:pointermove={calculatePositionProgress}
-  on:pointerleave={endHover}>
+  on:pointerleave={endHover}
+  on:pointercancel={endHover}>
   {#each segments as chapter, i (chapter)}
     {@const { size, scale, offset } = chapter}
     {@const active = seek && seek > offset && seek < offset + size}

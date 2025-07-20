@@ -22,7 +22,7 @@
 
   const imageRx = /\.(jpeg|jpg|gif|png|webp)/i
 
-  const w2gRx = /hayase(?:(?:\.watch)|(?::\/))\/w2g\/(.+)/
+  const w2gRx = /hayas.?ee?(?:(?:\.watch)|(?::\/))?\/w2g\/(.+)/
 
   async function handleTransfer (e: { dataTransfer?: DataTransfer | null, clipboardData?: DataTransfer | null } & Event) {
     const promises = [...(e.dataTransfer ?? e.clipboardData)!.items].map(item => {

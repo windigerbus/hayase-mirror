@@ -213,15 +213,28 @@ function getElementsInDesiredDirection (keyboardFocusable: ElementPosition[], cu
   })
 }
 
+// is input utility class
+function inInputEl (element: HTMLElement): element is HTMLInputElement {
+  return element.matches('input, textarea')
+}
+
 /**
  * Navigates using D-pad keys.
  */
-function navigateDPad (direction = 'up') {
+function navigateDPad (direction = 'up', e: KeyboardEvent) {
   const keyboardFocusable = getFocusableElementPositions()
   const nofocus = !document.activeElement || document.activeElement === document.body
   const currentElement = nofocus ? keyboardFocusable[0]! : getElementPosition(document.activeElement as HTMLElement)
 
   if (nofocus) return focusElement(currentElement.element)
+  if (inInputEl(currentElement.element)) {
+    const input = currentElement.element
+    if (direction === 'left' && input.selectionStart !== 0) return
+    if (direction === 'right' && input.selectionEnd !== input.value.length) return
+  }
+
+  e.preventDefault()
+  e.stopPropagation()
 
   // allow overrides via data attributes ex: <div data-up="#id, #id2"?> but order them, as querySelectorAll returns them in order of appearance rather than order of selectors
   for (const selector of currentElement.element.dataset[direction]?.split(',') ?? []) {
@@ -260,13 +273,13 @@ function navigateDPad (direction = 'up') {
 
 function focusElement (element?: HTMLElement | null) {
   if (!element) return false
-  const isInput = element.matches('input[type=text], input[type=url], input[type=number], textarea')
+  const isInput = inInputEl(element)
   if (isInput) {
-    const input = element as HTMLInputElement
+    const input = element
     input.readOnly = true
   }
   element.focus()
-  if (isInput) setTimeout(() => { (element as HTMLInputElement).readOnly = false })
+  if (isInput) setTimeout(() => { element.readOnly = false })
   element.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' })
 
   element.dispatchEvent(new CustomEvent('navigate', { bubbles: true, composed: true, detail: { target: element.id, value: element.dataset.value } }))
@@ -280,10 +293,8 @@ document.addEventListener('keydown', navigate)
 
 export function navigate (e: KeyboardEvent) {
   if (e.key in DirectionKeyMap) {
-    e.preventDefault()
-    e.stopPropagation()
     inputType.value = 'dpad'
-    navigateDPad(DirectionKeyMap[e.key as 'ArrowDown' | 'ArrowUp' | 'ArrowLeft' | 'ArrowRight'])
+    navigateDPad(DirectionKeyMap[e.key as 'ArrowDown' | 'ArrowUp' | 'ArrowLeft' | 'ArrowRight'], e)
   }
 }
 

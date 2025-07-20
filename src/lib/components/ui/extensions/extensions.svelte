@@ -51,7 +51,7 @@
       <Tabs.Trigger tabindex={0} value='extensions'>Extensions</Tabs.Trigger>
       <Tabs.Trigger tabindex={0} value='repositories'>Repositories</Tabs.Trigger>
     </Tabs.List>
-    <div class='flex items-center relative scale-parent md:max-w-72 w-full'>
+    <div class='flex items-center relative scale-parent md:max-w-56 w-full'>
       <Input
         class='pl-9 bg-neutral-950 select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'
         placeholder='Search {value}...'

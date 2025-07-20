@@ -68,7 +68,8 @@
   on:pointerdown={startDragging}
   on:pointerup|self={endDragging}
   on:pointermove|self={calculatePosition}
-  on:pointerleave|self={endHover}>
+  on:pointerleave|self={endHover}
+  on:pointercancel|self={endHover}>
   <div class={cn(
     'pointer-events-auto w-full',
     isMiniplayer ? 'max-w-80 absolute bottom-0 right-0 rounded-lg overflow-clip miniplayer transition-transform duration-[500ms] ease-[cubic-bezier(0.3,1.5,0.8,1)]' : 'h-full w-full',

@@ -36,8 +36,8 @@ declare global {
   }
 
   interface Navigator {
-    userAgentData: {
-      getHighEntropyValues: (keys: string[]) => Promise<Record<string, string>>
+    userAgentData?: {
+      getHighEntropyValues?: (keys: string[]) => Promise<Record<string, string>>
     }
   }
 
