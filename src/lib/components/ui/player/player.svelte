@@ -702,6 +702,7 @@
     const startFF = () => {
       clearTimeout(timeout)
       timeout = setTimeout(() => {
+        if (fastForwarding) return
         paused = false
         fastForwarding = true
         oldPlaybackRate = playbackRate
@@ -710,11 +711,10 @@
     }
     const endFF = () => {
       clearTimeout(timeout)
-      if (fastForwarding) {
-        fastForwarding = false
-        playbackRate = oldPlaybackRate
-        paused = true
-      }
+      if (!fastForwarding) return
+      fastForwarding = false
+      playbackRate = oldPlaybackRate
+      paused = true
     }
     document.addEventListener(type + 'down' as 'keydown' | 'pointerdown', event => {
       if (isMiniplayer) return
