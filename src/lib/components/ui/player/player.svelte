@@ -732,10 +732,12 @@
       endFF()
     }, { signal: ctrl.signal })
 
-    document.addEventListener('pointercancel', event => {
-      document.releasePointerCapture(event.pointerId)
-      endFF()
-    }, { signal: ctrl.signal })
+    if (type === 'pointer') {
+      document.addEventListener('pointercancel', event => {
+        if ('pointerId' in event) document.releasePointerCapture(event.pointerId)
+        endFF()
+      }, { signal: ctrl.signal })
+    }
 
     return { destroy: () => ctrl.abort() }
   }
