@@ -30,7 +30,7 @@
     const info = {
       ...device,
       appInfo: {
-        userAgent: await navigator.userAgentData.getHighEntropyValues(['architecture', 'platform', 'platformVersion']),
+        userAgent: await navigator.userAgentData?.getHighEntropyValues?.(['architecture', 'platform', 'platformVersion']),
         support: SUPPORTS,
         settings: $settings
       }
