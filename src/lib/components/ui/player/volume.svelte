@@ -60,7 +60,8 @@
     bind:this={seekbar}
     on:pointerdown={startSeeking}
     on:pointerup={endSeeking}
-    on:pointermove={calculatePositionProgress}>
+    on:pointermove={calculatePositionProgress}
+    on:pointercancel={endSeeking}>
     <div class='w-full h-0.5 overflow-clip rounded-[2px] relative transform-gpu transition-transform -translate-x-full group-select/volume:translate-x-0'>
       <div class='w-full bg-[rgba(217,217,217,0.4)] h-full' />
       <div class='w-full bg-white h-full absolute top-0 left-0 transform-gpu' style:--tw-translate-x='{volume * 100 - 100}%' />
