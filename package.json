@@ -1,6 +1,6 @@
 {
 	"name": "ui",
-	"version": "6.4.71",
+	"version": "6.4.72",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.15.5",
@@ -33,6 +33,7 @@
 		"gql.tada": "^1.8.10",
 		"hayase-extensions": "github:hayase-app/extensions",
 		"jassub": "^1.8.6",
+		"native": "github:hayase-app/native",
 		"rollup-plugin-license": "^3.6.0",
 		"simple-copy": "^2.2.1",
 		"svelte": "^4.2.19",
@@ -74,7 +75,6 @@
 		"js-levenshtein": "^1.1.6",
 		"lucide-svelte": "^0.511.0",
 		"marked": "^15.0.11",
-		"native": "github:hayase-app/native",
 		"p2pt": "github:ThaUnknown/p2pt#modernise",
 		"semver": "^7.7.2",
 		"simple-store-svelte": "^1.0.6",
