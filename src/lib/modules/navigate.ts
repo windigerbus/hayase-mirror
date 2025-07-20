@@ -79,6 +79,7 @@ export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [type
   const ctrl = new AbortController()
   node.addEventListener('wheel', e => {
     // cheap way to update hover state on scroll
+    // TODO: this is bad on touch, but good on mouse, fix it
     if (document.elementsFromPoint(e.clientX, e.clientY).includes(node)) {
       if (lastHoverElement !== hoverUpdate) lastHoverElement?.(false)
       lastHoverElement = hoverUpdate

@@ -41,5 +41,6 @@ export default {
   playerSeek: '2',
   playerSkip: false,
   playerSkipFiller: false,
-  minimalPlayerUI: false
+  minimalPlayerUI: false,
+  androidStorageType: 'cache'
 }
