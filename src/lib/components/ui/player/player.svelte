@@ -470,7 +470,10 @@
   native.setActionHandler('previoustrack', () => prev?.())
   native.setActionHandler('nexttrack', () => next?.())
   // about://flags/#auto-picture-in-picture-for-video-playback
-  native.setActionHandler('enterpictureinpicture', () => pip.pip(true))
+  native.setActionHandler('enterpictureinpicture', () => {
+    goto('/app/player')
+    pip.pip(true)
+  })
 
   let openSubs: () => Promise<void>
 
@@ -560,10 +563,7 @@
       desc: 'Toggle Mute'
     },
     KeyP: {
-      fn: () => {
-        goto('/app/player')
-        pip.pip()
-      },
+      fn: () => pip.pip(),
       id: 'picture_in_picture',
       icon: PictureInPicture2,
       type: 'icon',
