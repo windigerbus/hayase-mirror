@@ -6,6 +6,7 @@ import { toast } from 'svelte-sonner'
 import { client, type Media } from '../anilist'
 import { mappings, mappingsByMalId } from '../anizip'
 import native from '../native'
+import { SUPPORTS } from '../settings'
 
 import type { Entry, FullMediaList, UserFrag } from '../anilist/queries'
 import type { ResultOf, VariablesOf } from 'gql.tada'
@@ -153,8 +154,7 @@ export default new class MALSync {
     })
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async _request<T = object> (url: string | URL, method: string, body?: any): Promise<T | { error: string }> {
+  async _request<T = object> (url: string | URL, method: string, body?: URLSearchParams): Promise<T | { error: string }> {
     const auth = get(this.auth)
     try {
       if (auth) {
@@ -171,6 +171,15 @@ export default new class MALSync {
 
       if (auth) {
         headers.Authorization = `Bearer ${auth.access_token}`
+      }
+      // if android append body to the URL
+      if (SUPPORTS.isAndroid && body) {
+        if (url instanceof URL) {
+          url.search = body.toString()
+        } else {
+          url += '?' + body.toString()
+        }
+        body = undefined
       }
 
       const res = await fetch(url, {
@@ -208,8 +217,9 @@ export default new class MALSync {
     return await this._request<T>(url, 'GET')
   }
 
-  async _post <T> (url: string, body?: Record<string, unknown> | URLSearchParams): Promise<T | { error: string }> {
-    return await this._request<T>(url, 'POST', body)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async _post <T> (url: string, body?: Record<string, any>): Promise<T | { error: string }> {
+    return await this._request<T>(url, 'POST', new URLSearchParams(body))
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -252,13 +262,13 @@ export default new class MALSync {
 
     const data = await this._post<MALOAuth>(
       ENDPOINTS.API_OAUTH,
-      new URLSearchParams({
+      {
         client_id: clientID,
         grant_type: 'authorization_code',
         code,
         code_verifier: challenge,
         redirect_uri: redirect
-      })
+      }
     )
 
     if ('access_token' in data) {
