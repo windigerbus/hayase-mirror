@@ -44,11 +44,10 @@
   <div class='font-weight-bold text-xl font-bold'>Client Settings</div>
   <SettingCard let:id title='Torrent Download Location' description={`Path to the folder used to store torrents. By default this is the TEMP cache folder, which might lose data when your OS tries to reclaim storage.${SUPPORTS.isAndroid ? '\n\nSD Card saves to the Cards Download folder. If SD Card is not available torrents will automatically be saved to the Phone\'s Downloads folder' : ''}`}>
     <div class='flex'>
+      <Input type='url' bind:value={$settings.torrentPath} readonly {id} placeholder='/tmp/webtorrent' class='sm:w-60 bg-background rounded-r-none pointer-events-none' />
       {#if !SUPPORTS.isAndroid}
-        <Input type='url' bind:value={$settings.torrentPath} readonly {id} placeholder='/tmp/webtorrent' class='sm:w-60 bg-background rounded-r-none pointer-events-none' />
         <Button class='rounded-l-none font-bold' on:click={() => selectDownloadFolder()} variant='secondary'>Select Folder</Button>
       {:else}
-        <Input type='text' bind:value={$settings.torrentPath} {id} placeholder='/tmp/webtorrent' class='sm:w-60 bg-background rounded-r-none border-r-0' />
         <SingleCombo bind:value={$settings.androidStorageType} items={androidDirectories} class='w-32 shrink-0 border-input border rounded-l-none ' onSelected={selectDownloadFolder} />
       {/if}
     </div>
