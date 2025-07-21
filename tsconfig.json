@@ -20,6 +20,12 @@
   "typeAcquisition": {
     "enable": false
   },
+  "exclude": [
+    "node_modules",
+    ".svelte-kit",
+    "build",
+    "public"
+  ],
   "files": [],
   "references": [
     {

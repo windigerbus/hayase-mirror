@@ -196,13 +196,17 @@ export const extensions = new class Extensions {
     const extopts = get(extensionOptions)
     const configs = get(saved)
 
+    const checkMovie = !singleEp && movie
+    const checkBatch = !singleEp && !movie
+
     for (const [id, worker] of Object.entries(workers)) {
       if (!extopts[id]!.enabled) continue
       if (configs[id]!.type !== 'torrent') continue
       try {
         const promises: Array<Promise<TorrentResult[]>> = []
         promises.push(worker.single(options))
-        if (!singleEp && (movie || media.status === 'FINISHED')) promises.push(movie ? worker.movie(options) : worker.batch(options))
+        if (checkMovie) promises.push(worker.movie(options))
+        if (checkBatch) promises.push(worker.batch(options))
 
         for (const result of await Promise.allSettled(promises)) {
           if (result.status === 'fulfilled') {
