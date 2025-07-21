@@ -71,7 +71,7 @@
   {#await settled}
     <Tooltip.Root>
       <Tooltip.Trigger let:builder>
-        <Button builders={[builder]} class='font-semibold w-24 !pointer-events-auto cursor-wait' disabled id='setup-next-button' data-left='#setup-prev-button'>Next</Button>
+        <Button builders={[builder]} class='font-semibold !pointer-events-auto cursor-wait' disabled id='setup-next-button' data-left='#setup-prev-button'>Waiting for checks...</Button>
       </Tooltip.Trigger>
       <Tooltip.Content>
         <p>Wait for all checks to settle</p>
