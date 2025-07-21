@@ -16,19 +16,19 @@
       <div class='bg-white w-full h-full transform-gpu' style:--tw-translate-x='-{STEP_PERCENTAGE[step]}%' />
     </div>
     <div class='w-20 flex flex-col items-center z-10 shrink-0'>
-      <Badge class='w-12 h-12 rounded-[50%] flex justify-center' href='../storage/'><HardDrive /></Badge>
+      <Badge class='w-12 h-12 rounded-[50%] flex justify-center' href='../storage/' tabindex='-1'><HardDrive /></Badge>
       <div class='mt-3 font-bold'>
         Storage
       </div>
     </div>
     <div class='w-20 flex flex-col items-center z-10 shrink-0 {step > 0 ? 'text-white' : 'text-muted-foreground'}'>
-      <Badge variant={step > 0 ? 'default' : 'secondary'} class='w-12 h-12 rounded-[50%] flex justify-center {step > 0 ? 'text-black' : 'text-muted-foreground'}' href={step > 1 ? '../network/' : undefined}><Network /></Badge>
+      <Badge variant={step > 0 ? 'default' : 'secondary'} class='w-12 h-12 rounded-[50%] flex justify-center {step > 0 ? 'text-black' : 'text-muted-foreground'}' href={step > 1 ? '../network/' : undefined} tabindex='-1'><Network /></Badge>
       <div class='mt-3 font-bold'>
         Network
       </div>
     </div>
     <div class='w-20 flex flex-col items-center z-10 shrink-0 {step > 1 ? 'text-white' : 'text-muted-foreground'}'>
-      <Badge variant={step > 1 ? 'default' : 'secondary'} class='w-12 h-12 rounded-[50%] flex justify-center {step > 1 ? 'text-black' : 'text-muted-foreground'}'><Puzzle /></Badge>
+      <Badge variant={step > 1 ? 'default' : 'secondary'} class='w-12 h-12 rounded-[50%] flex justify-center {step > 1 ? 'text-black' : 'text-muted-foreground'}' tabindex='-1'><Puzzle /></Badge>
       <div class='mt-3 font-bold'>
         Extensions
       </div>
