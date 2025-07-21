@@ -184,6 +184,7 @@ export const storage = new class Storage {
           delete this.workers[id]
         }
       }
+      saved.set(newconfig)
       this.modules = this.load(newconfig)
     }
   }
