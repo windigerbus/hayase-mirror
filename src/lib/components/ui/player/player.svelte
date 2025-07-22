@@ -125,13 +125,15 @@
   $: immersed = (!buffering && !paused && !ended && !pictureInPictureElement && !pointerMoving) || fastForwarding
   $: isMiniplayer = $page.route.id !== '/app/player'
 
+  $: if (!isMiniplayer && SUPPORTS.isAndroidTV) fullscreen()
+
   let pointerMoveTimeout = 0
-  function resetMove () {
+  function resetMove (time = 300) {
     clearTimeout(pointerMoveTimeout)
     pointerMoving = true
     pointerMoveTimeout = setTimeout(() => {
       pointerMoving = false
-    }, 300)
+    }, time)
   }
 
   // functions
@@ -783,7 +785,7 @@
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
-<div class='w-full h-full relative content-center bg-black overflow-clip text-left touch-none' class:fitWidth class:seeking class:pip={pictureInPictureElement} bind:this={wrapper} on:navigate={resetMove}>
+<div class='w-full h-full relative content-center bg-black overflow-clip text-left touch-none' class:fitWidth class:seeking class:pip={pictureInPictureElement} bind:this={wrapper} on:navigate={() => resetMove(2000)}>
   <video class='w-full h-full touch-none' preload='metadata' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking || pictureInPictureElement} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
     use:createDeband={$settings.playerDeband}
@@ -809,7 +811,7 @@
     on:timeupdate={checkSkippableChapters}
     on:timeupdate={checkCompletion}
     on:loadedmetadata={autoPlay}
-    on:pointermove={resetMove}
+    on:pointermove={() => resetMove()}
   />
   {#if !isMiniplayer}
     <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
