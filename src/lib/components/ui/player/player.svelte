@@ -853,12 +853,12 @@
         </div>
       {/if}
       <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay id='player-options-button-top'
-        class='{($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute top-4 left-4 bg-black/20 pointer-events-auto transition-opacity select:opacity-100 delay-150 {immersed && 'opacity-0'}' />
+        class='{($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute z-[1] top-4 left-4 bg-black/20 pointer-events-auto transition-opacity select:opacity-100 delay-150 {immersed && 'opacity-0'}' />
       {#if fastForwarding}
         <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
       {/if}
       {#if !SUPPORTS.isAndroidTV}
-        <div class='mobile:flex hidden gap-10 absolute items-center transition-opacity select:opacity-100' class:opacity-0={immersed || seeking}>
+        <div class='mobile:flex hidden gap-10 absolute items-center transition-opacity select:opacity-100 z-[0]' class:opacity-0={immersed || seeking}>
           <Button class='p-3 size-10 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' disabled={!prev} on:click={() => prev?.()}>
             <SkipBack fill='currentColor' strokeWidth='1' />
           </Button>
@@ -874,8 +874,8 @@
           </Button>
         </div>
         <div class='size-full mobile:flex hidden justify-between absolute'>
-          <div class='h-full w-1/4 pointer-events-auto' on:dblclick|stopPropagation={() => seek(-Number($settings.playerSeek))} />
-          <div class='h-full w-1/4 pointer-events-auto' on:dblclick|stopPropagation={() => seek(Number($settings.playerSeek))} />
+          <div class='h-full w-1/4 pointer-events-auto' on:dblclick|stopPropagation={() => seek(-Number($settings.playerSeek))} use:holdToFF={'pointer'} />
+          <div class='h-full w-1/4 pointer-events-auto' on:dblclick|stopPropagation={() => seek(Number($settings.playerSeek))} use:holdToFF={'pointer'} />
         </div>
       {/if}
       {#if buffering}

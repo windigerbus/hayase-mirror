@@ -34,7 +34,7 @@
   $: checks = [{
     promise: checkExtensions($saved, $options),
     title: 'Extensions Required',
-    pending: 'Waiting for at least one extension to be installed...'
+    pending: 'At least one extension needs to be installed.'
   }]
 
   onMount(() => {
