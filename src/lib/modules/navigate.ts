@@ -80,11 +80,12 @@ export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [type
   node.addEventListener('wheel', e => {
     // cheap way to update hover state on scroll
     // TODO: this is bad on touch, but good on mouse, fix it
-    if (document.elementsFromPoint(e.clientX, e.clientY).includes(node)) {
-      if (lastHoverElement !== hoverUpdate) lastHoverElement?.(false)
+    if (document.elementsFromPoint(e.clientX + e.deltaX, e.clientY + e.deltaY).includes(node)) {
+      lastHoverElement?.(false)
       lastHoverElement = hoverUpdate
       hoverUpdate(true)
     } else {
+      lastHoverElement?.(false)
       hoverUpdate(false)
     }
   }, { passive: true, signal: ctrl.signal })
@@ -105,6 +106,7 @@ export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [type
       hoverUpdate(false)
       cb()
     } else {
+      lastHoverElement?.(false)
       lastHoverElement = hoverUpdate
     }
   }, { signal: ctrl.signal })
@@ -114,21 +116,35 @@ export function hover (node: HTMLElement, [cb = noop, hoverUpdate = noop]: [type
       lastHoverElement?.(false)
       if (lastHoverElement === hoverUpdate) {
         lastHoverElement = null
+        hoverUpdate(false)
         cb()
       } else {
+        lastHoverElement?.(false)
         hoverUpdate(true)
         lastHoverElement = hoverUpdate
       }
     }
   }, { signal: ctrl.signal })
   node.addEventListener('pointerleave', () => {
-    if (inputType.value !== 'touch') hoverUpdate(false)
+    if (inputType.value !== 'touch') {
+      lastHoverElement?.(false)
+      hoverUpdate(false)
+      lastHoverElement = null
+    }
   }, { signal: ctrl.signal })
-  node.addEventListener('pointermove', () => {
-    if (inputType.value === 'touch') hoverUpdate(false)
+  node.addEventListener('pointermove', (e) => {
+    if (inputType.value === 'touch' && Math.abs(e.movementY) > 0) {
+      lastHoverElement?.(false)
+      hoverUpdate(false)
+      lastHoverElement = null
+    }
   }, { signal: ctrl.signal })
   node.addEventListener('drag', () => {
-    if (inputType.value === 'mouse') hoverUpdate(false)
+    if (inputType.value === 'mouse') {
+      lastHoverElement?.(false)
+      hoverUpdate(false)
+      lastHoverElement = null
+    }
   }, { signal: ctrl.signal })
 
   return { destroy: () => ctrl.abort() }
@@ -309,6 +325,7 @@ export function dragScroll (node: HTMLElement) {
   const ctrl = new AbortController()
 
   node.addEventListener('mousedown', e => {
+    if (e.button !== 0 || e.buttons !== 1) return
     isDragging = true
     x = e.clientX
     y = e.clientY
