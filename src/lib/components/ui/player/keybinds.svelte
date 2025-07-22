@@ -28,7 +28,7 @@
 
   async function runBind (e: MouseEvent | KeyboardEvent, code: KeyCode) {
     const kbn = get(binds)
-    if (cnd(code)) kbn[layout[code] ?? code]?.fn(e)
+    if (cnd(code)) kbn[layout[code] ?? code]?.fn?.(e)
   }
 
   export function loadWithDefaults (defaults: Partial<Record<string, Bind>>) {
