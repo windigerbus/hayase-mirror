@@ -160,7 +160,7 @@ function getDistance (anchor: ElementPosition, relative: ElementPosition) {
  * Gets keyboard-focusable elements within a specified element.
  */
 function getKeyboardFocusableElements (element: Element = document.body) {
-  return [...element.querySelectorAll<HTMLElement>('a[href]:not([disabled], [tabindex="-1"]), button:not([disabled], [tabindex="-1"]), fieldset:not([disabled]), input:not([disabled], [readonly]), optgroup:not([disabled]), option:not([disabled]), select:not([disabled]), textarea:not([disabled]), details, [tabindex]:not([tabindex="-1"], [disabled]), [contenteditable], [controls]')].filter(
+  return [...element.querySelectorAll<HTMLElement>('a[href]:not([disabled=""], [disabled="true"], [tabindex="-1"]), button:not([disabled=""], [disabled="true"], [tabindex="-1"]), fieldset:not([disabled=""], [disabled="true"]), input:not([disabled=""], [disabled="true"], [readonly]), optgroup:not([disabled=""], [disabled="true"]), option:not([disabled=""], [disabled="true"]), select:not([disabled=""], [disabled="true"]), textarea:not([disabled=""], [disabled="true"]), details, [tabindex]:not([tabindex="-1"], [disabled=""], [disabled="true"]), [contenteditable], [controls]')].filter(
     el => !el.getAttribute('aria-hidden')
   )
 }
