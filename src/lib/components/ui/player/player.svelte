@@ -467,8 +467,8 @@
   native.setActionHandler('play', playPause)
   native.setActionHandler('pause', playPause)
   native.setActionHandler('seekto', ({ seekTime }) => seekTo(seekTime ?? 0))
-  native.setActionHandler('seekbackward', () => seek(-2))
-  native.setActionHandler('seekforward', () => seek(2))
+  native.setActionHandler('seekbackward', () => seek(-Number($settings.playerSeek)))
+  native.setActionHandler('seekforward', () => seek(Number($settings.playerSeek)))
   native.setActionHandler('previoustrack', () => prev?.())
   native.setActionHandler('nexttrack', () => next?.())
   // about://flags/#auto-picture-in-picture-for-video-playback
@@ -872,6 +872,10 @@
           <Button class='p-3 size-10 pointer-events-auto rounded-[50%] bg-black/20' variant='ghost' disabled={!next} on:click={() => next?.()}>
             <SkipForward fill='currentColor' strokeWidth='1' />
           </Button>
+        </div>
+        <div class='size-full mobile:flex hidden justify-between absolute'>
+          <div class='h-full w-1/4 pointer-events-auto' on:dblclick|stopPropagation={() => seek(-Number($settings.playerSeek))} />
+          <div class='h-full w-1/4 pointer-events-auto' on:dblclick|stopPropagation={() => seek(Number($settings.playerSeek))} />
         </div>
       {/if}
       {#if buffering}
