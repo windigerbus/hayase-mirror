@@ -34,6 +34,20 @@
     animation-duration: 0s !important;
   }
 
+  @supports not (overflow: clip) {
+    .overflow-clip {
+      overflow: hidden;
+    }
+
+    .overflow-x-clip {
+      overflow-x: hidden;
+    }
+
+    .overflow-y-clip {
+      overflow-y: hidden;
+    }
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;

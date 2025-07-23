@@ -5,7 +5,7 @@ import Root from './button.svelte'
 import type { Button as ButtonPrimitive } from 'bits-ui'
 
 const buttonVariants = tv({
-  base: 'focus-visible:ring-ring inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50',
+  base: 'bg-transparent focus-visible:ring-ring inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50',
   variants: {
     variant: {
       default: 'bg-primary text-primary-foreground select:bg-neutral-500 shadow',

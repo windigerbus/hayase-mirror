@@ -18,10 +18,11 @@ export const activityState = readable<'active' | 'inactive'>(document.hasFocus()
 })
 
 // @ts-expect-error non-standard API
-const idleDetector = new IdleDetector()
-idleDetector.start({ threshold: 60_000 })
+const idleDetector = typeof IdleDetector !== 'undefined' && new IdleDetector()
+if (idleDetector) idleDetector.start({ threshold: 60_000 })
 
 export const idleState = readable<'active' | 'idle'>(idleDetector.userState, set => {
+  if (!idleDetector) return set('active')
   set(idleDetector.userState)
   const ctrl = new AbortController()
 
@@ -32,6 +33,7 @@ export const idleState = readable<'active' | 'idle'>(idleDetector.userState, set
 })
 
 export const lockedState = readable<'locked' | 'unlocked'>(idleDetector.screenState, set => {
+  if (!idleDetector) return set('unlocked')
   set(idleDetector.screenState)
   const ctrl = new AbortController()
 
