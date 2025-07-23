@@ -38,7 +38,7 @@ export default defineConfig({
   },
   server: { port: 7344 },
   build: {
-    target: 'esnext',
+    target: 'es2020',
     sourcemap: true
   },
   ssr: {

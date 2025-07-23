@@ -518,10 +518,6 @@ class AnilistClient {
 // sveltekit/vite does the funny and evaluates at compile, this is a hack to fix development mode
 const client = (typeof indexedDB !== 'undefined' && new AnilistClient()) as AnilistClient
 
-// hydrating the cache re-starts all queries, it's better to wait for cache to hydrate, than waste rate limit on requests which are dumped anyways
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-await client.storagePromise?.promise
-
 export default client
 
 export function asyncStore<Result, Variables = AnyVariables> (query: TypedDocumentNode<Result, Variables>, variables: AnyVariables, context?: Partial<OperationContext>): Promise<Writable<Result>> {

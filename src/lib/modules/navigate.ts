@@ -195,7 +195,12 @@ function getElementPosition (element: HTMLElement): ElementPosition {
  */
 function getFocusableElementPositions (): ElementPosition[] {
   const elements = []
-  for (const element of getKeyboardFocusableElements(document.querySelector('[role="dialog"]') ?? document.querySelector('[role="application"]') ?? document.querySelector(':has(> [role="listbox"])') ?? document.body)) {
+  let listbox: Element | null = null
+  try {
+    // support for :has() pseudo-class, which is not widely supported yet
+    listbox = document.querySelector(':has(> [role="listbox"])')
+  } catch {}
+  for (const element of getKeyboardFocusableElements(document.querySelector('[role="dialog"]') ?? document.querySelector('[role="application"]') ?? listbox ?? document.body)) {
     const position = getElementPosition(element)
     elements.push(position)
   }

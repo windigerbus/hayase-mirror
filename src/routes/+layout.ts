@@ -26,3 +26,24 @@ if (typeof Object.groupBy === 'undefined') {
     }, {})
   }
 }
+
+if (!Array.prototype.at) {
+  // eslint-disable-next-line no-extend-native
+  Array.prototype.at = function <T> (this: T[], index: number): T | undefined {
+    const len = this.length
+    const relativeIndex = Math.trunc(index) || 0
+    const k = relativeIndex >= 0 ? relativeIndex : len + relativeIndex
+    if (k < 0 || k >= len) return undefined
+    return this[k]
+  }
+}
+// randomUUID
+if (typeof crypto.randomUUID === 'undefined') {
+  crypto.randomUUID = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0
+      const v = c === 'x' ? r : (r & 0x3 | 0x8)
+      return v.toString(16)
+    }) as `${string}-${string}-${string}-${string}-${string}`
+  }
+}
