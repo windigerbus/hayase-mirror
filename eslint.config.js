@@ -11,6 +11,7 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
         svelteConfig
       }
-    }
+    },
+    ignores: ['build/', '.svelte-kit/', 'node_modules/']
   }
 )

@@ -193,25 +193,25 @@
           <Tree.Item>
             <span slot='trigger'>Playback Rate</span>
             <Tree.Sub>
-              <Tree.Item on:click={() => { playbackRate = 0.5; open = false }}>
+              <Tree.Item active={playbackRate === 0.5} on:click={() => { playbackRate = 0.5; open = false }}>
                 <span>0.5x</span>
               </Tree.Item>
-              <Tree.Item on:click={() => { playbackRate = 0.75; open = false }}>
+              <Tree.Item active={playbackRate === 0.75} on:click={() => { playbackRate = 0.75; open = false }}>
                 <span>0.75x</span>
               </Tree.Item>
-              <Tree.Item on:click={() => { playbackRate = 1; open = false }}>
+              <Tree.Item active={playbackRate === 1} on:click={() => { playbackRate = 1; open = false }}>
                 <span>1x</span>
               </Tree.Item>
-              <Tree.Item on:click={() => { playbackRate = 1.25; open = false }}>
+              <Tree.Item active={playbackRate === 1.25} on:click={() => { playbackRate = 1.25; open = false }}>
                 <span>1.25x</span>
               </Tree.Item>
-              <Tree.Item on:click={() => { playbackRate = 1.5; open = false }}>
+              <Tree.Item active={playbackRate === 1.5} on:click={() => { playbackRate = 1.5; open = false }}>
                 <span>1.5x</span>
               </Tree.Item>
-              <Tree.Item on:click={() => { playbackRate = 1.75; open = false }}>
+              <Tree.Item active={playbackRate === 1.75} on:click={() => { playbackRate = 1.75; open = false }}>
                 <span>1.75x</span>
               </Tree.Item>
-              <Tree.Item on:click={() => { playbackRate = 2; open = false }}>
+              <Tree.Item active={playbackRate === 2} on:click={() => { playbackRate = 2; open = false }}>
                 <span>2x</span>
               </Tree.Item>
             </Tree.Sub>

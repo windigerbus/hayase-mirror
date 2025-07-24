@@ -77,7 +77,7 @@
   let currentTime = 0
   let seekPercent = 0
   let duration = 1
-  let playbackRate = 1
+  const playbackRate = persisted('playbackRate', 1)
   let buffered: SvelteMediaTimeRange[] = []
   let subtitleDelay = 0
   $: buffer = Math.max(...buffered.map(({ end }) => end))
@@ -462,7 +462,7 @@
   $: if (readyState && !seekIndex) thumbnailer._paintThumbnail(video, playbackIndex)
 
   $: native.setMediaSession(mediaInfo.session, mediaInfo.media.id, safeduration)
-  $: native.setPositionState({ duration: safeduration, position: Math.min(Math.max(0, currentTime), safeduration), playbackRate }, readyState === 0 ? 'none' : paused ? 'paused' : 'playing')
+  $: native.setPositionState({ duration: safeduration, position: Math.min(Math.max(0, currentTime), safeduration), playbackRate: $playbackRate }, readyState === 0 ? 'none' : paused ? 'paused' : 'playing')
   $: native.setPlayBackState(readyState === 0 ? 'none' : paused ? 'paused' : 'playing')
   native.setActionHandler('play', playPause)
   native.setActionHandler('pause', playPause)
@@ -657,21 +657,21 @@
       desc: 'Volume Down'
     },
     BracketLeft: {
-      fn: () => { playbackRate = video.defaultPlaybackRate -= 0.1 },
+      fn: () => { $playbackRate -= 0.1 },
       id: 'history',
       icon: RotateCcw,
       type: 'icon',
       desc: 'Decrease Playback Rate'
     },
     BracketRight: {
-      fn: () => { playbackRate = video.defaultPlaybackRate += 0.1 },
+      fn: () => { $playbackRate += 0.1 },
       id: 'update',
       icon: RotateCw,
       type: 'icon',
       desc: 'Increase Playback Rate'
     },
     Backslash: {
-      fn: () => { playbackRate = video.defaultPlaybackRate = 1 },
+      fn: () => { $playbackRate = 1 },
       icon: RefreshCcw,
       id: 'schedule',
       type: 'icon',
@@ -700,23 +700,25 @@
   function holdToFF (document: HTMLElement, type: 'key' | 'pointer') {
     const ctrl = new AbortController()
     let timeout = 0
-    let oldPlaybackRate = playbackRate
+    let oldPlaybackRate = $playbackRate
+    let wasPaused = paused
     const startFF = () => {
       clearTimeout(timeout)
       timeout = setTimeout(() => {
         if (fastForwarding) return
+        wasPaused = paused
         paused = false
         fastForwarding = true
-        oldPlaybackRate = playbackRate
-        playbackRate = 2
+        oldPlaybackRate = $playbackRate
+        $playbackRate = 2
       }, 1000)
     }
     const endFF = () => {
       clearTimeout(timeout)
       if (!fastForwarding) return
       fastForwarding = false
-      playbackRate = oldPlaybackRate
-      paused = true
+      $playbackRate = oldPlaybackRate
+      paused = wasPaused
     }
     document.addEventListener(type + 'down' as 'keydown' | 'pointerdown', event => {
       if (isMiniplayer) return
@@ -801,7 +803,7 @@
     bind:muted
     bind:readyState
     bind:buffered
-    bind:playbackRate
+    bind:playbackRate={$playbackRate}
     bind:volume={exponentialVolume}
     bind:this={video}
     on:click={() => isMiniplayer ? goto('/app/player') : playPause()}
@@ -852,7 +854,7 @@
           Subtitle delay: {subtitleDelay} sec
         </div>
       {/if}
-      <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay id='player-options-button-top'
+      <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate={$playbackRate} bind:subtitleDelay id='player-options-button-top'
         class='{($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute z-[1] top-4 left-4 bg-black/20 pointer-events-auto transition-opacity select:opacity-100 delay-150 {immersed && 'opacity-0'}' />
       {#if fastForwarding}
         <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
@@ -949,12 +951,12 @@
           <Volume bind:volume={$volume} bind:muted />
         </div>
         <div class='flex gap-2'>
-          {#if playbackRate !== 1}
+          {#if $playbackRate !== 1}
             <div class='flex justify-center items-center leading-none text-base font-bold px-1 pt-0.5'>
-              x{playbackRate.toFixed(1)}
+              x{$playbackRate.toFixed(1)}
             </div>
           {/if}
-          <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate bind:subtitleDelay id='player-options-button' />
+          <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate={$playbackRate} bind:subtitleDelay id='player-options-button' />
           {#if subtitles}
             <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs} on:keydown={keywrap(openSubs)} data-up='#player-seekbar'>
               <Subtitles size='24px' fill='currentColor' strokeWidth='0' />

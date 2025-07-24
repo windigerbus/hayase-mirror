@@ -138,7 +138,9 @@ export default class Subtitles {
       this.initSubtitleRenderer()
 
       const tracks = Object.entries(this._tracks.value)
+
       if (tracks.length) {
+        if (!this.set.subtitleLanguage) return // if lang set to none dont autoselect
         if (tracks.length === 1) {
           this.selectCaptions(tracks[0]![0])
         } else {
