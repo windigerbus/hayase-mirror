@@ -283,7 +283,7 @@
 
   function createDeband (video: HTMLVideoElement, playerDeband: boolean) {
     const create = () => {
-      destroy()
+      if (deband) return
       try {
         deband = new VideoDeband(video)
         deband.canvas.classList.add('deband-canvas', 'w-full', 'h-full', 'pointer-events-none', 'object-contain')
@@ -1006,7 +1006,7 @@
     object-fit: cover !important;
   }
 
-  .seeking :global(.deband-canvas), .pip :global(.deband-canvas){
+  .seeking :global(.deband-canvas), .pip :global(.deband-canvas), .seeking :global(.JASSUB) {
     display: none;
   }
 
