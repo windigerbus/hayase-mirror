@@ -1006,7 +1006,7 @@
     object-fit: cover !important;
   }
 
-  .seeking :global(.deband-canvas), .pip :global(.deband-canvas){
+  .seeking :global(.deband-canvas), .pip :global(.deband-canvas), .seeking :global(.JASSUB) {
     display: none;
   }
 
