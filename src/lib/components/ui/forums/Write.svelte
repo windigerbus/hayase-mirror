@@ -7,7 +7,7 @@
 
   export let isLocked = false
 
-  const viewer = client.viewer
+  const viewer = client.client.viewer
 
   export let threadId: number | undefined = undefined
   export let parentCommentId: number | undefined = undefined

@@ -23,7 +23,7 @@
   $: anime = data.anime
   $: media = $anime.Media!
 
-  const viewer = client.viewer
+  const viewer = client.client.viewer
 </script>
 
 <div class='flex items-center w-full'>

@@ -5,7 +5,7 @@
   import { Button } from '$lib/components/ui/button'
   import { SingleCombo } from '$lib/components/ui/combobox'
   import { Switch } from '$lib/components/ui/switch'
-  import { client } from '$lib/modules/anilist'
+  import { storage } from '$lib/modules/anilist/urql-client'
   import native from '$lib/modules/native'
   import { settings, SUPPORTS, debug } from '$lib/modules/settings'
 
@@ -61,9 +61,9 @@
       duration: 5000
     })
   }
-  function reset () {
+  async function reset () {
     localStorage.clear()
-    client.storage.clear()
+    await storage.clear()
     native.restart()
   }
 </script>

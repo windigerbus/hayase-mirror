@@ -15,7 +15,7 @@ export default new class AuthAggregator {
   hasAuth = readable(this.checkAuth(), set => {
     // add other subscriptions here for MAL, kitsu, tvdb, etc
     const unsub = [
-      client.viewer.subscribe(() => set(this.checkAuth())),
+      client.client.viewer.subscribe(() => set(this.checkAuth())),
       kitsu.viewer.subscribe(() => set(this.checkAuth())),
       mal.viewer.subscribe(() => set(this.checkAuth()))
     ]
@@ -27,7 +27,7 @@ export default new class AuthAggregator {
   // AUTH
 
   anilist () {
-    return !!client.viewer.value?.viewer?.id
+    return !!client.client.viewer.value?.viewer?.id
   }
 
   kitsu () {
@@ -43,14 +43,14 @@ export default new class AuthAggregator {
   }
 
   id () {
-    if (this.anilist()) return client.viewer.value!.viewer?.id
+    if (this.anilist()) return client.client.viewer.value!.viewer?.id
     if (this.kitsu()) return kitsu.id()
 
     return -1
   }
 
   profile (): ResultOf<typeof UserFrag> | undefined {
-    if (this.anilist()) return client.viewer.value?.viewer ?? undefined
+    if (this.anilist()) return client.client.viewer.value?.viewer ?? undefined
     if (this.kitsu()) return kitsu.profile()
     if (this.mal()) return mal.profile()
   }

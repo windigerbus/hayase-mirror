@@ -35,7 +35,7 @@
 
   let isMac = false
 
-  if (highEntropyValues) highEntropyValues.then(({ platform }) => { isMac = platform === 'MacOS' })
+  if (highEntropyValues) highEntropyValues.then(({ platform }) => { isMac = platform === 'macOS' })
 </script>
 
 <svelte:document bind:visibilityState />

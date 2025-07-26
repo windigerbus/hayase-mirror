@@ -229,7 +229,7 @@
     }
   }
 
-  const viewer = client.viewer
+  const viewer = client.client.viewer
 
   let pressed = false
 </script>
