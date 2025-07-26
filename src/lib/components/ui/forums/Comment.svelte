@@ -25,7 +25,7 @@
   let childComments: Array<ResultOf<typeof CommentFrag>>
   $: childComments = comment.childComments as Array<ResultOf<typeof CommentFrag>> | null ?? []
 
-  const viewer = client.viewer
+  const viewer = client.client.viewer
 </script>
 
 <div class='rounded-md {depth % 2 === 1 ? 'bg-black' : 'bg-neutral-950'} text-secondary-foreground flex w-full py-4 px-6 flex-col'>

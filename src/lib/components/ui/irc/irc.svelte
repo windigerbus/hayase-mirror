@@ -10,7 +10,7 @@
 <script lang='ts'>
   import Interface from './interface.svelte'
 
-  const viewer = client.viewer.value
+  const viewer = client.client.viewer.value
 
   let ident: { nick: string, id: string, pfpid: string, type: 'al' | 'guest' }
 

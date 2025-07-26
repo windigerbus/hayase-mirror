@@ -20,7 +20,7 @@
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
 
-  const alviewer = client.viewer
+  const alviewer = client.client.viewer
 
   $: anilist = $alviewer
 
@@ -64,9 +64,9 @@
     </div>
     <div class='bg-neutral-950 px-6 py-4 rounded-b-md flex justify-between'>
       {#if anilist?.viewer?.id}
-        <Button variant='secondary' on:click={() => client.logout()}>Logout</Button>
+        <Button variant='secondary' on:click={() => client.client.logout()}>Logout</Button>
       {:else}
-        <Button variant='secondary' on:click={() => client.auth()}>Login</Button>
+        <Button variant='secondary' on:click={() => client.client.auth()}>Login</Button>
       {/if}
       <div class='flex items-center gap-4'>
         <Tooltip.Root>
