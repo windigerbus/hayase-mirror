@@ -180,6 +180,9 @@ importers:
       jassub:
         specifier: ^1.8.6
         version: 1.8.6
+      ms:
+        specifier: ^2.1.3
+        version: 2.1.3
       native:
         specifier: github:hayase-app/native
         version: https://codeload.github.com/hayase-app/native/tar.gz/61d27bc30411840846e4e8ec5ea8ce875305e424
