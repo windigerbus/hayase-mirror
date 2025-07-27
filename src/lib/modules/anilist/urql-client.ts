@@ -39,6 +39,7 @@ export const storage = makeDefaultStorage({
   maxAge: 31 // The maximum age of the persisted data in days
 })
 
+debug('Loading urql client')
 storagePromise.promise.finally(() => {
   debug('Graphcache storage initialized')
 })
