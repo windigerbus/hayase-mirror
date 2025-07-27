@@ -30,7 +30,7 @@ class AnilistClient {
     // hacky but prevents query from re-running
     // the debug logging is added after an empty useless subscription, don't delete this subscription!
     this.userlists.subscribe(ids => {
-      debug('userlists: ', ids?.data?.MediaListCollection)
+      debug('userlists: ', ids?.data?.MediaListCollection?.lists?.find(list => list?.status === 'CURRENT')?.entries?.map(entry => entry?.media?.id) ?? [])
     })
     this.continueIDs.subscribe(ids => {
       debug('continueIDs: ', ids)

@@ -10,7 +10,7 @@ const _debug = Debug('ui:settings')
 
 export const settings = persisted('settings', defaults, { beforeRead: value => ({ ...defaults, ...value }) })
 
-export const debug = persisted('debug', '')
+export const debug = persisted('debug-key', '')
 
 debug.subscribe((value) => {
   native.debug(value)
