@@ -1,4 +1,5 @@
 import anitomyscript, { type AnitomyResult } from 'anitomyscript'
+import Debug from 'debug'
 import { get } from 'svelte/store'
 
 import { dedupeAiring, episodes, isMovie, type Media, getParentForSpecial, isSingleEpisode } from '../anilist'
@@ -29,8 +30,7 @@ if (!('audioTracks' in HTMLVideoElement.prototype)) {
   exclusions.push('MULTI')
 }
 video.remove()
-
-const debug = console.log
+const debug = Debug('ui:extensions')
 
 export let fillerEpisodes: Record<number, number[] | undefined> = {}
 
@@ -162,6 +162,7 @@ export const extensions = new class Extensions {
   }
 
   async getResultsFromExtensions ({ media, episode, resolution }: { media: Media, episode: number, resolution: keyof typeof videoResolutions }) {
+    debug(`Fetching results for ${media.id}:${media.title?.userPreferred} ${episode} ${resolution}`)
     await storage.modules
     const workers = storage.workers
     if (!Object.values(workers).length) {
@@ -199,6 +200,8 @@ export const extensions = new class Extensions {
     const checkMovie = !singleEp && movie
     const checkBatch = !singleEp && !movie
 
+    debug(`Checking ${Object.keys(workers).length} extensions for ${media.id}:${media.title?.userPreferred} ${episode} ${resolution} ${checkMovie ? 'movie' : ''} ${checkBatch ? 'batch' : ''}`)
+
     for (const [id, worker] of Object.entries(workers)) {
       if (!extopts[id]!.enabled) continue
       if (configs[id]!.type !== 'torrent') continue
@@ -229,7 +232,7 @@ export const extensions = new class Extensions {
       }
     }
 
-    debug(`Found ${results.length} results`)
+    debug(`Found ${results.length} results, online ${navigator.onLine}`)
 
     const deduped = this.dedupe(results)
 

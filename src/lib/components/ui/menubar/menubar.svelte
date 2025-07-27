@@ -1,13 +1,11 @@
 <script lang='ts'>
-  import { persisted } from 'svelte-persisted-store'
 
   import Wrapper from './wrapper.svelte'
 
   import native from '$lib/modules/native'
   import { click } from '$lib/modules/navigate'
-  import { SUPPORTS } from '$lib/modules/settings'
+  import { debug, SUPPORTS } from '$lib/modules/settings'
 
-  const debug = persisted('debug', '')
   function tabindex (node: HTMLElement) {
     node.tabIndex = -1
   }
