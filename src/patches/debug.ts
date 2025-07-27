@@ -9,6 +9,7 @@ import humanize from 'ms'
 
 const exports = {}
 const module = { exports }
+const formatters = {}
 
 exports.formatArgs = formatArgs
 exports.save = save
@@ -16,6 +17,7 @@ exports.load = load
 exports.humanize = humanize
 exports.useColors = useColors
 exports.storage = localstorage()
+exports.formatters = formatters
 exports.destroy = (() => {
   let warned = false
 
@@ -32,8 +34,6 @@ exports.destroy = (() => {
  */
 
 exports.colors = [6, 2, 3, 4, 5, 1]
-
-const { formatters = {} } = module.exports
 
 /**
  * Currently only WebKit-based Web Inspectors, Firefox >= v31,
@@ -153,6 +153,16 @@ formatters.j = function (v) {
   }
 }
 
+formatters.O = function (v) {
+  try {
+    return v && typeof v === 'object' ? JSON.stringify(v, null, 2) : v
+  } catch (error) {
+    return '[UnexpectedJSONParseError]: ' + error.message
+  }
+}
+
+formatters.o = formatters.j
+
 /**
  * This is the common logic for both the Node.js and web browser
  * implementations of `debug()`.
@@ -184,7 +194,7 @@ function setup (env) {
   *
   * Valid key names are a single, lower or upper-case letter, i.e. "n" and "N".
   */
-  createDebug.formatters = {}
+  createDebug.formatters = formatters
 
   /**
   * Selects a color for a debug namespace
@@ -238,7 +248,15 @@ function setup (env) {
       if (typeof args[0] !== 'string') {
         // Anything else let's inspect with %O
         args.unshift('%O')
+      } else {
+        for (let i = 1; i < args.length; i++) {
+          if (typeof args[i] === 'object') {
+            args[0] += ' %j'
+          }
+        }
       }
+
+
 
       // Apply any `formatters` transformations
       let index = 0

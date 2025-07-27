@@ -63,7 +63,7 @@ export const server = new class ServerClient {
     const last = get(this.last)
     if (last) {
       this.play(last.id, last.media, last.episode)
-      debug('restored last torrent', last.id, last.media.title, last.episode)
+      debug('restored last torrent', last.id, last.media.title?.userPreferred, last.episode)
     }
 
     this.stats.subscribe((stats) => {

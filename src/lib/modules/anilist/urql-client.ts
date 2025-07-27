@@ -325,7 +325,7 @@ export default new class URQLClient extends Client {
     })
 
     this.limiter.on('failed', async (error: FetchError | Error, jobInfo) => {
-      debug('Bottleneck onfailed', error, jobInfo)
+      debug('Bottleneck onfailed', error, jobInfo.options, jobInfo.retryCount, jobInfo.args[0], jobInfo.args[1]?.body)
       // urql has some weird bug that first error is always an AbortError ???
       if (error.name === 'AbortError') return undefined
       if (jobInfo.retryCount > 8) return undefined
