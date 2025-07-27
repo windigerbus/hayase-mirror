@@ -1,3 +1,4 @@
+import Debug from 'debug'
 import { readable, writable } from 'simple-store-svelte'
 import { get } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
@@ -8,6 +9,8 @@ import { w2globby } from '../w2g/lobby'
 
 import type { Media } from '../anilist'
 import type { TorrentFile, TorrentInfo } from 'native'
+
+const debug = Debug('ui:torrent-client')
 
 const defaultTorrentInfo: TorrentInfo = {
   name: '',
@@ -58,7 +61,10 @@ export const server = new class ServerClient {
 
   constructor () {
     const last = get(this.last)
-    if (last) this.play(last.id, last.media, last.episode)
+    if (last) {
+      this.play(last.id, last.media, last.episode)
+      debug('restored last torrent', last.id, last.media.title, last.episode)
+    }
 
     this.stats.subscribe((stats) => {
       native.downloadProgress(stats.progress)
@@ -66,10 +72,12 @@ export const server = new class ServerClient {
   }
 
   async cachedSet () {
+    debug('fetching cached torrents')
     return new Set(await native.cachedTorrents())
   }
 
   play (id: string, media: Media, episode: number) {
+    debug('playing torrent', id, media.id, episode)
     this.last.set({ id, media, episode })
     this.active.value = this._play(id, media, episode)
     w2globby.value?.mediaChange({ episode, mediaId: media.id, torrent: id })
@@ -78,6 +86,7 @@ export const server = new class ServerClient {
 
   async _play (id: string, media: Media, episode: number) {
     const result = { id, media, episode, files: await native.playTorrent(id, media.id, episode) }
+    debug('torrent play result', result)
     this.downloaded.value = this.cachedSet()
     return result
   }

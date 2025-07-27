@@ -3,6 +3,7 @@ import { offlineExchange } from '@urql/exchange-graphcache'
 import { makeDefaultStorage } from '@urql/exchange-graphcache/default-storage'
 import { Client, fetchExchange } from '@urql/svelte'
 import Bottleneck from 'bottleneck'
+import Debug from 'debug'
 import { writable as _writable } from 'simple-store-svelte'
 import { toast } from 'svelte-sonner'
 
@@ -16,6 +17,8 @@ import type { ResultOf } from 'gql.tada'
 import { dev } from '$app/environment'
 import native from '$lib/modules/native'
 import { safeLocalStorage, sleep } from '$lib/utils'
+
+const debug = Debug('ui:urql')
 
 interface ViewerData { viewer: ResultOf<typeof Viewer>['Viewer'], token: string, expires: string }
 
@@ -36,6 +39,10 @@ export const storage = makeDefaultStorage({
   maxAge: 31 // The maximum age of the persisted data in days
 })
 
+storagePromise.promise.finally(() => {
+  debug('Graphcache storage initialized')
+})
+
 export default new class URQLClient extends Client {
   limiter = new Bottleneck({
     reservoir: 90,
@@ -52,12 +59,14 @@ export default new class URQLClient extends Client {
     // await sleep(1000)
     const res = await fetch(req, opts)
     if (!res.ok && (res.status === 429 || res.status === 500)) {
+      debug('Rate limit exceeded', res)
       throw new FetchError(res)
     }
     return res
   })
 
   async token () {
+    debug('Requesting Anilist token')
     const res = await native.authAL(`https://anilist.co/api/v2/oauth/authorize?client_id=${dev ? 26159 : 3461}&response_type=token`)
     const token = res.access_token
     const expires = '' + (Date.now() + (parseInt(res.expires_in) * 1000))
@@ -66,12 +75,14 @@ export default new class URQLClient extends Client {
   }
 
   async auth (oauth = this.token()) {
+    debug('Authenticating Anilist')
     const { token, expires } = await oauth
     const viewerRes = await this.query(Viewer, {}, { fetchOptions: { headers: { Authorization: `Bearer ${token}` } } })
     if (!viewerRes.data?.Viewer) throw new Error('Failed to fetch viewer data')
 
     this.viewer.value = { viewer: viewerRes.data.Viewer, token, expires }
     localStorage.setItem('ALViewer', JSON.stringify(this.viewer.value))
+    debug('Anilist viewer data', this.viewer.value.viewer)
 
     const lists = viewerRes.data.Viewer.mediaListOptions?.animeList?.customLists ?? []
     if (!lists.includes('Watched using Hayase')) {
@@ -80,12 +91,14 @@ export default new class URQLClient extends Client {
   }
 
   async logout () {
+    debug('Logging out from Anilist')
     await storage.clear()
     localStorage.removeItem('ALViewer')
     native.restart()
   }
 
   setRateLimit (sec: number) {
+    debug('Setting rate limit', sec)
     toast.error('Anilist Error', { description: 'Rate limit exceeded, retrying in ' + Math.round(sec / 1000) + ' seconds.' })
     this.rateLimitPromise ??= sleep(sec).then(() => { this.rateLimitPromise = null })
     return sec
@@ -106,6 +119,7 @@ export default new class URQLClient extends Client {
           updates: {
             Mutation: {
               ToggleFavourite (result: ResultOf<typeof ToggleFavourite>, args, cache) {
+                debug('cache update ToggleFavourite', result, args)
                 if (!result.ToggleFavourite?.anime?.nodes) return result
                 const id = args.animeId as number
 
@@ -115,8 +129,10 @@ export default new class URQLClient extends Client {
                 cache.writeFragment(gql('fragment Med on Media {id, isFavourite}'), { id, isFavourite: !!exists })
               },
               DeleteMediaListEntry: (_, { id }, cache) => {
+                debug('cache update DeleteMediaListEntry', id)
                 cache.writeFragment(FullMediaList, { id: id as number, progress: null, repeat: null, status: null, customLists: null, score: null })
                 cache.updateQuery({ query: UserLists, variables: { id: this.viewer.value?.viewer?.id } }, data => {
+                  debug('cache update DeleteMediaListEntry, UserLists', data)
                   if (!data?.MediaListCollection?.lists) return data
                   const oldLists = data.MediaListCollection.lists
 
@@ -132,20 +148,24 @@ export default new class URQLClient extends Client {
                 })
               },
               SaveMediaListEntry: (result: ResultOf<typeof Entry>, { mediaId }, cache) => {
+                debug('cache update SaveMediaListEntry', result, mediaId)
                 const media = gql('fragment Med on Media {id, mediaListEntry {status, progress, repeat, score, customLists }}')
 
                 const entry = result.SaveMediaListEntry
 
                 if (entry?.customLists) entry.customLists = (entry.customLists as string[]).map(name => ({ enabled: true, name }))
+                debug('SaveMediaListEntry entry', entry)
                 cache.writeFragment(media, {
                   id: mediaId as number,
                   mediaListEntry: entry ?? null
                 })
                 cache.updateQuery({ query: UserLists, variables: { id: this.viewer.value?.viewer?.id } }, data => {
+                  debug('cache update SaveMediaListEntry, UserLists', data)
                   if (!data?.MediaListCollection?.lists) return data
                   const oldLists = data.MediaListCollection.lists
                   const oldEntry = oldLists.flatMap(list => list?.entries).find(entry => entry?.media?.id === mediaId) ?? { id: -1, media: cache.readFragment(FullMedia, { id: mediaId as number, __typename: 'Media' }) }
                   if (!oldEntry.media) return data
+                  debug('oldEntry', oldEntry)
 
                   const lists = oldLists.map(list => {
                     if (!list?.entries) return list
@@ -154,6 +174,7 @@ export default new class URQLClient extends Client {
                       entries: list.entries.filter(entry => entry?.media?.id !== mediaId)
                     }
                   })
+                  debug('lists', lists)
 
                   const status = result.SaveMediaListEntry?.status ?? oldEntry.media.mediaListEntry?.status ?? 'PLANNING' as const
 
@@ -163,12 +184,14 @@ export default new class URQLClient extends Client {
                     lists.push(fallback)
                     targetList = fallback
                   }
+                  debug('targetList', targetList)
                   targetList.entries ??= []
                   targetList.entries.push(oldEntry)
                   return { ...data, MediaListCollection: { ...data.MediaListCollection, lists } }
                 })
               },
               SaveThreadComment: (_result, args, cache, _info) => {
+                debug('cache update SaveThreadComment', args)
                 if (_info.variables.rootCommentId) {
                   const id = _info.variables.rootCommentId as number
                   cache.invalidate({
@@ -180,6 +203,7 @@ export default new class URQLClient extends Client {
                 }
               },
               DeleteThreadComment: (_result, args, cache, _info) => {
+                debug('cache update DeleteThreadComment', args)
                 const id = (_info.variables.rootCommentId ?? args.id) as number
                 cache.invalidate({
                   __typename: 'ThreadComment',
@@ -196,6 +220,7 @@ export default new class URQLClient extends Client {
           },
           optimistic: {
             ToggleFavourite ({ animeId }, cache, info) {
+              debug('optimistic ToggleFavourite', animeId)
               const id = animeId as number
               const media = cache.readFragment(FullMedia, { id, __typename: 'Media' })
               info.partial = true
@@ -210,13 +235,16 @@ export default new class URQLClient extends Client {
               }
             },
             DeleteMediaListEntry () {
+              debug('optimistic DeleteMediaListEntry')
               return { deleted: true, __typename: 'Deleted' }
             },
             SaveMediaListEntry (args, cache, info) {
+              debug('optimistic SaveMediaListEntry', args)
               const id = args.mediaId as number
               const media = cache.readFragment(FullMedia, { id, __typename: 'Media' })
               if (!media) return null
               info.partial = true
+              debug('optimistic SaveMediaListEntry media', media)
 
               return {
                 status: 'PLANNING' as const,
@@ -232,6 +260,7 @@ export default new class URQLClient extends Client {
               }
             },
             ToggleLikeV2 ({ id, type }, cache, info) {
+              debug('optimistic ToggleLikeV2', id, type)
               const threadOrCommentId = id as number
               const likable = type as 'THREAD' | 'THREAD_COMMENT' | 'ACTIVITY' | 'ACTIVITY_REPLY'
 
@@ -240,6 +269,7 @@ export default new class URQLClient extends Client {
               const likableUnion = cache.readFragment(likable === 'THREAD' ? ThreadFrag : CommentFrag, { id: threadOrCommentId, __typename: typename })
 
               if (!likableUnion) return null
+              debug('optimistic ToggleLikeV2 likableUnion', likableUnion)
 
               return {
                 id: threadOrCommentId,
@@ -295,6 +325,7 @@ export default new class URQLClient extends Client {
     })
 
     this.limiter.on('failed', async (error: FetchError | Error, jobInfo) => {
+      debug('Bottleneck onfailed', error, jobInfo)
       // urql has some weird bug that first error is always an AbortError ???
       if (error.name === 'AbortError') return undefined
       if (jobInfo.retryCount > 8) return undefined

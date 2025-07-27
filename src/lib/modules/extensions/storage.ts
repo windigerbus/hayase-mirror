@@ -1,5 +1,6 @@
 import { releaseProxy, type Remote } from 'abslink'
 import { wrap } from 'abslink/w3c'
+import Debug from 'debug'
 import { set, getMany, delMany, del } from 'idb-keyval'
 import { get } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
@@ -9,6 +10,8 @@ import Worker from './worker?worker'
 
 import type extensionLoader from './worker'
 import type { ExtensionConfig } from 'hayase-extensions'
+
+const debug = Debug('ui:extensions')
 
 type SavedExtensions = Record<ExtensionConfig['id'], ExtensionConfig>
 
@@ -81,6 +84,7 @@ export const storage = new class Storage {
 
   constructor () {
     saved.subscribe(async value => {
+      debug('saved extensions changed', value)
       this.modules = this.load(value)
       await this.modules
       this.update(value)
@@ -88,6 +92,7 @@ export const storage = new class Storage {
   }
 
   async reload () {
+    debug('reloading extensions')
     for (const worker of Object.values(this.workers)) {
       worker[releaseProxy]()
     }
@@ -96,6 +101,7 @@ export const storage = new class Storage {
   }
 
   async delete (id: string) {
+    debug('deleting extension', id)
     if (id in this.workers) this.workers[id]![releaseProxy]()
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.workers[id]
@@ -108,11 +114,13 @@ export const storage = new class Storage {
   }
 
   async import (url: string) {
+    debug('importing extension from', url)
     const config = await safejson<ExtensionConfig[]>(url)
     if (!config) throw new Error('Make sure the link you provided is a valid JSON config for Hayase', { cause: 'Invalid extension URI' })
     for (const c of config) {
       if (!this._validateConfig(c)) throw new Error('Make sure the link you provided is a valid extension config for Hayase', { cause: 'Invalid extension config' })
     }
+    debug('imported config', config)
     for (const c of config) {
       saved.update(value => {
         value[c.id] = c
@@ -126,6 +134,8 @@ export const storage = new class Storage {
     const values = await getMany<string>(ids)
 
     const modules: Record<string, string> = {}
+
+    debug('loading extensions', ids)
 
     options.update(options => {
       for (const id of ids) {
@@ -143,12 +153,14 @@ export const storage = new class Storage {
       if (module) {
         modules[id] = module
       } else {
+        debug('loading module', id)
         const module = await safejs(config[id]!.code)
         if (!module) continue
         modules[id] = module
         set(id, module)
       }
       if (!(id in this.workers)) {
+        debug('creating worker for', id)
         const worker = new Worker({ name: id })
         const Loader = wrap<typeof extensionLoader>(worker)
         try {
@@ -156,6 +168,7 @@ export const storage = new class Storage {
           this.workers[id] = Loader as unknown as Remote<typeof extensionLoader>
           await Loader.test()
         } catch (e) {
+          debug('failed to load extension', id, e)
           // worker.terminate()
           console.error(e, id)
           toast.error(`Failed to load extension ${config[id]!.name}`, { description: (e as Error).message })
@@ -168,6 +181,7 @@ export const storage = new class Storage {
   async update (config: Record<string, ExtensionConfig>) {
     const ids = Object.keys(config)
     const configs = Object.values(config)
+    debug('updating extensions', ids)
 
     const updateURLs = new Set<string>(configs.map(({ update }) => update).filter(e => e != null))
 
@@ -176,6 +190,7 @@ export const storage = new class Storage {
 
     const toDelete = ids.filter(id => newconfig[id]?.version !== config[id]!.version)
     if (toDelete.length) {
+      debug('deleting old extensions', toDelete)
       await delMany(toDelete)
       for (const id of toDelete) {
         if (id in this.workers) {

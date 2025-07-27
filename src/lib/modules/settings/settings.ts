@@ -1,3 +1,4 @@
+import Debug from 'debug'
 import { derived, type Readable } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
 
@@ -5,12 +6,19 @@ import native from '../native'
 
 import { defaults } from '.'
 
+const _debug = Debug('ui:settings')
+
 export const settings = persisted('settings', defaults, { beforeRead: value => ({ ...defaults, ...value }) })
 
 export const debug = persisted('debug', '')
 
 debug.subscribe((value) => {
   native.debug(value)
+  Debug.enable(value)
+})
+
+settings.subscribe((value) => {
+  _debug('settings changed', value)
 })
 
 function derivedDeep<T, U> (store: Readable<T>, fn: (value: T) => U) {

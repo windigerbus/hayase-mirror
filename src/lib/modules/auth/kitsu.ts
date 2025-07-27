@@ -1,3 +1,4 @@
+import Debug from 'debug'
 import { writable } from 'simple-store-svelte'
 import { derived, get, readable } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
@@ -12,6 +13,8 @@ import type { Entry, FullMediaList, UserFrag } from '../anilist/queries'
 import type { ResultOf, VariablesOf } from 'gql.tada'
 
 import { arrayEqual } from '$lib/utils'
+
+const debug = Debug('ui:kitsu')
 
 const ENDPOINTS = {
   API_OAUTH: 'https://kitsu.app/api/oauth/token',
@@ -50,6 +53,7 @@ export default new class KitsuSync {
   continueIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
     const sub = this.userlist.subscribe(values => {
+      debug('continueIDs: checking for IDs')
       const entries = Object.entries(values)
       if (!entries.length) return []
 
@@ -61,8 +65,10 @@ export default new class KitsuSync {
         }
       }
 
+      debug('continueIDs: found IDs', ids)
       if (arrayEqual(oldvalue, ids)) return
       oldvalue = ids
+      debug('continueIDs: setting IDs', ids)
       set(ids)
     })
     return sub
@@ -71,6 +77,7 @@ export default new class KitsuSync {
   planningIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
     const sub = this.userlist.subscribe(values => {
+      debug('planningIDs: checking for IDs')
       const entries = Object.entries(values)
       if (!entries.length) return []
 
@@ -82,8 +89,10 @@ export default new class KitsuSync {
         }
       }
 
+      debug('planningIDs: found IDs', ids)
       if (arrayEqual(oldvalue, ids)) return
       oldvalue = ids
+      debug('planningIDs: setting IDs', ids)
       set(ids)
     })
     return sub
@@ -164,6 +173,7 @@ export default new class KitsuSync {
   }
 
   async _refresh () {
+    debug('refreshing Kitsu auth token')
     const auth = get(this.auth)
     const data = await this._post<OAuth>(
       ENDPOINTS.API_OAUTH,
@@ -179,6 +189,7 @@ export default new class KitsuSync {
   }
 
   async login (username: string, password: string) {
+    debug('logging in to Kitsu with username', username)
     const data = await this._request<OAuth>(
       ENDPOINTS.API_OAUTH,
       'POST',
@@ -190,6 +201,7 @@ export default new class KitsuSync {
     )
 
     if ('access_token' in data) {
+      debug('Kitsu login successful, setting auth data')
       this.auth.set(data)
     }
   }
@@ -201,6 +213,7 @@ export default new class KitsuSync {
   }
 
   async _user () {
+    debug('fetching Kitsu user data')
     const res = await this._get<Res<User>>(
       ENDPOINTS.API_USER_FETCH,
       {
@@ -218,6 +231,8 @@ export default new class KitsuSync {
     this._entriesToML(res)
 
     const { id, attributes } = res.data[0]
+
+    debug('Kitsu user data fetched, setting viewer data')
 
     this.viewer.set({
       id: Number(id),
@@ -249,6 +264,8 @@ export default new class KitsuSync {
 
   _entriesToML (res: Res<KEntry | User, Anime | Mapping | KEntry | Fav>) {
     const entryMap = this.userlist.value
+
+    debug('Kitsu entries to MediaList conversion started for', res.data.length, 'entries')
 
     const { included } = res
 
@@ -290,12 +307,16 @@ export default new class KitsuSync {
       entryMap[anilistId] = this._kitsuEntryToAl(entry)
     }
 
+    debug('Kitsu entries to MediaList conversion finished, found', Object.keys(entryMap).length, 'entries')
+
     for (const [id, fav] of relations.favorites.entries()) {
       const data = fav.relationships!.item!.data as { id: string }
       const animeId = data.id
       this.favorites.value[animeId] = id
       this._getAlId(+animeId)
     }
+
+    debug('Kitsu favorites loaded, found', Object.keys(this.favorites.value).length, 'favorites')
 
     this.userlist.value = entryMap
   }
@@ -307,6 +328,7 @@ export default new class KitsuSync {
   }
 
   async _makeFavourite (kitsuAnimeId: string) {
+    debug('making Kitsu favorite for anime ID', kitsuAnimeId)
     const viewer = get(this.viewer)
     const data = await this._post<ResSingle<Fav>>(
       ENDPOINTS.API_FAVOURITES,
@@ -327,6 +349,7 @@ export default new class KitsuSync {
   }
 
   async _addEntry (id: string, attributes: Omit<KEntry, 'createdAt' | 'updatedAt'>, alId: number) {
+    debug('adding Kitsu entry for anime ID', id, 'with attributes', attributes)
     const viewer = get(this.viewer)
     const data = await this._post<ResSingle<KEntry>>(
       ENDPOINTS.API_USER_LIBRARY,
@@ -348,6 +371,7 @@ export default new class KitsuSync {
   }
 
   async _updateEntry (id: number, attributes: Omit<KEntry, 'createdAt' | 'updatedAt'>, alId: number) {
+    debug('updating Kitsu entry for anime ID', id, 'with attributes', attributes)
     const data = await this._patch<ResSingle<KEntry>>(
       `${ENDPOINTS.API_USER_LIBRARY}/${id}`,
       {
@@ -395,10 +419,12 @@ export default new class KitsuSync {
 
   schedule (onList = true) {
     const ids = Object.keys(this.userlist.value).map(id => parseInt(id))
+    debug('Kitsu schedule called with onList:', onList, 'and ids:', ids)
     return client.schedule(onList && ids.length ? ids : undefined)
   }
 
   async toggleFav (id: number) {
+    debug('toggling Kitsu favorite for anime ID', id)
     const kitsuId = await this._getKitsuId(id)
     if (!kitsuId) {
       toast.error('Kitsu Sync', {
@@ -421,6 +447,7 @@ export default new class KitsuSync {
   }
 
   async deleteEntry (media: Media) {
+    debug('deleting Kitsu entry for media ID', media.id)
     const id = this.userlist.value[media.id]?.id
     if (!id) return
     const res = await this._delete<undefined>(`${ENDPOINTS.API_USER_LIBRARY}/${id}`)
@@ -446,6 +473,7 @@ export default new class KitsuSync {
   }
 
   async entry (variables: VariablesOf<typeof Entry>) {
+    debug('updating Kitsu entry for media ID', variables.id, 'with variables', variables)
     const targetMediaId = variables.id
 
     const kitsuEntry = this.userlist.value[targetMediaId]

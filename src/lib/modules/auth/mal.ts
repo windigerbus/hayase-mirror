@@ -1,3 +1,4 @@
+import Debug from 'debug'
 import { writable } from 'simple-store-svelte'
 import { derived, get, readable } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
@@ -13,6 +14,8 @@ import type { ResultOf, VariablesOf } from 'gql.tada'
 
 import { dev } from '$app/environment'
 import { arrayEqual } from '$lib/utils'
+
+const debug = Debug('ui:mal')
 
 type ALMediaStatus = 'CURRENT' | 'PLANNING' | 'COMPLETED' | 'DROPPED' | 'PAUSED' | 'REPEATING'
 
@@ -109,6 +112,7 @@ export default new class MALSync {
   continueIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
     const sub = this.userlist.subscribe(values => {
+      debug('continueIDs: checking for IDs')
       const entries = Object.entries(values)
       if (!entries.length) return []
 
@@ -120,8 +124,10 @@ export default new class MALSync {
         }
       }
 
+      debug('continueIDs: found IDs', ids)
       if (arrayEqual(oldvalue, ids)) return
       oldvalue = ids
+      debug('continueIDs: setting new IDs', ids)
       set(ids)
     })
     return sub
@@ -130,6 +136,7 @@ export default new class MALSync {
   planningIDs = readable<number[]>([], set => {
     let oldvalue: number[] = []
     const sub = this.userlist.subscribe(values => {
+      debug('planningIDs: checking for IDs')
       const entries = Object.entries(values)
       if (!entries.length) return []
 
@@ -141,8 +148,10 @@ export default new class MALSync {
         }
       }
 
+      debug('planningIDs: found IDs', ids)
       if (arrayEqual(oldvalue, ids)) return
       oldvalue = ids
+      debug('planningIDs: setting new IDs', ids)
       set(ids)
     })
     return sub
@@ -232,6 +241,7 @@ export default new class MALSync {
   }
 
   async _refresh () {
+    debug('Refreshing MAL token')
     const auth = get(this.auth)
     if (!auth?.refresh_token) return
 
@@ -252,6 +262,7 @@ export default new class MALSync {
   }
 
   async login () {
+    debug('Logging in to MAL')
     const state = crypto.randomUUID().replaceAll('-', '')
     const challenge = (crypto.randomUUID() + crypto.randomUUID()).replaceAll('-', '')
     const clientID = 'd93b624a92e431a9b6dfe7a66c0c5bbb'
@@ -286,11 +297,14 @@ export default new class MALSync {
   }
 
   async _user () {
+    debug('Fetching MAL user data')
     const res = await this._get<MALUser>(ENDPOINTS.API_USER, {
       fields: 'anime_statistics'
     })
 
     if ('error' in res) return
+
+    debug('MAL user data fetched successfully', res)
 
     this.viewer.set({
       id: res.id,
@@ -319,6 +333,7 @@ export default new class MALSync {
   }
 
   async _loadUserList () {
+    debug('Loading MAL user list')
     const entryMap: Record<string, ResultOf<typeof FullMediaList>> = {}
 
     let hasNextPage = true
@@ -345,6 +360,8 @@ export default new class MALSync {
 
     const ids = data.map(item => item.node.id)
 
+    debug('MAL user list loaded with', data.length, 'entries and IDs:', ids)
+
     const malToAl = await client.malIdsCompound(ids)
     for (const item of data) {
       const malId = item.node.id
@@ -357,6 +374,8 @@ export default new class MALSync {
 
       entryMap[alId] = this._malEntryToAl(item.node.my_list_status, item.node.id)
     }
+
+    debug('MAL user list entries mapped to AL IDs:', Object.keys(entryMap))
 
     this.userlist.set(entryMap)
   }
@@ -403,6 +422,7 @@ export default new class MALSync {
   }
 
   profile (): ResultOf<typeof UserFrag> | undefined {
+    debug('Fetching MAL user profile')
     return get(this.viewer)
   }
 
@@ -410,6 +430,7 @@ export default new class MALSync {
 
   schedule (onList = true) {
     const ids = Object.keys(this.userlist.value).map(id => parseInt(id))
+    debug('Fetching MAL schedule with IDs:', ids)
     return client.schedule(onList && ids.length ? ids : undefined)
   }
 
@@ -418,6 +439,7 @@ export default new class MALSync {
   }
 
   async deleteEntry (media: Media) {
+    debug('Deleting MAL entry for media ID', media.id)
     const malId = media.idMal ?? await this._getMalId(media.id)
     if (!malId) return
 
@@ -434,6 +456,7 @@ export default new class MALSync {
   }
 
   async entry (variables: VariablesOf<typeof Entry>) {
+    debug('Updating MAL entry for media ID', variables.id, 'with variables', variables)
     const targetMediaId = variables.id
     const malId = (await client.single(targetMediaId)).data?.Media?.idMal ?? await this._getMalId(targetMediaId)
 
