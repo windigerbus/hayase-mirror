@@ -67,7 +67,8 @@
   async function playEntry ({ mediaID, episode, hash }: LibraryEntry) {
     if (!mediaID || !hash) return
     const media = await client.single(mediaID)
-    server.play(hash, media.data!.Media!, episode)
+    if (!media.data?.Media) return // TODO: log this?
+    server.play(hash, media.data.Media, episode)
     goto('/app/player/')
   }
 

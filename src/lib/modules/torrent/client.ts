@@ -77,6 +77,7 @@ export const server = new class ServerClient {
   }
 
   play (id: string, media: Media, episode: number) {
+    if (!media || !id) return
     debug('playing torrent', id, media.id, episode)
     this.last.set({ id, media, episode })
     this.active.value = this._play(id, media, episode)
