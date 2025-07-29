@@ -71,7 +71,7 @@
                 Episodes {entry.episodes}
               </div>
               {#if entry.videos?.length}
-                <Button size='icon-sm' class='ml-auto font-bold rounded-full' on:click={() => playVideo(url)}><Play fill='currentColor' size={iconSizes['icon-sm']} /></Button>
+                <Button size='icon-sm' class='ml-auto font-bold rounded-full bg-custom select:!bg-custom-600 text-contrast' on:click={() => playVideo(url)}><Play fill='currentColor' size={iconSizes['icon-sm']} /></Button>
               {/if}
             </div>
             {#if src === url}

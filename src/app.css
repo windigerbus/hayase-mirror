@@ -48,6 +48,17 @@
     }
   }
 
+  .text-contrast {
+    --accessible-color: calc(((((var(--red) * 299) + (var(--green) * 587) + (var(--blue) * 114)) / 1000) - 128) * -1000);
+
+    color: rgb(var(--accessible-color),
+        var(--accessible-color),
+        var(--accessible-color));
+    fill: rgb(var(--accessible-color),
+        var(--accessible-color),
+        var(--accessible-color));
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -79,6 +90,8 @@
     --ring: 240 10% 3.9%;
 
     --radius: 0.5rem;
+
+    --custom: #fff;
   }
 
   .dark {
@@ -110,6 +123,8 @@
     --destructive-foreground: 0 0% 98%;
 
     --ring: 240 4.9% 83.9%;
+
+    --custom: #fff;
   }
 }
 
@@ -246,7 +261,7 @@ details,
   align-items: center;
 }
 
-.text-contrast {
+.text-contrast-filter {
   filter: invert(1) grayscale(1) brightness(1.2) contrast(9000);
   mix-blend-mode: luminosity;
   -webkit-font-smoothing: antialiased;

@@ -26,7 +26,7 @@
     font-weight: bold;
     cursor: pointer;
     list-style: none;
-    background: #0f0f0f;
+    background: #0003;
     display: inline-block;
     padding: 0.4em 0.8em;
     border-radius: 0.5em;

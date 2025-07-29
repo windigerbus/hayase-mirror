@@ -315,16 +315,13 @@
   }
 
   let completed = false
-  function checkCompletion () {
+  async function checkCompletion () {
     if (!completed && $settings.playerAutocomplete) {
-      checkCompletionByTime(currentTime, safeduration)
-    }
-  }
-  function checkCompletionByTime (currentTime: number, safeduration: number) {
-    const fromend = Math.max(180, safeduration / 10)
-    if (safeduration && currentTime && readyState && safeduration - fromend < currentTime) {
-      authAggregator.watch(mediaInfo.media, mediaInfo.episode)
-      completed = true
+      const fromend = Math.max(180, safeduration / 10)
+      if (safeduration && currentTime && readyState && safeduration - fromend < currentTime) {
+        authAggregator.watch(mediaInfo.media, mediaInfo.episode)
+        completed = true
+      }
     }
   }
 

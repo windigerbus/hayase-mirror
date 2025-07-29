@@ -115,12 +115,15 @@ export default new class AuthAggregator {
     return null
   })
 
-  watch (media: Media, progress: number) {
+  async watch (outdated: Media, progress: number) {
+    const media = (await client.single(outdated.id)).data?.Media ?? outdated
     // TODO: auto re-watch status
     const totalEps = episodes(media) ?? 1 // episodes or movie which is single episode
     if (totalEps < progress) return // woah, bad data from resolver?!
 
-    const currentProgress = media.mediaListEntry?.progress ?? 0
+    const mediaList = this.mediaListEntry(media)
+
+    const currentProgress = mediaList?.progress ?? 0
     if (currentProgress >= progress) return
 
     // there's an edge case here that episodes returns 1, because anilist doesn't have episode count for an airing show without an expected end date
@@ -130,11 +133,11 @@ export default new class AuthAggregator {
     const status =
       totalEps === progress && canBeCompleted
         ? 'COMPLETED'
-        : media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
+        : mediaList?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
 
-    const lists = (media.mediaListEntry?.customLists as Array<{enabled: boolean, name: string}> | undefined)?.filter(({ enabled }) => enabled).map(({ name }) => name) ?? []
+    const lists = (mediaList?.customLists as Array<{enabled: boolean, name: string}> | undefined)?.filter(({ enabled }) => enabled).map(({ name }) => name) ?? []
 
-    this.entry({ id: media.id, progress, status, lists })
+    return await this.entry({ id: media.id, progress, status, lists })
   }
 
   delete (media: Media) {

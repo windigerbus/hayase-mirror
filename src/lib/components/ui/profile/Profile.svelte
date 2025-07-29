@@ -55,7 +55,7 @@
           {#if bubble && bubble !== 'Donator'}
             <div class='-left-5 -top-11 absolute text-sm'>
               <div class='px-4 py-2 rounded-2xl bg-mix bubbles relative leading-tight'>
-                <span class='text-contrast'>
+                <span class='text-contrast-filter'>
                   {bubble}
                 </span>
               </div>
