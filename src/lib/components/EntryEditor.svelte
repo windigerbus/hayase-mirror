@@ -37,7 +37,7 @@
 
 <Dialog.Root portal='#root'>
   <Dialog.Trigger let:builder asChild>
-    <Button size='icon' class='rounded-l-none bg-primary/85 select:bg-primary/75 shrink-0' builders={[builder]}>
+    <Button size='icon' class='rounded-l-none bg-custom-400 select:!bg-custom-700 shrink-0 text-contrast' builders={[builder]}>
       <PencilLine class='size-4' />
     </Button>
   </Dialog.Trigger>

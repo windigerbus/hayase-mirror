@@ -50,7 +50,7 @@
               <Load src={media.coverImage?.medium} class='object-cover h-full w-full shrink-0 rounded-l-md' />
             </div>
             <div class='h-full grid px-3 items-center'>
-              <div class='text-theme font-bold capitalize'>{relation(rel.relationType)}</div>
+              <div class='text-custom font-bold capitalize'>{relation(rel.relationType)}</div>
               <div class='line-clamp-2'>{media.title?.userPreferred ?? 'N/A'}</div>
               <div class='font-thin'>{format(media)}</div>
             </div>
@@ -63,9 +63,9 @@
 <Tabs.Root bind:value class='w-full' activateOnFocus={false}>
   <div class='flex justify-between items-center gap-3 sm:flex-row flex-col'>
     <Tabs.List class='flex'>
-      <Tabs.Trigger value='episodes' tabindex={0} class='px-8 data-[state=active]:font-bold'>Episodes</Tabs.Trigger>
-      <Tabs.Trigger value='threads' tabindex={0} class='px-8 data-[state=active]:font-bold'>Threads</Tabs.Trigger>
-      <Tabs.Trigger value='themes' tabindex={0} class='px-8 data-[state=active]:font-bold'>Themes</Tabs.Trigger>
+      <Tabs.Trigger value='episodes' tabindex={0} class='px-8 data-[state=active]:bg-custom data-[state=active]:text-contrast data-[state=active]:font-bold'>Episodes</Tabs.Trigger>
+      <Tabs.Trigger value='threads' tabindex={0} class='px-8 data-[state=active]:bg-custom data-[state=active]:text-contrast data-[state=active]:font-bold'>Threads</Tabs.Trigger>
+      <Tabs.Trigger value='themes' tabindex={0} class='px-8 data-[state=active]:bg-custom data-[state=active]:text-contrast data-[state=active]:font-bold'>Themes</Tabs.Trigger>
     </Tabs.List>
   </div>
   <Tabs.Content value='episodes' tabindex={-1}>

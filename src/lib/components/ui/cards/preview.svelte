@@ -40,10 +40,10 @@
     {/if}
   </div>
   <div class='w-full px-4 bg-neutral-950'>
-    <div class='text-lg font-bold truncate inline-block w-full text-white' title={title(media)}>
+    <div class='text-lg font-bold truncate inline-block w-full text-white pt-2' title={title(media)}>
       {title(media)}
     </div>
-    <div class='flex flex-row pt-1'>
+    <div class='flex flex-row'>
       <PlayButton {media} class='grow' />
       <FavoriteButton {media} class='ml-2' />
       <BookmarkButton {media} class='ml-2' />

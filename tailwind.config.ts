@@ -58,6 +58,20 @@ const config: Config = {
     },
     extend: {
       colors: {
+        custom: {
+          DEFAULT: 'hsl(from var(--custom) h s l / <alpha-value>)',
+          50: 'hsl(from var(--custom) h s 95% / <alpha-value>)',
+          100: 'hsl(from var(--custom) h s 90% / <alpha-value>)',
+          200: 'hsl(from var(--custom) h s 80% / <alpha-value>)',
+          300: 'hsl(from var(--custom) h s 70% / <alpha-value>)',
+          400: 'hsl(from var(--custom) h s 60% / <alpha-value>)',
+          500: 'hsl(from var(--custom) h s l / <alpha-value>)',
+          600: 'hsl(from var(--custom) h s 40% / <alpha-value>)',
+          700: 'hsl(from var(--custom) h s 30% / <alpha-value>)',
+          800: 'hsl(from var(--custom) h s 20% / <alpha-value>)',
+          900: 'hsl(from var(--custom) h s 10% / <alpha-value>)',
+          950: 'hsl(from var(--custom) h s 5% / <alpha-value>)'
+        },
         theme: 'hsl(346.6deg 79.12% 51.18% / <alpha-value>)',
         border: 'hsl(var(--border) / <alpha-value>)',
         input: 'hsl(var(--input) / <alpha-value>)',

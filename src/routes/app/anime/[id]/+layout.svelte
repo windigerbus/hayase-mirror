@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import Bell from 'lucide-svelte/icons/bell'
+  // import Bell from 'lucide-svelte/icons/bell'
   import Clapperboard from 'lucide-svelte/icons/clapperboard'
   import Maximize2 from 'lucide-svelte/icons/maximize-2'
   import Share2 from 'lucide-svelte/icons/share-2'
@@ -9,7 +9,7 @@
 
   import type { LayoutData } from './$types'
 
-  import { onNavigate } from '$app/navigation'
+  import { goto, onNavigate } from '$app/navigation'
   import Anilist from '$lib/components/icons/Anilist.svelte'
   import MyAnimeList from '$lib/components/icons/MyAnimeList.svelte'
   import { bannerSrc, hideBanner } from '$lib/components/ui/banner'
@@ -22,6 +22,7 @@
   import { authAggregator, of } from '$lib/modules/auth'
   import native from '$lib/modules/native'
   import { dragScroll } from '$lib/modules/navigate'
+  import { colors } from '$lib/utils'
 
   export let data: LayoutData
 
@@ -51,9 +52,9 @@
   }
 
   function getColorForRating (rating: number) {
-    if (rating >= 75) return 'bg-green-700'
-    if (rating >= 65) return 'bg-orange-400'
-    return 'bg-red-400'
+    if (rating >= 75) return 'bg-green-700 select:bg-green-800'
+    if (rating >= 65) return 'bg-orange-400 select:bg-orange-500'
+    return 'bg-red-400 select:bg-red-500'
   }
 
   $: mediaId = media.id
@@ -71,9 +72,11 @@
       behavior: 'smooth'
     })
   })
+
+  $: ({ r, g, b } = colors(media.coverImage?.color ?? undefined))
 </script>
 
-<div class='min-w-0 -ml-14 pl-14 grow items-center flex flex-col h-full overflow-y-auto z-10 pointer-events-none pb-10' use:dragScroll on:scroll={handleScroll} bind:this={container}>
+<div class='min-w-0 -ml-14 pl-14 grow items-center flex flex-col h-full overflow-y-auto z-10 pointer-events-none pb-10' use:dragScroll on:scroll={handleScroll} bind:this={container} style:--custom={media.coverImage?.color ?? '#fff'} style:--red={r} style:--green={g} style:--blue={b}>
   <div class='gap-6 w-full pt-4 md:pt-32 flex flex-col items-center justify-center max-w-[1600px] px-3 xl:px-14 pointer-events-auto'>
     <div class='flex flex-col md:flex-row w-full items-center md:items-end gap-5 pt-12'>
       <Dialog.Root portal='#root'>
@@ -92,34 +95,22 @@
           <h2 class='line-clamp-1 text-base md:text-lg font-light text-muted-foreground select-text'>{media.title?.romaji?.toLowerCase().trim() === title(media).toLowerCase().trim() ? nativeTitle : romajiTitle}</h2>
           <h1 class='font-black text-3xl md:text-4xl line-clamp-2 text-white select-text'>{title(media)}</h1>
           <div class='flex-wrap w-full justify-start md:pt-1 gap-4 hidden md:flex'>
-            <div class='rounded px-3.5 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
-              <div class='text-contrast'>
-                {of(media) ?? duration(media) ?? 'N/A'}
-              </div>
+            <div class='rounded px-3.5 font-bold bg-custom text-contrast'>
+              {of(media) ?? duration(media) ?? 'N/A'}
             </div>
-            <div class='rounded px-3.5 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
-              <div class='text-contrast'>
-                {format(media)}
-              </div>
-            </div>
-            <div class='rounded px-3.5 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
-              <div class='text-contrast'>
-                {status(media)}
-              </div>
-            </div>
+            <Button class='rounded px-3.5 font-bold bg-custom select:!bg-custom-600 text-contrast h-6 py-0 text-base' on:click={() => goto('/app/search', { state: { search: { format: [media.format] } } })}>
+              {format(media)}            </Button>
+            <Button class='rounded px-3.5 font-bold bg-custom select:!bg-custom-600 text-contrast h-6 py-0 text-base' on:click={() => goto('/app/search', { state: { search: { status: [media.status] } } })}>
+              {status(media)}            </Button>
             {#if season(media)}
-              <div class='rounded px-3.5 font-bold' style:background={media.coverImage?.color ?? '#27272a'}>
-                <div class='text-contrast capitalize'>
-                  {season(media)}
-                </div>
-              </div>
+              <Button class='rounded px-3.5 font-bold bg-custom select:!bg-custom-600 text-contrast h-6 py-0 text-base capitalize' on:click={() => goto('/app/search', { state: { search: { season: media.season, seasonYear: media.seasonYear } } })}>
+                {season(media)}
+              </Button>
             {/if}
             {#if media.averageScore}
-              <div class='rounded px-3.5 font-bold {getColorForRating(media.averageScore)}'>
-                <div class='text-contrast'>
-                  {media.averageScore}%
-                </div>
-              </div>
+              <Button class='rounded px-3.5 font-bold text-contrast h-6 py-0 text-base {getColorForRating(media.averageScore)}' on:click={() => goto('/app/search', { state: { search: { sort: ['SCORE_DESC'] } } })}>
+                {media.averageScore}%
+              </Button>
             {/if}
           </div>
           <div class='md:block hidden relative pb-6 md:pt-2 md:pb-0'>
@@ -130,26 +121,18 @@
     </div>
     <div class='flex gap-2 items-center justify-center md:justify-start md:self-start w-full overflow-x-clip [&>*]:flex-shrink-0'>
       <div class='flex md:mr-3 w-full min-[380px]:w-[180px]'>
-        <PlayButton size='default' {media} class='rounded-r-none w-full' />
+        <PlayButton size='default' {media} class='rounded-r-none w-full bg-custom select:!bg-custom-600 text-contrast' />
         <EntryEditor {media} />
       </div>
-      <FavoriteButton {media} variant='secondary' size='icon' class='min-[380px]:-order-1 md:order-none' />
-      <BookmarkButton {media} variant='secondary' size='icon' class='min-[380px]:-order-2 md:order-none' />
-      <Button size='icon' variant='secondary' on:click={share}>
+      <FavoriteButton {media} variant='secondary' size='icon' class='min-[380px]:-order-1 md:order-none select:!text-custom' />
+      <BookmarkButton {media} variant='secondary' size='icon' class='min-[380px]:-order-2 md:order-none select:!text-custom' />
+      <Button size='icon' variant='secondary' on:click={share} class='select:!text-custom'>
         <Share2 class='size-4' />
       </Button>
-      <Button size='icon' variant='secondary' class='hidden md:flex' on:click={() => native.openURL(`https://anilist.co/anime/${media.id}`)}>
-        <Anilist class='size-4' />
-      </Button>
-      {#if media.idMal}
-        <Button size='icon' variant='secondary' class='hidden md:flex' on:click={() => native.openURL(`https://myanimelist.net/anime/${media.idMal}`)}>
-          <MyAnimeList class='size-4 flex-center' />
-        </Button>
-      {/if}
       {#if media.trailer?.id}
         <Dialog.Root portal='#root'>
           <Dialog.Trigger let:builder asChild>
-            <Button size='icon' variant='secondary' class='hidden md:flex' builders={[builder]}>
+            <Button size='icon' variant='secondary' class='select:!text-custom' builders={[builder]}>
               <Clapperboard class='size-4' />
             </Button>
           </Dialog.Trigger>
@@ -158,9 +141,17 @@
           </Dialog.Content>
         </Dialog.Root>
       {/if}
-      <Button size='icon' variant='secondary' disabled>
-        <Bell class='size-4' />
+      <Button size='icon' variant='secondary' class='hidden md:flex' on:click={() => native.openURL(`https://anilist.co/anime/${media.id}`)}>
+        <Anilist class='size-4' />
       </Button>
+      {#if media.idMal}
+        <Button size='icon' variant='secondary' class='hidden md:flex' on:click={() => native.openURL(`https://myanimelist.net/anime/${media.idMal}`)}>
+          <MyAnimeList class='size-4 flex-center' />
+        </Button>
+      {/if}
+      <!-- <Button size='icon' variant='secondary' disabled>
+        <Bell class='size-4' />
+      </Button> -->
       <div class='-space-x-1 md:ml-3 hidden md:flex'>
         {#each followerEntries as followerEntry, i (followerEntry?.user?.id ?? i)}
           {#if followerEntry?.user}
@@ -169,13 +160,13 @@
         {/each}
       </div>
     </div>
-    <!-- <div class='flex gap-2 items-center md:justify-start md:self-start flex-wrap'>
+    <div class='flex gap-2 items-center md:justify-start md:self-start flex-wrap'>
       {#each media.genres ?? [] as genre (genre)}
-        <div class='bg-secondary text-secondary-foreground text-sm font-medium rounded-md h-9 items-center justify-center flex px-4 text-nowrap'>
+        <Button variant='secondary' class='select:!text-custom h-7 text-nowrap' on:click={() => goto('/app/search', { state: { search: { genre: [genre] } } })}>
           {genre}
-        </div>
+        </Button>
       {/each}
-    </div> -->
+    </div>
     <slot />
   </div>
 </div>
