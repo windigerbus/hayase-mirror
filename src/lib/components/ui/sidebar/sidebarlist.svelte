@@ -3,7 +3,7 @@
   import Heart from 'lucide-svelte/icons/heart'
   import House from 'lucide-svelte/icons/house'
   import LogIn from 'lucide-svelte/icons/log-in'
-  import MessagesSquare from 'lucide-svelte/icons/messages-square'
+  // import MessagesSquare from 'lucide-svelte/icons/messages-square'
   import Play from 'lucide-svelte/icons/play'
   import Search from 'lucide-svelte/icons/search'
   import Settings from 'lucide-svelte/icons/settings'
@@ -59,9 +59,9 @@
 <SidebarButton href='/app/w2g/'>
   <Users size={18} />
 </SidebarButton>
-<SidebarButton href='/app/chat/'>
+<!-- <SidebarButton href='/app/chat/'>
   <MessagesSquare size={18} />
-</SidebarButton>
+</SidebarButton> -->
 <SidebarButton href='/app/client/' id='sidebar-client' data-down='#sidebar-donate'>
   <Download size={18} />
 </SidebarButton>
@@ -71,8 +71,8 @@
 <SidebarButton href='/app/settings/'>
   <Settings size={18} />
 </SidebarButton>
-<!-- <SidebarButton href='/app/profile/'> -->
-<SidebarButton href='/app/profile/' class='hidden md:flex py-0'>
+<SidebarButton href='/app/profile/'>
+  <!-- <SidebarButton href='/app/profile/' class='hidden md:flex py-0'> -->
   {#if hasAuth}
     {@const viewer = client.profile()}
     <Avatar.Root class='size-6 rounded-md'>
