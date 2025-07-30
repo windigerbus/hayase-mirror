@@ -262,7 +262,7 @@
                         {/if}
                         {#each sanitiseTerms(result.parseObject) as { text, color }, i (i)}
                           <div class='rounded px-3 py-1 ml-2 text-nowrap font-bold flex items-center' style:background={color}>
-                            <div class='text-contrast'>
+                            <div class='text-contrast-filter'>
                               {text}
                             </div>
                           </div>
