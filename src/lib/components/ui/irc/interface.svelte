@@ -58,7 +58,7 @@
   </div>
   <div class='flex md:flex-row flex-col-reverse w-full h-full min-h-0'>
     <div class='flex flex-col justify-end overflow-clip flex-grow px-4 pb-4 h-full min-h-0'>
-      <div class='h-full overflow-y-scroll min-h-0 w-full'>
+      <div class='h-full overflow-y-scroll min-h-0 w-full [overflow-anchor:auto] content-end'>
         <Messages messages={client.messages} />
       </div>
       <div class='flex mt-4 gap-2'>
