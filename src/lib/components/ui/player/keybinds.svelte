@@ -3,7 +3,9 @@
   import { get } from 'svelte/store'
   import { persisted } from 'svelte-persisted-store'
 
-  import { keys, layout, type KeyCode } from './maps.ts'
+  import { keys, layout, type KeyCode, codeMap } from './maps.ts'
+
+  import { SUPPORTS } from '$lib/modules/settings'
 
   type Bind <T extends Record<string, unknown> = Record<string, unknown>> = T & {
     fn: (e: MouseEvent | KeyboardEvent) => void
@@ -27,6 +29,8 @@
   })
 
   async function runBind (e: MouseEvent | KeyboardEvent, code: KeyCode) {
+    if (!code && 'key' in e) code = codeMap[e.key] ?? ''
+
     const kbn = get(binds)
     if (cnd(code)) kbn[layout[code] ?? code]?.fn?.(e)
   }
