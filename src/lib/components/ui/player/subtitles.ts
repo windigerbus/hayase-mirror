@@ -350,7 +350,7 @@ export default class Subtitles {
       // replace all html special tags with normal ones
       Text = Text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, '\\h').replace(/\r?\n/g, '\\N')
     } else {
-      Text = Text.replace('\r', '') // some bad subbers put \n in the text, which breaks the rendering
+      Text = Text.replace(/\r?\n/g, '')
     }
     return {
       Start: subtitle.time,

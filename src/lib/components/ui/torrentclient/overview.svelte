@@ -31,7 +31,7 @@
   const forwarding = safeLocalStorage<boolean>('torrent-port-forwarding') ?? false
 </script>
 
-<div class='max-w-6xl flex flex-col gap-12'>
+<div class='max-w-6xl flex flex-col gap-12 min-[2000px]:max-w-full'>
   <div class='flex items-center gap-4'>
     <div class='flex-1 w-full'>
       <h1 class='text-2xl font-bold truncate text-nowrap'>{torrent.name || 'No Name Provided'}</h1>

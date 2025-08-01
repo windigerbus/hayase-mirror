@@ -122,7 +122,7 @@ export function makeEpisodeList (media: Media, episodesRes?: EpisodesResponse | 
 
     const { image, summary, overview, rating, title, length, airdate, anidbEid } = resolvedEpisode ?? {}
     const res = {
-      episode, image, summary: summary ?? overview, rating, title, length, airdate, airingAt, filler: !!fillerEpisodes[media.id]?.includes(episode + 1), anidbEid
+      episode, image, summary: summary ?? overview, rating, title, length, airdate, airingAt, filler: !!fillerEpisodes[media.id]?.includes(episode), anidbEid
     }
     episodeList.push(res)
   }
