@@ -4,7 +4,7 @@
 
   import Columnheader from '../columnheader.svelte'
 
-  import { MediaCell, NameCell, StatusCell } from './cells'
+  import { MediaCell, NameCell, StatusCell, DateCell } from './cells'
 
   import type { LibraryEntry } from 'native'
 
@@ -55,7 +55,7 @@
       header: 'Date',
       id: 'date',
       plugins: { sort: { getSortValue: e => e ?? 0 } },
-      cell: ({ value }) => value ? new Date(value).toLocaleDateString() : '?'
+      cell: ({ value }) => value ? createRender(DateCell, { value }) : '?'
     }),
     table.column({
       accessor: e => e?.name ?? e.hash,
