@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import anitomyscript from 'anitomyscript'
+// import Debug from 'debug'
 
 import type { MediaEdgeFrag } from '$lib/modules/anilist/queries'
 import type { AnitomyResult } from 'anitomyscript'
@@ -22,6 +24,8 @@ async function toResolvedFile (file: TorrentFile, media: Media): Promise<Resolve
     }
   }
 }
+// const debug = Debug('ui:resolver')
+// Debug.enable('ui:resolver')
 
 export async function resolveFilesPoorly (promise: Promise<{media: Media, id: string, episode: number, files: TorrentFile[]}| null>) {
   const list = await promise
@@ -160,7 +164,7 @@ const AnimeResolver = new class AnimeResolver {
 
   getCacheKeyForTitle (obj: AnitomyResult): string {
     let key = obj.anime_title[0] ?? ''
-    if (obj.anime_year) key += obj.anime_year[0]
+    if (obj.anime_year.length) key += obj.anime_year[0]
     return key
   }
 
@@ -267,7 +271,7 @@ const AnimeResolver = new class AnimeResolver {
               // debug(`Root ${root?.id}:${root?.title.userPreferred}`)
 
               // if highest value is bigger than episode count or latest streamed episode +1 for safety, parseint to math.floor a number like 12.5 - specials - in 1 go
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+
               const result = await this.resolveSeason({ media: root || media, episode: Number(parseObj.episode_number[1]!), increment: !parseObj.anime_season[0] ? null : true })
               // debug(`Found rootMedia for ${parseObj.anime_title}: ${result.rootMedia.id}:${result.rootMedia.title.userPreferred} from ${media.id}:${media.title.userPreferred}`)
               media = result.rootMedia
@@ -284,18 +288,18 @@ const AnimeResolver = new class AnimeResolver {
           if (maxep && parseInt(parseObj.episode_number[0]!) > maxep) {
             // see big comment above
             const prequel = !parseObj.anime_season[0] && (this.findEdge(media, 'PREQUEL')?.node ?? ((media.format === 'OVA' || media.format === 'ONA') && this.findEdge(media, 'PARENT')?.node))
-            // debug(`Prequel ${prequel?.id}:${prequel?.title.userPreferred}`)
+            // debug(`Prequel ${prequel.id}:${prequel.title?.userPreferred}`)
             const root = prequel && (await this.resolveSeason({ media: await this.getAnimeById(prequel.id), force: true })).media
-            // debug(`Root ${root?.id}:${root?.title.userPreferred}`)
+            // debug(`Root ${root.id}:${root.title?.userPreferred}`)
 
             // value bigger than episode count
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+
             const result = await this.resolveSeason({ media: root || media, episode: parseInt(parseObj.episode_number[0]!), increment: !parseObj.anime_season[0] ? null : true })
-            // debug(`Found rootMedia for ${parseObj.anime_title}: ${result.rootMedia.id}:${result.rootMedia.title.userPreferred} from ${media.id}:${media.title.userPreferred}`)
+            // debug(`Found rootMedia for ${parseObj.anime_title[0]}: ${result.rootMedia.id}:${result.rootMedia.title?.userPreferred} from ${media.id}:${media.title?.userPreferred}`)
             media = result.rootMedia
             episode = result.episode
             failed = !!result.failed
-            // if (failed) debug(`Failed to resolve ${parseObj.anime_title} ${parseObj.episode_number} ${media.title.userPreferred}`)
+            // if (failed) debug(`Failed to resolve ${parseObj.anime_title[0]} ${parseObj.episode_number[0]} ${media.title?.userPreferred}`)
           } else {
             // cant find ep count or episode seems fine
             episode = Number(parseObj.episode_number[0])
@@ -328,7 +332,7 @@ const AnimeResolver = new class AnimeResolver {
   // note: this doesnt cover anime which uses partially relative and partially absolute episode number, BUT IT COULD!
   async resolveSeason (opts: {media?: Media, episode?: number, increment?: boolean | null, offset?: number, rootMedia?: Media, force?: boolean}): Promise<{ media: Media, episode: number, offset: number, increment: boolean, rootMedia: Media, failed?: boolean }> {
     // media, episode, increment, offset, force
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+
     if (!opts.media || !(opts.episode || opts.force)) throw new Error('No episode or media for season resolve!')
 
     let { media, episode = 1, increment, offset = 0, rootMedia = opts.media, force } = opts
@@ -336,10 +340,10 @@ const AnimeResolver = new class AnimeResolver {
     const rootHighest = episodes(rootMedia) ?? 1
 
     const prequel = !increment && this.findEdge(media, 'PREQUEL')?.node
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+
     const sequel = !prequel && (increment || increment == null) && this.findEdge(media, 'SEQUEL')?.node
-    const edge = prequel ?? sequel
-    increment = increment ?? !prequel
+    const edge = prequel || sequel
+    increment = increment || !prequel
 
     if (!edge) {
       const obj = { media, episode: episode - offset, offset, increment, rootMedia, failed: true }
