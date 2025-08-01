@@ -218,11 +218,11 @@
           </Tree.Item>
           <Tree.Item>
             <span slot='trigger'>Playlist</span>
-            <Tree.Sub class='w-auto max-w-96'>
+            <Tree.Sub class='w-auto max-w-xl'>
               {#each videoFiles as file, i (i)}
                 <Tree.Item on:click={() => selectFile(file)}>
                   <Tooltip.Root>
-                    <Tooltip.Trigger class='text-ellipsis text-nowrap overflow-clip w-full' tabindex={-1}>
+                    <Tooltip.Trigger class='text-ellipsis text-nowrap overflow-clip w-full text-xs text-left' tabindex={-1}>
                       {file.name}
                     </Tooltip.Trigger>
                     <Tooltip.Content>
