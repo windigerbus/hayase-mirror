@@ -2,4 +2,4 @@
   export let value: string
 </script>
 
-<div class='text-xs font-mono'>{value}</div>
+<div class='text-xs font-mono text-wrap'>{value}</div>

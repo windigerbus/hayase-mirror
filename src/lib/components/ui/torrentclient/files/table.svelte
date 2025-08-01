@@ -33,7 +33,7 @@
       id: 'progress',
       cell: ({ value }) => createRender(ProgressCell, { value })
     }),
-    table.column({ accessor: 'selections', header: 'Selections', id: 'selections' })
+    table.column({ accessor: 'selections', header: 'Streams', id: 'selections' })
   ])
 
   const tableModel = table.createViewModel(columns)
@@ -41,7 +41,7 @@
   const { headerRows, pageRows, tableAttrs, tableBodyAttrs } = tableModel
 </script>
 
-<div class='rounded-md border max-w-screen-xl h-full overflow-clip contain-strict'>
+<div class='rounded-md border size-full overflow-clip contain-strict'>
   <Table.Root {...$tableAttrs} class='max-h-full'>
     <Table.Header class='px-5'>
       {#each $headerRows as headerRow, i (i)}
@@ -77,7 +77,7 @@
             <Table.Row {...rowAttrs} class='h-12'>
               {#each row.cells as cell (cell.id)}
                 <Subscribe attrs={cell.attrs()} let:attrs>
-                  <Table.Cell {...attrs} class={cn('px-4 h-14 first:pl-6 last:pr-6 text-nowrap', (cell.id === 'downloaded' || cell.id === 'episode') && 'text-muted-foreground')}>
+                  <Table.Cell {...attrs} class={cn('px-4 h-14 first:pl-6 last:pr-6 text-nowrap', cell.id === 'name' && 'text-wrap break-all')}>
                     <Render of={cell.render()} />
                   </Table.Cell>
                 </Subscribe>

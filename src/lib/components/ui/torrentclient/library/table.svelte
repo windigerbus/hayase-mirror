@@ -25,12 +25,14 @@
       accessor: 'mediaID',
       header: 'Series',
       id: 'series',
+      plugins: { sort: { getSortValue: e => e ?? 0 } },
       cell: ({ value }) => value ? createRender(MediaCell, { value }) : '?'
     }),
     table.column({
       accessor: 'episode',
       header: 'Episode',
       id: 'episode',
+      plugins: { sort: { getSortValue: e => e ?? 0 } },
       cell: ({ value }) => value?.toString() ?? '?'
     }),
     table.column({ accessor: 'files', header: 'Files', id: 'files' }),
@@ -38,24 +40,28 @@
       accessor: 'size',
       header: 'Size',
       id: 'size',
+      plugins: { sort: { getSortValue: e => e ?? 0 } },
       cell: ({ value }) => value ? fastPrettyBytes(value) : '?'
     }),
     table.column({
       accessor: 'progress',
       header: 'Status',
       id: 'completed',
+      plugins: { sort: { getSortValue: e => e ?? 0 } },
       cell: ({ value }) => value ? createRender(StatusCell, { value: value === 1 }) : '?'
     }),
     table.column({
       accessor: 'date',
       header: 'Date',
       id: 'date',
+      plugins: { sort: { getSortValue: e => e ?? 0 } },
       cell: ({ value }) => value ? new Date(value).toLocaleDateString() : '?'
     }),
     table.column({
       accessor: e => e?.name ?? e.hash,
       header: 'Torrent Name',
       id: 'name',
+      plugins: { sort: { getSortValue: e => e ?? '' } },
       cell: ({ value }) => createRender(NameCell, { value })
     })
   ])
@@ -76,7 +82,7 @@
   // $: allIDsPromise = client.multiple($lib.map(e => e.mediaID))
 </script>
 
-<div class='rounded-md border max-w-screen-xl h-full overflow-clip contain-strict'>
+<div class='rounded-md border size-full overflow-clip contain-strict'>
   <Table.Root {...$tableAttrs} class='max-h-full'>
     <Table.Header class='px-5'>
       {#each $headerRows as headerRow, i (i)}
@@ -88,16 +94,10 @@
                 props={cell.props()}
                 let:attrs
                 let:props>
-                <Table.Head {...attrs} class={cn('px-0 first:pl-2 h-12 last:pr-2', cell.id === 'name' && 'w-full')}>
-                  {#if cell.id !== 'flags'}
-                    <Columnheader {props}>
-                      <Render of={cell.render()} />
-                    </Columnheader>
-                  {:else}
-                    <div class='text-sm px-4'>
-                      <Render of={cell.render()} />
-                    </div>
-                  {/if}
+                <Table.Head {...attrs} class={cn('px-0 first:pl-2 h-12 last:pr-2')}>
+                  <Columnheader {props}>
+                    <Render of={cell.render()} />
+                  </Columnheader>
                 </Table.Head>
               </Subscribe>
             {/each}
@@ -109,10 +109,10 @@
       {#if $pageRows.length}
         {#each $pageRows as row (row.id)}
           <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-            <Table.Row {...rowAttrs} class={cn('h-12', (row instanceof DataBodyRow) && row.original.mediaID ? 'cursor-pointer' : 'cursor-not-allowed')} on:click={() => { if (row instanceof DataBodyRow) playEntry(row.original) }}>
+            <Table.Row {...rowAttrs} class={cn('h-14', (row instanceof DataBodyRow) && row.original.mediaID ? 'cursor-pointer' : 'cursor-not-allowed')} on:click={() => { if (row instanceof DataBodyRow) playEntry(row.original) }}>
               {#each row.cells as cell (cell.id)}
                 <Subscribe attrs={cell.attrs()} let:attrs>
-                  <Table.Cell {...attrs} class={cn('px-4 h-14 first:pl-6 last:pr-6 text-nowrap', (cell.id === 'downloaded' || cell.id === 'episode') && 'text-muted-foreground')}>
+                  <Table.Cell {...attrs} class={cn('px-4 min-h-14 first:pl-6 last:pr-6 text-nowrap', (cell.id === 'episode') && 'text-muted-foreground', (cell.id === 'series' || cell.id === 'name') && 'min-w-80 text-wrap break-all')}>
                     <Render of={cell.render()} />
                   </Table.Cell>
                 </Subscribe>

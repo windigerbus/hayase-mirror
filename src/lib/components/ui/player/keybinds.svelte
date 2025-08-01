@@ -5,8 +5,6 @@
 
   import { keys, layout, type KeyCode, codeMap } from './maps.ts'
 
-  import { SUPPORTS } from '$lib/modules/settings'
-
   type Bind <T extends Record<string, unknown> = Record<string, unknown>> = T & {
     fn: (e: MouseEvent | KeyboardEvent) => void
     id: string
