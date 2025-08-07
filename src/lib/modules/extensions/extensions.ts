@@ -26,8 +26,8 @@ if (!dev && !video.canPlayType('audio/mp4; codecs="ac-3"')) {
   exclusions.push('AC3', 'AC-3')
 }
 if (!('audioTracks' in HTMLVideoElement.prototype)) {
-  exclusions.push('DUAL')
-  exclusions.push('MULTI')
+  exclusions.push('DUAL AUDIO', 'Dual Audio')
+  exclusions.push('MULTI AUDIO', 'Multi Audio')
 }
 video.remove()
 const debug = Debug('ui:extensions')
