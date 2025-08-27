@@ -138,6 +138,8 @@
   }
 </script>
 
+<svelte:window on:blur={endHover} />
+
 <div class='w-full flex cursor-pointer relative group/seekbar touch-none !transform-none' class:!cursor-grab={seeking}
   tabindex='0' role='slider' aria-valuenow='0'
   id='player-seekbar'

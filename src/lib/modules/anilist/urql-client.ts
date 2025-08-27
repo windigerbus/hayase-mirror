@@ -36,7 +36,7 @@ export const storagePromise = Promise.withResolvers<void>()
 export const storage = makeDefaultStorage({
   idbName: 'graphcache-v3',
   onCacheHydrated: () => storagePromise.resolve(),
-  maxAge: 31 // The maximum age of the persisted data in days
+  maxAge: 14 // The maximum age of the persisted data in days
 })
 
 debug('Loading urql client')

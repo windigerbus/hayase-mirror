@@ -1,3 +1,5 @@
+import SUPPORTS from './settings/supports'
+
 import type { AuthResponse, Native, TorrentInfo } from 'native'
 
 import { sleep } from '$lib/utils'
@@ -51,7 +53,7 @@ const dummyFiles = [
 export default Object.assign<Native, Partial<Native>>({
   authAL: (url: string) => {
     return new Promise<AuthResponse>((resolve, reject) => {
-      const popup = open(url, 'authframe', 'popup,width=382,height=582')
+      const popup = open(url, 'authframe', SUPPORTS.isAndroid ? 'popup' : 'popup,width=382,height=582')
       if (!popup) return reject(new Error('Failed to open popup'))
       const check = () => {
         if (popup.closed) return reject(new Error('Popup closed'))
@@ -70,7 +72,7 @@ export default Object.assign<Native, Partial<Native>>({
   },
   authMAL: (url: string) => {
     return new Promise<{ code: string, state: string }>((resolve, reject) => {
-      const popup = open(url, 'authframe', 'popup,width=540,height=782')
+      const popup = open(url, 'authframe', SUPPORTS.isAndroid ? 'popup' : 'popup,width=540,height=782')
       if (!popup) return reject(new Error('Failed to open popup'))
       const check = () => {
         if (popup.closed) return reject(new Error('Popup closed'))
