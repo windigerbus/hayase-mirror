@@ -1,4 +1,4 @@
-import { SUPPORTS } from './settings'
+import SUPPORTS from './settings/supports'
 
 import type { AuthResponse, Native, TorrentInfo } from 'native'
 
