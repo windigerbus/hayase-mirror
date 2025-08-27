@@ -29,9 +29,17 @@
   let bottom = '0px'
   let right = '100%'
 
+  let firstX = 0
+  let firstY = 0
+
   function calculatePosition (e: PointerEvent) {
     if (!isMiniplayer) return
-    dragging = true
+    if (firstX === 0) {
+      firstX = e.offsetX
+      firstY = e.offsetY
+    } else if (!dragging && Math.abs(firstX - e.offsetX) > 3 && Math.abs(firstY - e.offsetY) > 3) {
+      dragging = true
+    }
     bottom = e.offsetY - initialY + 'px'
     right = e.offsetX - initialX + 'px'
   }
@@ -39,6 +47,8 @@
   function endHover () {
     if (!isMiniplayer) return
     dragging = false
+    firstX = 0
+    firstY = 0
   }
 
   let initialX = 0
@@ -74,7 +84,7 @@
     'pointer-events-auto w-full',
     isMiniplayer ? 'max-w-80 absolute bottom-0 right-0 rounded-lg overflow-clip miniplayer transition-transform duration-[500ms] ease-[cubic-bezier(0.3,1.5,0.8,1)]' : 'h-full w-full',
     dragging && isMiniplayer && 'dragging',
-    !$isPlaying && 'paused hover:paused-show'
+    !$isPlaying && 'paused select:paused-show'
   )} style:--top={bottom} style:--left={right}>
     {#if $active}
       {#await $active}
