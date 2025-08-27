@@ -948,9 +948,9 @@
           <Volume bind:volume={$volume} bind:muted />
         </div>
         <div class='flex gap-2'>
-          {#if $playbackRate !== 1}
+          {#if $playbackRate !== 1 && $playbackRate}
             <div class='flex justify-center items-center leading-none text-base font-bold px-1 pt-0.5'>
-              x{$playbackRate.toFixed(1)}
+              x{$playbackRate?.toFixed(1)}
             </div>
           {/if}
           <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate={$playbackRate} bind:subtitleDelay id='player-options-button' />
