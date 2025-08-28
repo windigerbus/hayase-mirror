@@ -92,3 +92,7 @@ export const server = new class ServerClient {
     return result
   }
 }()
+
+requestIdleCallback(() => {
+  get(server.library)
+}, { timeout: 120_000 })

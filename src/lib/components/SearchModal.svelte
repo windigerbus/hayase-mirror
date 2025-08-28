@@ -201,7 +201,7 @@
         <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:focusin={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation} use:dragScroll>
           {#await Promise.all([searchResult, $downloaded])}
             {#each Array.from({ length: 12 }) as _, i (i)}
-              <div class='p-3 h-[104px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border flex-col justify-between'>
+              <div class='p-3 h-[106px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border flex-col justify-between [content-visibility:auto] [contain-intrinsic-height:auto_106px]'>
                 <div class='h-4 w-40 bg-primary/5 animate-pulse rounded mt-2' />
                 <div class='bg-primary/5 animate-pulse rounded h-2 w-28 mt-1' />
                 <div class='flex justify-between mb-1'>
@@ -218,7 +218,7 @@
             {#if search && media}
               {@const { results, errors } = search}
               {#each filterAndSortResults(results, inputText, downloaded) as result (result.hash)}
-                <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border select:ring-1 select:ring-ring select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name[0]}>
+                <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border select:ring-1 select:ring-ring select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all [content-visibility:auto] [contain-intrinsic-height:auto_106px]' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name[0]}>
                   {#if result.accuracy === 'high'}
                     <div class='absolute top-0 left-0 w-full h-full -z-10'>
                       <Banner {media} class='object-cover w-full h-full' />
