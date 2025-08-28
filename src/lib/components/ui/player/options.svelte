@@ -183,7 +183,7 @@
               {#each chapters as { text, start }, i (i)}
                 <Tree.Item on:click={() => { seekTo(start); open = false }}>
                   <div class='flex justify-between w-full pr-2'>
-                    <span>{text || '?'}</span>
+                    <span class='capitalize'>{text || '?'}</span>
                     <span class='text-muted-foreground'>{toTS(start || 0)}</span>
                   </div>
                 </Tree.Item>
