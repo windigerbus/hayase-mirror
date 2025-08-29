@@ -20,11 +20,11 @@
     REPEATING: 'Re-Watching'
   }
 
-  $: status = { value: list(media) ?? 'CURRENT', label: STATUS_LABELS[list(media) ?? 'CURRENT'] }
-  $: score = { value: Number(_score(media) ?? 0), label: '' + (_score(media) ?? 0) }
+  let status = { value: list(media) ?? 'CURRENT', label: STATUS_LABELS[list(media) ?? 'CURRENT'] }
+  let score = { value: Number(_score(media) ?? 0), label: '' + (_score(media) ?? 0) }
 
-  $: progress = _progress(media) ?? 0
-  $: repeat = _repeat(media) ?? 0
+  let progress = _progress(media) ?? 0
+  let repeat = _repeat(media) ?? 0
 
   function deleteEntry () {
     authAggregator.delete(media)

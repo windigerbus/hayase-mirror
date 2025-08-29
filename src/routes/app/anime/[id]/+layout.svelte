@@ -5,11 +5,10 @@
   import Share2 from 'lucide-svelte/icons/share-2'
   import { onDestroy } from 'svelte'
 
-  import EntryEditor from '../../../../lib/components/EntryEditor.svelte'
-
   import type { LayoutData } from './$types'
 
   import { goto, onNavigate } from '$app/navigation'
+  import EntryEditor from '$lib/components/EntryEditor.svelte'
   import Anilist from '$lib/components/icons/Anilist.svelte'
   import MyAnimeList from '$lib/components/icons/MyAnimeList.svelte'
   import { bannerSrc, hideBanner } from '$lib/components/ui/banner'
@@ -122,7 +121,9 @@
     <div class='flex gap-2 items-center justify-center md:justify-start md:self-start w-full overflow-x-clip [&>*]:flex-shrink-0'>
       <div class='flex md:mr-3 w-full min-[380px]:w-[180px]'>
         <PlayButton size='default' {media} class='rounded-r-none w-full bg-custom select:!bg-custom-600 text-contrast' />
-        <EntryEditor {media} />
+        {#key media}
+          <EntryEditor {media} />
+        {/key}
       </div>
       <FavoriteButton {media} variant='secondary' size='icon' class='min-[380px]:-order-1 md:order-none select:!text-custom' />
       <BookmarkButton {media} variant='secondary' size='icon' class='min-[380px]:-order-2 md:order-none select:!text-custom' />
