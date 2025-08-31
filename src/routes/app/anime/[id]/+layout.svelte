@@ -1,6 +1,6 @@
 <script lang='ts'>
   // import Bell from 'lucide-svelte/icons/bell'
-  import Clapperboard from 'lucide-svelte/icons/clapperboard'
+  import Check from 'lucide-svelte/icons/check'
   import Maximize2 from 'lucide-svelte/icons/maximize-2'
   import Share2 from 'lucide-svelte/icons/share-2'
   import { onDestroy } from 'svelte'
@@ -11,9 +11,10 @@
   import EntryEditor from '$lib/components/EntryEditor.svelte'
   import Anilist from '$lib/components/icons/Anilist.svelte'
   import MyAnimeList from '$lib/components/icons/MyAnimeList.svelte'
+  import { Clapperboard } from '$lib/components/icons/animated'
   import { bannerSrc, hideBanner } from '$lib/components/ui/banner'
   import { Button } from '$lib/components/ui/button'
-  import { PlayButton, BookmarkButton, FavoriteButton } from '$lib/components/ui/button/extra'
+  import { PlayButton, BookmarkButton, FavoriteButton, TransitionButton } from '$lib/components/ui/button/extra'
   import * as Dialog from '$lib/components/ui/dialog'
   import { Load } from '$lib/components/ui/img'
   import { Profile } from '$lib/components/ui/profile'
@@ -98,9 +99,11 @@
               {of(media) ?? duration(media) ?? 'N/A'}
             </div>
             <Button class='rounded px-3.5 font-bold bg-custom select:!bg-custom-600 text-contrast h-6 py-0 text-base' on:click={() => goto('/app/search', { state: { search: { format: [media.format] } } })}>
-              {format(media)}            </Button>
+              {format(media)}
+            </Button>
             <Button class='rounded px-3.5 font-bold bg-custom select:!bg-custom-600 text-contrast h-6 py-0 text-base' on:click={() => goto('/app/search', { state: { search: { status: [media.status] } } })}>
-              {status(media)}            </Button>
+              {status(media)}
+            </Button>
             {#if season(media)}
               <Button class='rounded px-3.5 font-bold bg-custom select:!bg-custom-600 text-contrast h-6 py-0 text-base capitalize' on:click={() => goto('/app/search', { state: { search: { season: media.season, seasonYear: media.seasonYear } } })}>
                 {season(media)}
@@ -127,13 +130,18 @@
       </div>
       <FavoriteButton {media} variant='secondary' size='icon' class='min-[380px]:-order-1 md:order-none select:!text-custom' />
       <BookmarkButton {media} variant='secondary' size='icon' class='min-[380px]:-order-2 md:order-none select:!text-custom' />
-      <Button size='icon' variant='secondary' on:click={share} class='select:!text-custom'>
-        <Share2 class='size-4' />
-      </Button>
+      <TransitionButton size='icon' variant='secondary' on:click={share} class='select:!text-custom'>
+        <div slot='base'>
+          <Share2 class='size-4' />
+        </div>
+        <div slot='transition'>
+          <Check class='size-4' />
+        </div>
+      </TransitionButton>
       {#if media.trailer?.id}
         <Dialog.Root portal='#root'>
           <Dialog.Trigger let:builder asChild>
-            <Button size='icon' variant='secondary' class='select:!text-custom' builders={[builder]}>
+            <Button size='icon' variant='secondary' class='select:!text-custom animated-icon' builders={[builder]}>
               <Clapperboard class='size-4' />
             </Button>
           </Dialog.Trigger>

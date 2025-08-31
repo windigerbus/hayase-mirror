@@ -1,7 +1,4 @@
 <script lang='ts'>
-  import FileImage from 'lucide-svelte/icons/file-image'
-  import Settings from 'lucide-svelte/icons/settings'
-  import Trash from 'lucide-svelte/icons/trash'
   import X from 'lucide-svelte/icons/x'
   import { onDestroy, tick } from 'svelte'
   import MagnifyingGlass from 'svelte-radix/MagnifyingGlass.svelte'
@@ -14,6 +11,7 @@
 
   import { replaceState } from '$app/navigation'
   import { page } from '$app/stores'
+  import { Bolt, FileImage, Trash } from '$lib/components/icons/animated'
   import { badgeVariants } from '$lib/components/ui/badge'
   import { Button } from '$lib/components/ui/button'
   import { QueryCard, TraceCards } from '$lib/components/ui/cards'
@@ -297,17 +295,17 @@
         {/if}
       {/if}
       <div class='w-auto p-2 gap-4 flex items-end'>
-        <Button variant='outline' size='icon' class='border-0'>
+        <Button variant='outline' size='icon' class='border-0 animated-icon'>
           <label for='search-image' class='contents'>
             <FileImage class='h-4 w-full cursor-pointer' />
           </label>
           <input type='file' class='hidden' id='search-image' accept='image/*' on:input|preventDefault|stopPropagation={imagePicker} />
         </Button>
-        <Button variant='outline' size='icon' on:click={clear} class='border-0'>
-          <Trash class={cn('h-4 w-4', empty(search) ? 'text-muted-foreground opacity-50' : 'text-blue-400')} />
+        <Button variant='outline' size='icon' on:click={clear} class='border-0 animated-icon'>
+          <Trash class={cn('size-4', empty(search) ? 'text-muted-foreground opacity-50' : 'text-blue-400')} />
         </Button>
-        <Toggle variant='outline' size='icon' class='border-0 md:hidden' bind:pressed>
-          <Settings size={18} />
+        <Toggle variant='outline' size='icon' class='border-0 md:hidden animated-icon' bind:pressed>
+          <Bolt size={18} />
         </Toggle>
       </div>
     </div>

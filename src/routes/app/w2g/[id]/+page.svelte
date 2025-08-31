@@ -1,4 +1,5 @@
 <script lang='ts' context='module'>
+  import Check from 'lucide-svelte/icons/check'
   import DoorOpen from 'lucide-svelte/icons/door-open'
   import SendHorizontal from 'lucide-svelte/icons/send-horizontal'
   import UserPlus from 'lucide-svelte/icons/user-plus'
@@ -12,6 +13,7 @@
   import { onDestroy } from 'svelte'
 
   import { goto } from '$app/navigation'
+  import { TransitionButton } from '$lib/components/ui/button/extra'
   import { Separator } from '$lib/components/ui/separator'
   import native from '$lib/modules/native'
   import { w2globby } from '$lib/modules/w2g/lobby'
@@ -73,9 +75,14 @@
         <Button on:click={quit} size='icon' class='border-0 shrink-0' variant='outline'>
           <DoorOpen size={18} />
         </Button>
-        <Button on:click={invite} size='icon' class='border-0 shrink-0' variant='outline'>
-          <UserPlus size={18} />
-        </Button>
+        <TransitionButton on:click={invite} size='icon' class='border-0 shrink-0' variant='outline'>
+          <div slot='base'>
+            <UserPlus size={18} />
+          </div>
+          <div slot='transition'>
+            <Check class='size-4' />
+          </div>
+        </TransitionButton>
         <Textarea
           bind:value={message}
           class='h-auto px-3 w-full resize-none min-h-0 border-0 bg-background select:bg-accent select:text-accent-foreground'

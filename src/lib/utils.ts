@@ -316,3 +316,16 @@ export function colors (hex = '#ffffff') {
   const b = bigint & 255
   return { r, g, b }
 }
+
+export function scaleBlurFade (node: Element, { duration = 300 } = {}) {
+  return {
+    delay: 0,
+    duration,
+    easing: cubicOut,
+    css: (t: number) => `
+        transform: scale(${t});
+        filter: blur(${(1 - t) * 4}px);
+        opacity: ${t};
+      `
+  }
+}

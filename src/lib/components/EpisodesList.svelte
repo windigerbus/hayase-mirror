@@ -1,9 +1,8 @@
 <script lang='ts'>
-  import ChevronLeft from 'lucide-svelte/icons/chevron-left'
-  import ChevronRight from 'lucide-svelte/icons/chevron-right'
   import Play from 'lucide-svelte/icons/play'
 
   import Pagination from './Pagination.svelte'
+  import { ChevronLeft, ChevronRight } from './icons/animated'
   import { Button } from './ui/button'
   import { Load } from './ui/img'
   import { playEp } from './ui/player/mediahandler.svelte'
@@ -115,8 +114,8 @@
       Showing <span class='font-bold'>{range.start + 1}</span> to <span class='font-bold'>{range.end}</span> of <span class='font-bold'>{episodeCount}</span> episodes
     </p>
     <div class='w-full md:w-auto gap-2 flex items-center'>
-      <Button size='icon' variant='ghost' on:click={() => setPage(currentPage - 1)} disabled={!hasPrev}>
-        <ChevronLeft class='h-4 w-4' />
+      <Button size='icon' variant='ghost' class='animated-icon' on:click={() => setPage(currentPage - 1)} disabled={!hasPrev}>
+        <ChevronLeft class='size-4' />
       </Button>
       {#if $breakpoints.md}
         {#each pages as { page, type } (page)}
@@ -133,8 +132,8 @@
           Showing <span class='font-bold'>{range.start + 1}</span> to <span class='font-bold'>{range.end}</span> of <span class='font-bold'>{episodeCount}</span> episodes
         </p>
       {/if}
-      <Button size='icon' variant='ghost' on:click={() => setPage(currentPage + 1)} disabled={!hasNext}>
-        <ChevronRight class='h-4 w-4' />
+      <Button size='icon' variant='ghost' class='animated-icon' on:click={() => setPage(currentPage + 1)} disabled={!hasNext}>
+        <ChevronRight class='size-4' />
       </Button>
     </div>
   </div>
