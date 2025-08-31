@@ -28,11 +28,9 @@
   $: isActive = href && matchPath(href, $page)
 </script>
 
-<Button variant='ghost' {href} class={cn(className, 'px-2 w-10 relative md:pl-4 md:w-12 md:rounded-l-none group/sidebar')} {...$$restProps}>
+<Button variant='ghost' {href} class={cn(className, 'px-2 w-10 relative md:pl-4 md:w-12 md:rounded-l-none group/sidebar transition-colors duration-300', isActive ? '!text-black' : 'text-white')} {...$$restProps}>
   {#if isActive}
-    <div class='bg-white absolute inset-0 rounded-md md:rounded-l-none group-select/sidebar:bg-primary/70' in:send={{ key }} out:receive={{ key }} />
+    <div class='bg-white absolute inset-0 rounded-md md:rounded-l-none group-select/sidebar:bg-primary/70 -z-[1]' in:send={{ key }} out:receive={{ key }} />
   {/if}
-  <div class='relative text-white transition-colors duration-300 pointer-events-none' class:!text-black={isActive}>
-    <slot />
-  </div>
+  <slot />
 </Button>

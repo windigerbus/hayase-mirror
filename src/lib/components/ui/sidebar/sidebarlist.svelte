@@ -1,14 +1,6 @@
 <script lang='ts'>
-  import Calendar from 'lucide-svelte/icons/calendar'
   import Heart from 'lucide-svelte/icons/heart'
-  import House from 'lucide-svelte/icons/house'
-  import LogIn from 'lucide-svelte/icons/log-in'
-  import MessagesSquare from 'lucide-svelte/icons/messages-square'
   import Play from 'lucide-svelte/icons/play'
-  import Search from 'lucide-svelte/icons/search'
-  import Settings from 'lucide-svelte/icons/settings'
-  import Users from 'lucide-svelte/icons/users'
-  import Download from 'svelte-radix/Download.svelte'
 
   import { BannerImage } from '../banner'
   import { Button } from '../button'
@@ -18,6 +10,7 @@
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import Logo from '$lib/components/icons/Logo.svelte'
+  import { Home, Search, Calendar, Users, Download, Bolt, LogIn, Messages } from '$lib/components/icons/animated'
   import * as Avatar from '$lib/components/ui/avatar'
   import client from '$lib/modules/auth/client'
   import { lockedState, idleState, activityState } from '$lib/modules/idle'
@@ -47,32 +40,32 @@
     <Play size={16} />
   </SidebarButton>
 {/if}
-<SidebarButton href='/app/home/'>
-  <House size={18} />
+<SidebarButton href='/app/home/' class='animated-icon'>
+  <Home size={18} />
 </SidebarButton>
-<SidebarButton href='/app/search/'>
+<SidebarButton href='/app/search/' class='animated-icon'>
   <Search size={18} />
 </SidebarButton>
-<SidebarButton href='/app/schedule/'>
+<SidebarButton href='/app/schedule/' class='animated-icon'>
   <Calendar size={18} />
 </SidebarButton>
-<SidebarButton href='/app/w2g/'>
+<SidebarButton href='/app/w2g/' class='animated-icon'>
   <Users size={18} />
 </SidebarButton>
-<SidebarButton href='/app/chat/'>
-  <MessagesSquare size={18} />
+<SidebarButton href='/app/chat/' class='animated-icon'>
+  <Messages size={18} />
 </SidebarButton>
-<SidebarButton href='/app/client/' id='sidebar-client' data-down='#sidebar-donate'>
+<SidebarButton href='/app/client/' id='sidebar-client' data-down='#sidebar-donate' class='animated-icon'>
   <Download size={18} />
 </SidebarButton>
 <Button variant='ghost' id='sidebar-donate' data-up='#sidebar-client' on:click={() => native.openURL('https://github.com/sponsors/ThaUnknown/')} class='px-2 w-full relative mt-auto select:!bg-transparent text-[#fa68b6] select:text-[#fa68b6] md:pl-4 md:w-12 md:rounded-l-none'>
   <Heart size={18} fill='currentColor' class={cn('drop-shadow-[0_0_1rem_#fa68b6]', active && 'animate-[hearbeat_1s_ease-in-out_infinite_alternate]')} />
 </Button>
-<SidebarButton href='/app/settings/'>
-  <Settings size={18} />
+<SidebarButton href='/app/settings/' class='animated-icon'>
+  <Bolt size={18} />
 </SidebarButton>
 <!-- <SidebarButton href='/app/profile/'> -->
-<SidebarButton href='/app/profile/' class='hidden md:flex py-0'>
+<SidebarButton href='/app/profile/' class='hidden md:flex py-0 animated-icon'>
   {#if hasAuth}
     {@const viewer = client.profile()}
     <Avatar.Root class='size-6 rounded-md'>

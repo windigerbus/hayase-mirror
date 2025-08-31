@@ -1,8 +1,6 @@
 <script lang='ts'>
   import { Button as ButtonPrimitive } from 'bits-ui'
   import { addMonths, endOfMonth, endOfWeek, format, isSameMonth, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
-  import ChevronLeftIcon from 'lucide-svelte/icons/chevron-left'
-  import ChevronRightIcon from 'lucide-svelte/icons/chevron-right'
   import { persisted } from 'svelte-persisted-store'
   import Cross2 from 'svelte-radix/Cross2.svelte'
 
@@ -10,6 +8,7 @@
   import type { ResultOf } from 'gql.tada'
 
   import StatusDot from '$lib/components/StatusDot.svelte'
+  import { ChevronLeft, ChevronRight } from '$lib/components/icons/animated'
   import { Button } from '$lib/components/ui/button'
   import * as Drawer from '$lib/components/ui/drawer'
   import { Label } from '$lib/components/ui/label'
@@ -88,8 +87,8 @@
   </div>
   <div class='grid grid-cols-7 border rounded-lg [&>*:not(:nth-child(7n+1)):nth-child(n+8)]:border-r [&>*:nth-last-child(n+8)]:border-b [&>*:nth-child(-n+8)]:border-b w-full max-w-[1800px]'>
     <div class='col-span-full flex justify-between items-center p-4'>
-      <Button size='icon' on:click={prevMonth} variant='outline' class='bg-transparent'>
-        <ChevronLeftIcon class='h-6 w-6' />
+      <Button size='icon' on:click={prevMonth} variant='outline' class='bg-transparent animated-icon'>
+        <ChevronLeft class='h-6 w-6' />
       </Button>
       <div class='text-center font-bold text-xl'>
         {monthName}
@@ -98,8 +97,8 @@
           <Label for='schedule-on-list'>My list</Label>
         </div>
       </div>
-      <Button size='icon' on:click={nextMonth} variant='outline' class='bg-transparent'>
-        <ChevronRightIcon class='h-6 w-6' />
+      <Button size='icon' on:click={nextMonth} variant='outline' class='bg-transparent animated-icon'>
+        <ChevronRight class='h-6 w-6' />
       </Button>
     </div>
     <div class='text-center py-2'>Mon</div>

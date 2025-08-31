@@ -8,8 +8,6 @@
   import DecimalsArrowRight from 'lucide-svelte/icons/decimals-arrow-right'
   import FastForward from 'lucide-svelte/icons/fast-forward'
   import List from 'lucide-svelte/icons/list'
-  import Maximize from 'lucide-svelte/icons/maximize'
-  import Minimize from 'lucide-svelte/icons/minimize'
   import Pause from 'lucide-svelte/icons/pause'
   import PictureInPicture2 from 'lucide-svelte/icons/picture-in-picture-2'
   import Proportions from 'lucide-svelte/icons/proportions'
@@ -50,6 +48,7 @@
   import PictureInPictureExit from '$lib/components/icons/PictureInPictureExit.svelte'
   import Play from '$lib/components/icons/Play.svelte'
   import Subtitles from '$lib/components/icons/Subtitles.svelte'
+  import { Maximize, Minimize } from '$lib/components/icons/animated'
   import { Button, iconSizes } from '$lib/components/ui/button'
   import * as Sheet from '$lib/components/ui/sheet'
   import { client } from '$lib/modules/anilist'
@@ -62,7 +61,7 @@
   import { server } from '$lib/modules/torrent'
   import { w2globby } from '$lib/modules/w2g/lobby'
   import { getAnimeProgress, setAnimeProgress } from '$lib/modules/watchProgress'
-  import { toTS, fastPrettyBits } from '$lib/utils'
+  import { toTS, fastPrettyBits, scaleBlurFade } from '$lib/utils'
 
   export let mediaInfo: MediaInfo
   export let otherFiles: TorrentFile[]
@@ -852,7 +851,7 @@
         </div>
       {/if}
       <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate={$playbackRate} bind:subtitleDelay id='player-options-button-top'
-        class='{($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 w-12 h-12 absolute z-[1] top-4 left-4 bg-black/20 pointer-events-auto transition-opacity select:opacity-100 delay-150 {immersed && 'opacity-0'}' />
+        class='{($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 size-12 absolute z-[1] top-4 left-4 bg-black/20 pointer-events-auto transition-opacity select:opacity-100 delay-150 {immersed && 'opacity-0'}' />
       {#if fastForwarding}
         <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
       {/if}
@@ -928,20 +927,24 @@
       <Seekbar {duration} {currentTime} buffer={buffer / duration * 100} {chapters} bind:seeking bind:seek={seekPercent} on:seeked={finishSeek} on:seeking={startSeek} {thumbnailer} on:keydown={seekBarKey} on:dblclick={fullscreen} />
       <div class='justify-between gap-2 {($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'hidden' : 'mobile:hidden flex'}'>
         <div class='flex text-white gap-2'>
-          <Button class='p-3 w-12 h-12' variant='ghost' on:click={playPause} on:keydown={keywrap(playPause)} id='player-play-pause-button' data-up='#player-seekbar'>
+          <Button class='p-3 size-12 relative shrink-0' variant='ghost' on:click={playPause} on:keydown={keywrap(playPause)} id='player-play-pause-button' data-up='#player-seekbar'>
             {#if paused}
-              <Play size='24px' fill='currentColor' class='p-0.5' />
+              <div transition:scaleBlurFade class='absolute'>
+                <Play size='24px' fill='currentColor' class='p-0.5' />
+              </div>
             {:else}
-              <Pause size='24px' fill='currentColor' strokeWidth='1' />
+              <div transition:scaleBlurFade class='absolute'>
+                <Pause size='24px' fill='currentColor' strokeWidth='1' />
+              </div>
             {/if}
           </Button>
           {#if prev}
-            <Button class='p-3 w-12 h-12' variant='ghost' on:click={prev} on:keydown={keywrap(prev)} id='player-prev-button' data-up='#player-seekbar' data-right='#player-next-button, #player-volume-button, #player-options-button'>
+            <Button class='p-3 size-12' variant='ghost' on:click={prev} on:keydown={keywrap(prev)} id='player-prev-button' data-up='#player-seekbar' data-right='#player-next-button, #player-volume-button, #player-options-button'>
               <SkipBack size='24px' fill='currentColor' strokeWidth='1' />
             </Button>
           {/if}
           {#if next}
-            <Button class='p-3 w-12 h-12' variant='ghost' on:click={next} on:keydown={keywrap(next)} id='player-next-button' data-up='#player-seekbar' data-right='#player-volume-button, #player-options-button'>
+            <Button class='p-3 size-12' variant='ghost' on:click={next} on:keydown={keywrap(next)} id='player-next-button' data-up='#player-seekbar' data-right='#player-volume-button, #player-options-button'>
               <SkipForward size='24px' fill='currentColor' strokeWidth='1' />
             </Button>
           {/if}
@@ -955,19 +958,23 @@
           {/if}
           <Options {fullscreen} {wrapper} {seekTo} bind:openSubs {video} {selectAudio} {selectVideo} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate={$playbackRate} bind:subtitleDelay id='player-options-button' />
           {#if subtitles}
-            <Button class='p-3 w-12 h-12' variant='ghost' on:click={openSubs} on:keydown={keywrap(openSubs)} data-up='#player-seekbar'>
+            <Button class='p-3 size-12' variant='ghost' on:click={openSubs} on:keydown={keywrap(openSubs)} data-up='#player-seekbar'>
               <Subtitles size='24px' fill='currentColor' strokeWidth='0' />
             </Button>
           {/if}
-          <Button class='p-3 w-12 h-12' variant='ghost' on:click={() => pip.pip()} on:keydown={keywrap(() => pip.pip())} data-up='#player-seekbar'>
+          <Button class='p-3 size-12 relative shrink-0' variant='ghost' on:click={() => pip.pip()} on:keydown={keywrap(() => pip.pip())} data-up='#player-seekbar'>
             {#if pictureInPictureElement}
-              <PictureInPictureExit size='24px' strokeWidth='2' />
+              <div transition:scaleBlurFade class='absolute'>
+                <PictureInPictureExit size='24px' strokeWidth='2' />
+              </div>
             {:else}
-              <PictureInPictureOff size='24px' strokeWidth='2' />
+              <div transition:scaleBlurFade class='absolute'>
+                <PictureInPictureOff size='24px' strokeWidth='2' />
+              </div>
             {/if}
           </Button>
           {#if false}
-            <Button class='p-3 w-12 h-12' variant='ghost' on:click={toggleCast} on:keydown={keywrap(toggleCast)} data-up='#player-seekbar'>
+            <Button class='p-3 size-12' variant='ghost' on:click={toggleCast} on:keydown={keywrap(toggleCast)} data-up='#player-seekbar'>
               {#if cast}
                 <Cast size='24px' fill='white' strokeWidth='2' />
               {:else}
@@ -975,11 +982,15 @@
               {/if}
             </Button>
           {/if}
-          <Button class='p-3 w-12 h-12' variant='ghost' on:click={fullscreen} on:keydown={keywrap(fullscreen)} data-up='#player-seekbar'>
+          <Button class='p-3 size-12 relative animated-icon shrink-0' variant='ghost' on:click={fullscreen} on:keydown={keywrap(fullscreen)} data-up='#player-seekbar'>
             {#if fullscreenElement}
-              <Minimize size='24px' class='p-0.5' strokeWidth='2.5' />
+              <div transition:scaleBlurFade class='absolute'>
+                <Minimize size='24px' class='p-0.5' strokeWidth='2.5' />
+              </div>
             {:else}
-              <Maximize size='24px' class='p-0.5' strokeWidth='2.5' />
+              <div transition:scaleBlurFade class='absolute'>
+                <Maximize size='24px' class='p-0.5' strokeWidth='2.5' />
+              </div>
             {/if}
           </Button>
         </div>
@@ -987,11 +998,15 @@
     </div>
   {:else}
     <div class='absolute w-full left-0 bottom-0 flex justify-center'>
-      <Button variant='ghost' class='drop-shadow-[0_0_7px_#000] mb-1' size='icon' on:pointerdown={e => { e.stopPropagation(); playPause() }}>
+      <Button variant='ghost' class='drop-shadow-[0_0_7px_#000] mb-1 relative' size='icon' on:pointerdown={e => { e.stopPropagation(); playPause() }}>
         {#if paused}
-          <Play size={iconSizes.lg} fill='currentColor' class='px-0.5' />
+          <div transition:scaleBlurFade class='absolute'>
+            <Play size={iconSizes.lg} fill='currentColor' class='px-0.5' />
+          </div>
         {:else}
-          <Pause size={iconSizes.lg} fill='currentColor' strokeWidth='1' />
+          <div transition:scaleBlurFade class='absolute'>
+            <Pause size={iconSizes.lg} fill='currentColor' strokeWidth='1' />
+          </div>
         {/if}
       </Button>
     </div>

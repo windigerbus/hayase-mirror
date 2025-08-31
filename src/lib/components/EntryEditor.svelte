@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import PencilLine from 'lucide-svelte/icons/pencil-line'
+  import { PencilLine } from './icons/animated'
 
   import { Button } from '$lib/components/ui/button'
   import * as Dialog from '$lib/components/ui/dialog'
@@ -37,7 +37,7 @@
 
 <Dialog.Root portal='#root'>
   <Dialog.Trigger let:builder asChild>
-    <Button size='icon' class='rounded-l-none bg-custom-400 select:!bg-custom-700 shrink-0 text-contrast' builders={[builder]}>
+    <Button size='icon' class='rounded-l-none bg-custom-400 select:!bg-custom-700 shrink-0 text-contrast animated-icon' builders={[builder]}>
       <PencilLine class='size-4' />
     </Button>
   </Dialog.Trigger>
