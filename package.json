@@ -1,6 +1,6 @@
 {
 	"name": "ui",
-	"version": "6.4.112",
+	"version": "6.4.113",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.15.5",
@@ -64,7 +64,6 @@
 		"@urql/svelte": "^5.0.0",
 		"abslink": "^1.1.2",
 		"anitomyscript": "github:thaunknown/anitomyscript",
-		"bittorrent-tracker": "11.2.1",
 		"bottleneck": "^2.19.5",
 		"clsx": "^2.1.1",
 		"cobe": "0.6.3",

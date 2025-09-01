@@ -243,6 +243,8 @@
           <Input
             class='pl-9 border-0 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50 capitalize'
             placeholder='Any'
+            id='animeName' type='text'
+            autocomplete='on'
             on:input={updateText}
             bind:value={inputText} />
           <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
