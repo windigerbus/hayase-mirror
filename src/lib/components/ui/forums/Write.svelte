@@ -29,7 +29,7 @@
       <slot />
     </Button>
   </Dialog.Trigger>
-  <Dialog.Content tabindex={null} class='gap-4 bottom-0 border-b-0 !translate-y-[unset] p-0 top-[unset] !pb-4 flex flex-col h-full sm:h-1/2'>
+  <Dialog.Content tabindex={null} class='gap-4 bottom-0 border-b-0 !translate-y-[unset] p-0 top-[unset] !pb-4 flex flex-col h-[90%] sm:h-1/2'>
     <Markdown class='form-control w-full shrink-0 min-h-56 rounded-none flex-grow' {placeholder} bind:value />
     <div class='flex gap-2 justify-end flex-grow-0 px-4'>
       <Dialog.Close asChild let:builder>

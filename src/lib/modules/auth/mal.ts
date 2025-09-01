@@ -102,6 +102,8 @@ const ENDPOINTS = {
   API_ANIME: 'https://api.myanimelist.net/v2/anime'
 } as const
 
+const clientID = 'd93b624a92e431a9b6dfe7a66c0c5bbb'
+
 export default new class MALSync {
   auth = persisted<MALOAuth | undefined>('malAuth', undefined)
   viewer = persisted<ResultOf<typeof UserFrag> | undefined>('malViewer', undefined)
@@ -169,7 +171,7 @@ export default new class MALSync {
       if (auth) {
         const expiresAt = (auth.created_at + auth.expires_in) * 1000
 
-        if (expiresAt < Date.now() - 1000 * 60 * 5) { // 5 minutes before expiry
+        if (expiresAt < Date.now() - 1000 * 60 * 5 && !body?.get('refresh_token')) { // 5 minutes before expiry
           await this._refresh()
         }
       }
@@ -248,6 +250,7 @@ export default new class MALSync {
     const data = await this._post<MALOAuth>(
       ENDPOINTS.API_OAUTH,
       {
+        client_id: clientID,
         grant_type: 'refresh_token',
         refresh_token: auth.refresh_token
       }
@@ -265,7 +268,6 @@ export default new class MALSync {
     debug('Logging in to MAL')
     const state = crypto.randomUUID().replaceAll('-', '')
     const challenge = (crypto.randomUUID() + crypto.randomUUID()).replaceAll('-', '')
-    const clientID = 'd93b624a92e431a9b6dfe7a66c0c5bbb'
 
     const redirect = dev ? 'http://localhost:7344/authorize' : 'https://hayase.app/authorize'
 

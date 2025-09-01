@@ -1,7 +1,9 @@
 <script lang='ts'>
   import { Render, Subscribe, createRender, createTable } from 'svelte-headless-table'
-  import { addSortBy } from 'svelte-headless-table/plugins'
+  import { addSortBy, addTableFilter } from 'svelte-headless-table/plugins'
+  import MagnifyingGlass from 'svelte-radix/MagnifyingGlass.svelte'
 
+  import { Input } from '../../input'
   import Columnheader from '../columnheader.svelte'
 
   import { NameCell, ProgressCell } from './cells'
@@ -11,7 +13,10 @@
   import { cn, fastPrettyBytes } from '$lib/utils'
 
   const table = createTable(server.files, {
-    sort: addSortBy({ toggleOrder: ['asc', 'desc'] })
+    sort: addSortBy({ toggleOrder: ['asc', 'desc'] }),
+    filter: addTableFilter({
+      fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
+    })
   })
 
   const columns = table.createColumns([
@@ -25,12 +30,14 @@
       accessor: 'size',
       header: 'Size',
       id: 'size',
+      plugins: { filter: { exclude: true } },
       cell: ({ value }) => fastPrettyBytes(value)
     }),
     table.column({
       accessor: 'progress',
       header: 'Progress',
       id: 'progress',
+      plugins: { filter: { exclude: true } },
       cell: ({ value }) => createRender(ProgressCell, { value })
     }),
     table.column({ accessor: 'selections', header: 'Streams', id: 'selections' })
@@ -38,9 +45,18 @@
 
   const tableModel = table.createViewModel(columns)
 
-  const { headerRows, pageRows, tableAttrs, tableBodyAttrs } = tableModel
+  const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } = tableModel
+
+  const filterValue = pluginStates.filter.filterValue
 </script>
 
+<div class='flex items-center scale-parent relative pb-2 overflow-visible'>
+  <Input
+    class='pl-9 bg-black select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'
+    placeholder='Search by File Name...'
+    bind:value={$filterValue} />
+  <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
+</div>
 <div class='rounded-md border size-full overflow-clip contain-strict'>
   <Table.Root {...$tableAttrs} class='max-h-full'>
     <Table.Header class='px-5'>
@@ -74,7 +90,7 @@
       {#if $pageRows.length}
         {#each $pageRows as row (row.id)}
           <Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-            <Table.Row {...rowAttrs} class='h-12'>
+            <Table.Row {...rowAttrs} class='h-12 [content-visibility:auto] [contain-intrinsic-height:auto_48px] contain-strict'>
               {#each row.cells as cell (cell.id)}
                 <Subscribe attrs={cell.attrs()} let:attrs>
                   <Table.Cell {...attrs} class={cn('px-4 h-14 first:pl-6 last:pr-6 text-nowrap', cell.id === 'name' && 'text-wrap break-all')}>

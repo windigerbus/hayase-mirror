@@ -110,6 +110,7 @@ export default new class URQLClient extends Client {
   constructor () {
     super({
       url: 'https://graphql.anilist.co',
+      preferGetMethod: false,
       // fetch: dev ? fetch : (req: RequestInfo | URL, opts?: RequestInit) => this.handleRequest(req, opts),
       fetch: (req: RequestInfo | URL, opts?: RequestInit) => this.handleRequest(req, opts),
       exchanges: [

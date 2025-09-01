@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { sveltekit } from '@sveltejs/kit/vite'
 import license from 'rollup-plugin-license'
 import { defineConfig } from 'vite'
+import devtoolsJson from 'vite-plugin-devtools-json'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
@@ -22,7 +23,8 @@ export default defineConfig({
           dest: 'geoip/'
         }
       ]
-    })
+    }),
+    devtoolsJson()
   ],
   resolve: {
     alias: {

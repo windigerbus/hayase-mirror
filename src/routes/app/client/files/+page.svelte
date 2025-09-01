@@ -2,4 +2,6 @@
   import { FilesTable } from '$lib/components/ui/torrentclient'
 </script>
 
-<FilesTable />
+<div class='flex flex-col size-full'>
+  <FilesTable />
+</div>
