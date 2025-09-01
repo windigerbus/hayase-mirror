@@ -1,6 +1,6 @@
 {
 	"name": "ui",
-	"version": "6.4.110",
+	"version": "6.4.111",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.15.5",
@@ -52,7 +52,6 @@
 		"@cloudflare/speedtest": "^1.4.1",
 		"@fontsource-variable/nunito": "^5.2.5",
 		"@fontsource/geist-mono": "^5.2.6",
-		"@jis3r/icons": "^1.1.5",
 		"@prgm/sveltekit-progress-bar": "2.0.0",
 		"@thaunknown/web-irc": "^1.0.3",
 		"@urql/core": "^5.2.0",
@@ -77,6 +76,7 @@
 		"js-levenshtein": "^1.1.6",
 		"lucide-svelte": "^0.511.0",
 		"marked": "^15.0.11",
+		"overtype": "^1.2.3",
 		"p2pt": "github:ThaUnknown/p2pt#modernise",
 		"semver": "^7.7.2",
 		"simple-store-svelte": "^1.0.6",

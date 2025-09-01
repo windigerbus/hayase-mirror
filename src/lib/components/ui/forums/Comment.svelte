@@ -28,8 +28,8 @@
   const viewer = client.client.viewer
 </script>
 
-<div class='rounded-md {depth % 2 === 1 ? 'bg-black' : 'bg-neutral-950'} text-secondary-foreground flex w-full py-4 px-6 flex-col'>
-  <div class='flex w-full justify-between text-xl'>
+<div class='rounded-md {depth % 2 === 1 ? 'bg-black' : 'bg-neutral-950'} text-secondary-foreground flex w-full py-4 flex-col'>
+  <div class='flex w-full justify-between text-xl px-6'>
     <div class='font-bold mb-2 line-clamp-1 flex leading-none items-center text-[16px]'>
       {#if comment.user}
         <Profile user={comment.user} class='size-5 mr-2' />
@@ -41,15 +41,15 @@
       {comment.likeCount}
     </div>
   </div>
-  <Shadow html={comment.comment ?? ''} class='text-muted-foreground text-sm [&_*]:flex [&_*]:flex-col [&_br]:hidden w-full overflow-clip' />
+  <Shadow html={comment.comment ?? ''} class='text-muted-foreground text-sm [&_*]:flex [&_*]:flex-col [&_br]:hidden w-full overflow-clip px-6' />
   {#each childComments as comment (comment.id)}
     {#if comment}
-      <div class='py-2'>
+      <div class='pl-4 py-2 pr-2'>
         <svelte:self {comment} depth={depth + 1} {isLocked} {threadId} {rootCommentId} />
       </div>
     {/if}
   {/each}
-  <div class='flex w-full justify-between mt-auto text-[9.6px]'>
+  <div class='flex w-full justify-between mt-auto text-[9.6px] px-6'>
     <div class='flex items-center leading-none'>
       <Button size='icon-sm' variant='ghost' class='mr-1' on:click={() => client.toggleLike(comment.id, 'THREAD_COMMENT', !!comment.isLiked)} disabled={isLocked || !$viewer?.viewer}>
         <Heart fill={comment.isLiked ? 'currentColor' : 'transparent'} size={iconSizes['icon-sm']} />
