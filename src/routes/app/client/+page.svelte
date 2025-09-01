@@ -2,6 +2,6 @@
   import { Overview } from '$lib/components/ui/torrentclient'
 </script>
 
-<div class='flex flex-col h-full'>
+<div class='flex flex-col h-full overflow-y-scroll'>
   <Overview />
 </div>

@@ -18,8 +18,6 @@
   import native from '$lib/modules/native'
   import { w2globby } from '$lib/modules/w2g/lobby'
 
-  export let data
-
   $: users = $w2globby!.peers
   $: messages = $w2globby!.messages
 

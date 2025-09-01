@@ -59,10 +59,10 @@
     <aside class='lg:grow lg:max-w-60 flex flex-col'>
       <SettingsNav {items} />
       <div class='mt-auto text-xs text-muted-foreground px-4 sm:px-2 py-3 md:py-5 flex-row lg:flex-col font-light gap-0.5 gap-x-4 flex-wrap hidden sm:flex'>
-        <div>WebTorrent v2.6.8</div>
+        <div>WebTorrent v2.8.4</div>
       </div>
     </aside>
-    <div class='flex-1 overflow-y-scroll' use:dragScroll>
+    <div class='flex-1' use:dragScroll>
       {#if !SUPPORTS.isUnderPowered}
         <Globe />
       {/if}

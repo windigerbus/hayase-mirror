@@ -19,7 +19,7 @@
   const key = 'active-settings-tab'
 </script>
 
-<nav class={cn('md:flex grid grid-cols-2 md:flex-row lg:flex-col gap-y-1 gap-x-2', className)}>
+<nav class={cn('md:flex grid grid-cols-2 md:flex-row lg:flex-col gap-y-1 gap-x-2 pb-2 sm:pb-0', className)}>
   {#each items as { href, title }, i (i)}
     {@const isActive = $page.url.pathname === href}
     <Button {href} variant='ghost' data-sveltekit-noscroll class='relative font-semibold justify-start last:odd:col-span-2'>

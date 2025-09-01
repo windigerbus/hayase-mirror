@@ -167,7 +167,7 @@ a {
   -webkit-user-drag: none;
 }
 
-:fullscreen {
+#episodeListTarget:fullscreen {
   user-select: none;
 }
 
