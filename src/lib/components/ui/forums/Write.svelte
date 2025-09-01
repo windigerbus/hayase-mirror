@@ -1,8 +1,8 @@
 <script lang='ts'>
   import { Button } from '../button'
-  import { Textarea } from '../textarea'
+  import { Markdown } from '../markdown'
 
-  import * as Drawer from '$lib/components/ui/drawer'
+  import * as Dialog from '$lib/components/ui/dialog'
   import { client } from '$lib/modules/anilist'
 
   export let isLocked = false
@@ -23,25 +23,25 @@
   }
 </script>
 
-<Drawer.Root portal='html'>
-  <Drawer.Trigger asChild let:builder>
+<Dialog.Root portal='html'>
+  <Dialog.Trigger asChild let:builder>
     <Button size='icon-sm' variant='ghost' class='mr-1' disabled={isLocked || !$viewer?.viewer} builders={[builder]}>
       <slot />
     </Button>
-  </Drawer.Trigger>
-  <Drawer.Content tabindex={null} class='px-20 py-10 gap-4'>
-    <Textarea class='form-control w-full shrink-0 min-h-56 bg-dark !transform-none !scale-100' {placeholder} bind:value />
-    <div class='flex gap-2 justify-end'>
-      <Drawer.Close asChild let:builder>
+  </Dialog.Trigger>
+  <Dialog.Content tabindex={null} class='gap-4 bottom-0 border-b-0 !translate-y-[unset] p-0 top-[unset] !pb-4 flex flex-col h-full sm:h-1/2'>
+    <Markdown class='form-control w-full shrink-0 min-h-56 rounded-none flex-grow' {placeholder} bind:value />
+    <div class='flex gap-2 justify-end flex-grow-0 px-4'>
+      <Dialog.Close asChild let:builder>
         <Button variant='secondary' builders={[builder]}>
           Close
         </Button>
-      </Drawer.Close>
-      <Drawer.Close asChild let:builder>
+      </Dialog.Close>
+      <Dialog.Close asChild let:builder>
         <Button builders={[builder]} on:click={comment}>
           Send
         </Button>
-      </Drawer.Close>
+      </Dialog.Close>
     </div>
-  </Drawer.Content>
-</Drawer.Root>
+  </Dialog.Content>
+</Dialog.Root>
