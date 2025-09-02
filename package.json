@@ -42,6 +42,7 @@
 		"svelte-radix": "^1.1.1",
 		"svelte-sonner": "^0.3.28",
 		"tailwindcss": "^3.4.17",
+		"torrent-client": "github:hayase-app/torrent-client",
 		"typescript": "^5.9.2",
 		"vaul-svelte": "^0.3.2",
 		"vite": "^5.4.11",

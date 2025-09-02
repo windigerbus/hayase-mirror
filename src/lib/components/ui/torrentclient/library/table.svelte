@@ -112,16 +112,13 @@
   }
 
   const { filterValue } = pluginStates.filter
-  const { selectedDataIds } = pluginStates.select
+  const { selectedDataIds, someRowsSelected } = pluginStates.select
 
   function getSelected () {
     return Object.keys($selectedDataIds).map(id => $lib[id as unknown as number]?.hash).filter(e => e) as string[]
   }
 
-  // TODO: enable
   function rescanTorrents () {
-    return null
-    // eslint-disable-next-line no-unreachable
     toast.promise(native.rescanTorrents(getSelected()), {
       loading: 'Rescanning torrents...',
       success: 'Rescan complete',
@@ -129,21 +126,23 @@
         console.error(e)
         return 'Failed to rescan torrents\n' + ('stack' in (e as object) ? (e as Error).stack : 'Unknown error')
       },
-      description: 'This may take a long while depending on the number of torrents.'
+      description: 'This may take a VERY long while depending on the number of torrents.'
     })
   }
   function deleteTorrents () {
-    return null
-    // eslint-disable-next-line no-unreachable
-    toast.promise(native.deleteTorrents(getSelected()), {
-      loading: 'Deleting torrents...',
-      success: 'Torrents deleted',
-      error: e => {
-        console.error(e)
-        return 'Failed to delete torrents\n' + ('stack' in (e as object) ? (e as Error).stack : 'Unknown error')
-      },
-      description: 'This may take a while depending on the number of torrents.'
-    })
+    toast.promise(
+      native.deleteTorrents(getSelected())
+        .then(() => server.updateLibrary()
+          .then(() => pluginStates.select.allPageRowsSelected.set(false))
+        ), {
+        loading: 'Deleting torrents...',
+        success: 'Torrents deleted',
+        error: e => {
+          console.error(e)
+          return 'Failed to delete torrents\n' + ('stack' in (e as object) ? (e as Error).stack : 'Unknown error')
+        },
+        description: 'This may take a while depending on the library size.'
+      })
   }
 
 // TODO once new resolver is implemented
@@ -158,10 +157,10 @@
       bind:value={$filterValue} />
     <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
   </div>
-  <Button variant='secondary' size='icon' class='border-0 animated-icon !pointer-events-auto cursor-not-allowed' disabled on:click={rescanTorrents}>
+  <Button variant='secondary' size='icon' class='border-0 animated-icon' on:click={rescanTorrents} disabled={!$someRowsSelected}>
     <FolderSync class={cn('size-4')} />
   </Button>
-  <Button variant='destructive' size='icon' class='border-0 animated-icon !pointer-events-auto cursor-not-allowed' disabled on:click={deleteTorrents}>
+  <Button variant='destructive' size='icon' class='border-0 animated-icon' on:click={deleteTorrents} disabled={!$someRowsSelected}>
     <Trash class={cn('size-4')} />
   </Button>
 </div>
