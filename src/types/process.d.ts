@@ -1,5 +1,8 @@
 declare module 'process' {
   export const env: Record<string, string | undefined>
+  export const cwd: () => string
+  export const exit: (code?: number) => never
+  export const argv: string[]
 }
 
 declare module 'node:process' {
