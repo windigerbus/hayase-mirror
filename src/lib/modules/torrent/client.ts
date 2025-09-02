@@ -1,5 +1,5 @@
 import Debug from 'debug'
-import { readable, writable } from 'simple-store-svelte'
+import { writable } from 'simple-store-svelte'
 import { get } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
 
@@ -30,18 +30,18 @@ export const server = new class ServerClient {
   active = writable<Promise<{ media: Media, id: string, episode: number, files: TorrentFile[] } | null>>()
   downloaded = writable(this.cachedSet())
 
-  stats = this._timedSafeReadable(defaultTorrentInfo, native.torrentInfo, SUPPORTS.isUnderPowered ? 3000 : 200)
+  stats = this._timedSafeStore(defaultTorrentInfo, native.torrentInfo, SUPPORTS.isUnderPowered ? 3000 : 200)
 
-  protocol = this._timedSafeReadable(defaultProtocolStatus, native.protocolStatus)
+  protocol = this._timedSafeStore(defaultProtocolStatus, native.protocolStatus)
 
-  peers = this._timedSafeReadable([], native.peerInfo)
+  peers = this._timedSafeStore([], native.peerInfo)
 
-  files = this._timedSafeReadable([], native.fileInfo)
+  files = this._timedSafeStore([], native.fileInfo)
 
-  library = this._timedSafeReadable([], native.library, 120_000)
+  library = this._timedSafeStore([], native.library, 120_000)
 
-  _timedSafeReadable<T> (defaultData: T, fn: (id: string) => Promise<T>, duration = SUPPORTS.isUnderPowered ? 15000 : 5000) {
-    return readable<T>(defaultData, set => {
+  _timedSafeStore<T> (defaultData: T, fn: (id: string) => Promise<T>, duration = SUPPORTS.isUnderPowered ? 15000 : 5000) {
+    return writable<T>(defaultData, set => {
       let listener = 0
 
       const update = async () => {
@@ -69,6 +69,12 @@ export const server = new class ServerClient {
     this.stats.subscribe((stats) => {
       native.downloadProgress(stats.progress)
     })
+  }
+
+  async updateLibrary () {
+    const library = native.library()
+    this.downloaded.value = library.then(lib => new Set(lib.map(({ hash }) => hash)))
+    this.library.value = await library
   }
 
   async cachedSet () {
