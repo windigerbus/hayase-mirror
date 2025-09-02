@@ -479,8 +479,8 @@
     if (!subtitles) return
     const entries = Object.entries(subtitles._tracks.value)
     const index = entries.findIndex(([index]) => index === subtitles!.current.value)
-    const nextIndex = (index + 1) % entries.length
-    subtitles.selectCaptions(entries[nextIndex]![0])
+    const nextIndex = (index + 1)
+    subtitles.selectCaptions((index + 1) >= entries.length ? -1 : entries[nextIndex]![0])
   }
 
   function seekBarKey (event: KeyboardEvent) {

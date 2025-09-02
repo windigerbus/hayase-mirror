@@ -2,7 +2,6 @@ import SUPPORTS from './settings/supports'
 
 import type { AuthResponse, Native, TorrentInfo } from 'native'
 
-import electron from '$lib/modules/torrent/electron'
 import { sleep } from '$lib/utils'
 
 const rnd = (range = 100) => Math.floor(Math.random() * range)
@@ -51,7 +50,7 @@ const dummyFiles = [
 //   dummyPeerInfo.push(makeRandomPeer())
 // }
 
-const native: Native = {
+export default Object.assign<Native, Partial<Native>>({
   authAL: (url: string) => {
     return new Promise<AuthResponse>((resolve, reject) => {
       const popup = open(url, 'authframe', SUPPORTS.isAndroid ? 'popup' : 'popup,width=382,height=582')
@@ -163,10 +162,6 @@ const native: Native = {
   defaultTransparency: () => false,
   errors: async () => undefined,
   debug: async () => undefined,
-  profile: async () => undefined,
+  profile: async () => undefined
   // @ts-expect-error idk
-  ...globalThis.native as Partial<Native>,
-  ...electron
-}
-
-export default native
+}, globalThis.native as Partial<Native>)
