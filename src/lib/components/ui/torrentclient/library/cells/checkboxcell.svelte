@@ -9,8 +9,11 @@
   }
   export let checked: Writable<boolean>
 
+  function check () {
+    checked.update(value => !value)
+  }
 </script>
 
-<div class='contents' on:click|stopPropagation|stopImmediatePropagation>
+<div class='w-full inset-0 h-full flex justify-center items-center' on:click|stopPropagation|stopImmediatePropagation={check}>
   <Checkbox bind:checked={$checked} {...$$restProps} class='mx-4' />
 </div>
