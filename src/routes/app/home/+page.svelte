@@ -97,9 +97,9 @@
 <div class='grow h-full min-w-0 -ml-14 pl-14 overflow-y-scroll' use:dragScroll on:scroll={handleScroll}>
   <Banner />
   {#each $sectionQueries as { title, query, variables }, i (i)}
-    <div class='flex px-4 pt-5 items-end cursor-pointer text-muted-foreground select:text-foreground'>
-      <div class='font-semibold text-lg leading-none' use:click={() => search(variables)}>{title}</div>
-      <div class='ml-auto text-xs' use:click={() => search(variables)}>View More</div>
+    <div class='flex px-4 pt-5 items-end cursor-pointer text-muted-foreground'>
+      <div class='font-semibold text-lg leading-none select:text-foreground' use:click={() => search(variables)}>{title}</div>
+      <div class='ml-auto text-xs select:text-foreground' use:click={() => search(variables)}>View More</div>
     </div>
     <div class='flex overflow-x-scroll select:-ml-14 select:pl-14 -mt-40 pt-40 -mb-5 pb-5 relative group pointer-events-none' use:dragScroll>
       <QueryCard {query} />
