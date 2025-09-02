@@ -117,7 +117,6 @@ export default new class AuthAggregator {
 
   async watch (outdated: Media, progress: number) {
     const media = (await client.single(outdated.id)).data?.Media ?? outdated
-    // TODO: auto re-watch status
     const totalEps = episodes(media) ?? 1 // episodes or movie which is single episode
     if (totalEps < progress) return // woah, bad data from resolver?!
 
@@ -164,5 +163,19 @@ export default new class AuthAggregator {
       sync.mal && this.mal() && mal.entry(variables),
       sync.local && local.entry(variables)
     ])
+  }
+
+  async setInitialState (media: Media, episode: number) {
+    if (episode !== 1) return
+    const mediaList = this.mediaListEntry(media)
+
+    if (!mediaList) return await this.entry({ id: media.id, progress: 0, status: 'CURRENT' })
+
+    if (['COMPLETED', 'PLANNING', 'PAUSED'].includes(mediaList.status ?? '')) {
+      const status = mediaList.status === 'COMPLETED' ? 'REPEATING' : 'CURRENT'
+      const lists = (mediaList.customLists as Array<{enabled: boolean, name: string}> | undefined)?.filter(({ enabled }) => enabled).map(({ name }) => name) ?? []
+
+      return await this.entry({ id: media.id, progress: 0, status, lists })
+    }
   }
 }()

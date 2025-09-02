@@ -92,7 +92,7 @@ function save (namespaces) {
     }
   } catch (error) {
     // Swallow
-    // XXX (@Qix-) should we be logging these?
+    // (@Qix-) should we be logging these?
   }
 }
 
@@ -108,7 +108,7 @@ function load () {
     r = exports.storage.getItem('debug')
   } catch (error) {
     // Swallow
-    // XXX (@Qix-) should we be logging these?
+    // (@Qix-) should we be logging these?
   }
 
   // If debug isn't set in LS, and we're in Electron, try to load $DEBUG
@@ -137,7 +137,7 @@ function localstorage () {
     return localStorage
   } catch (error) {
     // Swallow
-    // XXX (@Qix-) should we be logging these?
+    // (@Qix-) should we be logging these?
   }
 }
 
@@ -289,7 +289,7 @@ function setup (env) {
     debug.useColors = createDebug.useColors()
     debug.color = createDebug.selectColor(namespace)
     debug.extend = extend
-    debug.destroy = createDebug.destroy // XXX Temporary. Will be removed in the next major release.
+    debug.destroy = createDebug.destroy // Temporary. Will be removed in the next major release.
 
     Object.defineProperty(debug, 'enabled', {
       enumerable: true,

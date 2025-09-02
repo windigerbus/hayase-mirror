@@ -131,15 +131,12 @@
   let lastDbl = 0
   function customDoubleClick (e: MouseEvent) {
     const now = Date.now()
-    if (now - lastDbl < (SUPPORTS.isAndroid ? 400 : 100)) {
+    if (now - lastDbl < (SUPPORTS.isAndroid ? 500 : 200)) {
       dispatch('dblclick', e)
     }
     lastDbl = now
   }
 </script>
-
-<!-- fix for android gestures not cancelling pointer when closing the app using gestures from the bottom which hovers the seekbar, insane. -->
-<!-- <svelte:document on:visibilitychange={endHover} /> -->
 
 <div class='w-full flex cursor-pointer relative group/seekbar touch-none !transform-none' class:!cursor-grab={seeking}
   tabindex='0' role='slider' aria-valuenow='0'
@@ -153,7 +150,8 @@
   on:pointerup={endSeeking}
   on:pointermove={calculatePositionProgress}
   on:pointerleave={endHover}
-  on:pointercancel={endSeeking}>
+  on:pointercancel={endSeeking}
+  on:pointercancel={endHover}>
   {#each segments as chapter, i (chapter)}
     {@const { size, scale, offset } = chapter}
     {@const active = seek && seek > offset && seek < offset + size}
