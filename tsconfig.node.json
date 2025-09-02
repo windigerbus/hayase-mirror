@@ -42,7 +42,8 @@
     "generateALIntrospection.ts",
     "src/types/**/*.d.ts",
     "postcss.config.js",
-    "tsconfig.web.json"
+    "tsconfig.web.json",
+    "nocheck.ts"
   ],
   "exclude": [
     "../node_modules/**"
