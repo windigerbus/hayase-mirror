@@ -3,6 +3,7 @@ import { writable } from 'simple-store-svelte'
 import { get } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
 
+import client from '../auth/client'
 import native from '../native'
 import { SUPPORTS } from '../settings'
 import { w2globby } from '../w2g/lobby'
@@ -86,6 +87,7 @@ export const server = new class ServerClient {
     if (!media || !id) return
     debug('playing torrent', id, media.id, episode)
     this.last.set({ id, media, episode })
+    client.setInitialState(media, episode)
     this.active.value = this._play(id, media, episode)
     w2globby.value?.mediaChange({ episode, mediaId: media.id, torrent: id })
     return this.active.value

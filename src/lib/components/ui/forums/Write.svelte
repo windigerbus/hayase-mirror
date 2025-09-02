@@ -23,7 +23,7 @@
   }
 </script>
 
-<Dialog.Root portal='html'>
+<Dialog.Root portal='#root'>
   <Dialog.Trigger asChild let:builder>
     <Button size='icon-sm' variant='ghost' class='mr-1' disabled={isLocked || !$viewer?.viewer} builders={[builder]}>
       <slot />
