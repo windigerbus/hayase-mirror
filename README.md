@@ -110,6 +110,7 @@ It is meant to feel look, work and perform like a premium streaming service, but
 * Support for most popular BEP's.
 * Persist torrents, cache progress, and rescan instantly.
 * View detailed torrent and peer info.
+* Batch downloads.
 
 <p align="center">
   <img src='https://raw.githubusercontent.com/hayase-app/website/main/static/modal.webp' width='400px'></img>

@@ -28,6 +28,7 @@
   import { toast } from 'svelte-sonner'
   import VideoDeband from 'video-deband'
 
+  import Animations, { playAnimation } from './animations.svelte'
   import { condition, loadWithDefaults } from './keybinds.svelte'
   import Options from './options.svelte'
   import PictureInPicture from './pip'
@@ -178,10 +179,15 @@
       })
     }
   }
+  function changeVolume (delta: number) {
+    playAnimation(delta > 0 ? 'volumeup' : 'volumedown')
+    $volume = Math.min(1, Math.max(0, $volume + delta))
+  }
   function selectAudio (id: string) {
     if (id) {
       for (const track of video.audioTracks ?? []) {
         track.enabled = track.id === id
+        playAnimation(track.label)
       }
       seek(-0.2) // stupid fix because video freezes up when chaging tracks
     }
@@ -190,6 +196,7 @@
     if (id) {
       for (const track of video.videoTracks ?? []) {
         track.selected = track.id === id
+        playAnimation(track.label)
       }
     }
   }
@@ -200,8 +207,8 @@
     playAnimation(time > 0 ? 'seekforw' : 'seekback')
   }
   function seekTo (time: number) {
-    playAnimation(time > currentTime ? 'seekforw' : 'seekback')
     video.currentTime = currentTime = time
+    playAnimation(time > currentTime ? 'seekforw' : 'seekback')
   }
   let wasPaused = false
   function startSeek () {
@@ -234,25 +241,6 @@
       description: 'Saved screenshot to clipboard.'
     })
   }
-
-  // animations
-
-  function playAnimation (type: 'play' | 'pause' | 'seekforw' | 'seekback') {
-    animations.push({ type, id: crypto.randomUUID() })
-    // eslint-disable-next-line no-self-assign
-    animations = animations
-  }
-  function endAnimation (id: string) {
-    const index = animations.findIndex(animation => animation.id === id)
-    if (index !== -1) animations.splice(index, 1)
-    // eslint-disable-next-line no-self-assign
-    animations = animations
-  }
-  interface Animation {
-    type: 'play' | 'pause' | 'seekforw' | 'seekback'
-    id: string
-  }
-  let animations: Animation[] = []
 
   let chapters: Chapter[] = []
   const chaptersPromise = native.chapters(mediaInfo.file.hash, mediaInfo.file.id)
@@ -364,8 +352,8 @@
   $: if (currentSkippable && $settings.playerSkip) skip()
 
   const skippableChaptersRx: Array<[string, RegExp]> = [
-    ['Opening', /^op$|opening$|^ncop/mi],
-    ['Ending', /^ed$|ending$|^nced/mi],
+    ['Opening', /^op$|opening$|^ncop|^opening /mi],
+    ['Ending', /^ed$|ending$|^nced|^ending /mi],
     ['Recap', /recap/mi]
   ]
   function isChapterSkippable (chapter: Chapter) {
@@ -478,9 +466,11 @@
   function cycleSubtitles () {
     if (!subtitles) return
     const entries = Object.entries(subtitles._tracks.value)
-    const index = entries.findIndex(([index]) => index === subtitles!.current.value)
-    const nextIndex = (index + 1)
-    subtitles.selectCaptions((index + 1) >= entries.length ? -1 : entries[nextIndex]![0])
+    if (!entries.length) return
+    const index = entries.findIndex(([index]) => index === subtitles!.current.value) + 1
+    const [id, info] = entries[index] ?? [-1, { meta: { name: 'Off', language: 'Eng' } }]
+    playAnimation(info.meta.name ?? info.meta.language ?? 'Eng')
+    subtitles.selectCaptions(id)
   }
 
   function seekBarKey (event: KeyboardEvent) {
@@ -632,7 +622,7 @@
         e.preventDefault()
         e.stopImmediatePropagation()
         e.stopPropagation()
-        $volume = Math.min(1, $volume + 0.05)
+        changeVolume(0.05)
       },
       id: 'volume_up',
       icon: Volume2,
@@ -645,7 +635,7 @@
         e.preventDefault()
         e.stopImmediatePropagation()
         e.stopPropagation()
-        $volume = Math.max(0, $volume - 0.05)
+        changeVolume(-0.05)
       },
       id: 'volume_down',
       icon: Volume1,
@@ -779,11 +769,20 @@
       stopProgressBar()
     }
   })
+
+  function handleWheel ({ shiftKey, deltaY }: WheelEvent) {
+    const sign = Math.sign(deltaY)
+    if (shiftKey) {
+      seek(Number($settings.playerSeek) * sign * -1)
+    } else {
+      changeVolume(-0.05 * sign)
+    }
+  }
 </script>
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
-<div class='w-full h-full relative content-center bg-black overflow-clip text-left touch-none' class:fitWidth class:seeking class:pip={pictureInPictureElement} bind:this={wrapper} on:navigate={() => resetMove(2000)}>
+<div class='w-full h-full relative content-center bg-black overflow-clip text-left touch-none' class:fitWidth class:seeking class:pip={pictureInPictureElement} bind:this={wrapper} on:navigate={() => resetMove(2000)} on:wheel={handleWheel}>
   <video class='w-full h-full touch-none' preload='metadata' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking || pictureInPictureElement} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
     use:createDeband={$settings.playerDeband}
@@ -881,21 +880,7 @@
           <div class='border-[3px] rounded-[50%] w-10 h-10 drop-shadow-lg border-transparent border-t-white animate-spin' />
         </div>
       {/if}
-      {#if !$settings.minimalPlayerUI}
-        {#each animations as { type, id } (id)}
-          <div class='absolute animate-pulse-once' on:animationend={() => endAnimation(id)}>
-            {#if type === 'play'}
-              <Play size='64px' fill='white' />
-            {:else if type === 'pause'}
-              <Pause size='64px' fill='white' />
-            {:else if type === 'seekforw'}
-              <FastForward size='64px' fill='white' />
-            {:else if type === 'seekback'}
-              <Rewind size='64px' fill='white' />
-            {/if}
-          </div>
-        {/each}
-      {/if}
+      <Animations />
     </div>
     <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity delay-150 select:opacity-100' class:opacity-0={immersed}>
       <div class='flex justify-between gap-12 items-end'>
@@ -1028,20 +1013,5 @@
 
   .gradient-to-bottom {
     background: linear-gradient(to bottom, oklab(0 0 0 / 0.85) 0%, oklab(0 0 0 / 0.7) 35%, oklab(0 0 0 / 0) 100%);
-  }
-
-  .animate-pulse-once {
-    animation: pulse-once .4s linear;
-  }
-
-  @keyframes pulse-once {
-    0% {
-      opacity: 1;
-      scale: 1;
-    }
-    100% {
-      opacity: 0;
-      scale: 1.2;
-    }
   }
 </style>
