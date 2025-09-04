@@ -1,7 +1,7 @@
 <script lang='ts' context='module'>
   import BadgeCheck from 'lucide-svelte/icons/badge-check'
-  import Database from 'lucide-svelte/icons/database'
   import Download from 'svelte-radix/Download.svelte'
+  import File from 'svelte-radix/File.svelte'
   import MagnifyingGlass from 'svelte-radix/MagnifyingGlass.svelte'
 
   import { SingleCombo } from './ui/combobox'
@@ -15,7 +15,7 @@
   import { extensions } from '$lib/modules/extensions/extensions'
   import { click, dragScroll } from '$lib/modules/navigate'
   import { settings, videoResolutions } from '$lib/modules/settings'
-  import { fastPrettyBytes, since } from '$lib/utils'
+  import { cn, colors, fastPrettyBytes, since } from '$lib/utils'
 
   const termMapping: Record<string, {text: string, color: string}> = {}
   termMapping['5.1'] = termMapping['5.1CH'] = { text: '5.1', color: '#f67255' }
@@ -32,11 +32,12 @@
   termMapping.AV1 = { text: 'AV1', color: '#0c8ce9' }
   termMapping.BD = termMapping.BDRIP = termMapping.BLURAY = termMapping['BLU-RAY'] = { text: 'BD', color: '#ab1b31' }
   termMapping.DVD5 = termMapping.DVD9 = termMapping['DVD-R2J'] = termMapping.DVDRIP = termMapping.DVD = termMapping['DVD-RIP'] = termMapping.R2DVD = termMapping.R2J = termMapping.R2JDVD = termMapping.R2JDVDRIP = { text: 'DVD', color: '#ab1b31' }
+  termMapping.MULTISUB = termMapping['MULTI-SUB'] = termMapping['MULTI SUB'] = termMapping.MULTISUBS = termMapping['MULTI-SUBS'] = termMapping['MULTI SUBS'] = { text: 'Multi Sub', color: '#ffcb3b' }
   // termMapping.HDTV = termMapping.HDTVRIP = termMapping.TVRIP = termMapping['TV-RIP'] = { text: 'TV', color: '#ab1b31' }
   // termMapping.WEBCAST = termMapping.WEBRIP = { text: 'WEB', color: '#ab1b31' }
 
-  function sanitiseTerms ({ video_term: video, audio_term: audio, video_resolution: resolution, source }: AnitomyResult) {
-    const terms = [...new Set([...video ?? [], ...audio ?? [], ...source ?? []].map(term => termMapping[term.toUpperCase() ?? '']).filter(t => t))] as Array<{text: string, color: string}>
+  function sanitiseTerms ({ video_term: video, audio_term: audio, video_resolution: resolution, source, subtitles }: AnitomyResult) {
+    const terms = [...new Set([...video ?? [], ...audio ?? [], ...source ?? [], ...subtitles ?? []].map(term => termMapping[term.toUpperCase() ?? '']).filter(t => t))] as Array<{text: string, color: string}>
     if (resolution.length) terms.unshift({ text: resolution[0]!, color: '#c6ec58' })
 
     return terms
@@ -47,13 +48,18 @@
     if (group.length) simpleName = simpleName.replace(group[0]!, '')
     if (resolution.length) simpleName = simpleName.replace(resolution[0]!, '')
     if (checksum.length) simpleName = simpleName.replace(checksum[0]!, '')
-    for (const term of video ?? []) simpleName = simpleName.replace(term[0]!, '')
-    for (const term of audio ?? []) simpleName = simpleName.replace(term[0]!, '')
+    for (const term of video ?? []) simpleName = simpleName.replace(term, '')
+    for (const term of audio ?? []) simpleName = simpleName.replace(term, '')
     return simpleName.replace(/[[{(]\s*[\]})]/g, '').replace(/\s+/g, ' ').trim()
+  }
+
+  function getGroup ({ release_group: group, file_name: name }: AnitomyResult) {
+    return group[0] && group[0].length < 20 ? group[0] : /^(?!\[[^\]]*\]).*-(\w+)(?=\s\(|\.\w+$|$)/.exec(name[0] ?? '')?.[1] ?? 'No Group'
   }
 </script>
 
 <script lang='ts'>
+  import Folder from 'lucide-svelte/icons/folder'
   import { getContext } from 'svelte'
 
   import ProgressButton from './ui/button/progress-button.svelte'
@@ -159,20 +165,22 @@
       stop()
     }
   })
+
+  $: ({ r, g, b } = colors($searchStore?.media.coverImage?.color ?? undefined))
 </script>
 
 <Dialog.Root bind:open onOpenChange={close} portal='#episodeListTarget'>
-  <Dialog.Content class='bg-black h-full max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex-col flex lg:rounded-t-xl overflow-hidden z-[100] gap-0'>
+  <Dialog.Content class='bg-black h-full max-w-5xl w-full max-h-[calc(100%-1rem)] border-b-0 !rounded-b-none mt-2 p-0 items-center flex-col flex lg:rounded-t-xl overflow-clip z-[100] gap-0'>
     <!-- this hacky thing is required for dialog root focus trap... pitiful -->
     <div class='size-0' tabindex='0' />
     {#if $searchStore}
-      <div class='absolute top-0 left-0 w-full h-full max-h-28 overflow-hidden'>
-        <Banner media={$searchStore.media} class='object-cover w-full h-full absolute bottom-[0.5px] left-0 -z-10' />
-        <div class='w-full h-full banner-2' />
+      <div class='absolute top-0 left-0 w-full h-full max-h-36 overflow-hidden flex items-end'>
+        <Banner media={$searchStore.media} class='object-cover w-full h-full absolute bottom-[0.5px] left-0 -z-10 opacity-40' />
+        <div class='w-full h-[70%] bg-gradient-to-t from-black/80 to-transparent' />
       </div>
-      <div class='gap-4 w-full relative h-full flex flex-col pt-6'>
+      <div class='gap-4 w-full relative h-full flex flex-col pt-8' style:--custom={$searchStore.media.coverImage?.color ?? '#fff'} style:--red={r} style:--green={g} style:--blue={b}>
         <div class='px-4 sm:px-6 space-y-4'>
-          <div class='font-weight-bold text-2xl font-bold text-ellipsis text-nowrap overflow-hidden pb-2'>{title($searchStore.media) ?? ''}</div>
+          <div class='font-weight-bold text-2xl font-bold text-ellipsis text-nowrap overflow-hidden'>{title($searchStore.media)}</div>
           <div class='flex items-center relative scale-parent'>
             <Input
               class='pl-9 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'
@@ -193,12 +201,12 @@
           <ProgressButton
             onclick={playBest}
             size='default'
-            class='w-full font-bold'
+            class='w-full font-bold bg-custom select:bg-custom-600 text-contrast'
             bind:animating>
             Auto Select Torrent
           </ProgressButton>
         </div>
-        <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:focusin={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation} use:dragScroll>
+        <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:focusin={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation} use:dragScroll style:--custom={$searchStore.media.coverImage?.color ?? '#fff'} style:--red={r} style:--green={g} style:--blue={b}>
           {#await Promise.all([searchResult, $downloaded])}
             {#each Array.from({ length: 12 }) as _, i (i)}
               <div class='p-3 h-[106px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border flex-col justify-between [content-visibility:auto] [contain-intrinsic-height:auto_106px]'>
@@ -218,23 +226,23 @@
             {#if search && media}
               {@const { results, errors } = search}
               {#each filterAndSortResults(results, inputText, downloaded) as result (result.hash)}
-                <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border select:ring-1 select:ring-ring select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all [content-visibility:auto] [contain-intrinsic-height:auto_106px]' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name[0]}>
-                  {#if result.accuracy === 'high'}
-                    <div class='absolute top-0 left-0 w-full h-full -z-10'>
-                      <Banner {media} class='object-cover w-full h-full' />
-                      <div class='absolute top-0 left-0 w-full h-full banner' />
-                    </div>
-                  {/if}
+                <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border group/card select:ring-1 select:ring-custom select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all [content-visibility:auto] [contain-intrinsic-height:auto_106px]' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name[0]}>
+                  <div class='size-20 relative shrink-0 flex items-center justify-center text-xs px-1 text-wrap break-all font-bold'>
+                    {#if result.accuracy === 'high' || result.accuracy === 'medium'}
+                      <BadgeCheck class={cn('absolute top-0 left-0 mix-blend-difference', result.accuracy === 'high' ? 'text-[#53da33]' : 'text-muted-foreground/20')} fill='currentColor' color='#000' size='1.2rem' />
+                    {/if}
+                    {getGroup(result.parseObject)}
+                    {#if downloaded.has(result.hash) || Math.random() < 0.2}
+                      <Download class='text-[#53da33] absolute size-12 opacity-15' stroke-width='0.5' color='currentColor' stroke='currentColor' />
+                    {:else if result.type}
+                      <Folder class='text-yellow-300 absolute size-12 opacity-15' fill='currentColor' />
+                    {:else}
+                      <File class='absolute size-12 opacity-15 text-muted-foreground' />
+                    {/if}
+                  </div>
                   <div class='flex pl-2 flex-col justify-between w-full h-20 relative min-w-0 text-[.7rem]'>
                     <div class='flex w-full items-center'>
-                      {#if downloaded.has(result.hash)}
-                        <Download class='mr-2 text-[#53da33]' size='1.2rem' />
-                      {:else if result.type === 'batch'}
-                        <Database class='mr-2' size='1.2rem' />
-                      {:else if result.accuracy === 'high'}
-                        <BadgeCheck class='mr-2 text-[#53da33]' size='1.2rem' />
-                      {/if}
-                      <div class='text-xl font-bold text-nowrap'>{result.parseObject.release_group[0] && result.parseObject.release_group[0].length < 20 ? result.parseObject.release_group[0] : 'No Group'}</div>
+                      <div class='text-xl font-bold text-nowrap group-select/card:text-custom transition-colors'>{result.type ? 'Multiple Episodes' : `Episode ${$searchStore.episode}`}</div>
                       <div class='ml-auto flex gap-2 self-start'>
                         {#each result.extension as id (id)}
                           {#if $saved[id]}
@@ -246,20 +254,24 @@
                     <div class='text-muted-foreground text-ellipsis text-nowrap overflow-hidden'>{simplifyFilename(result.parseObject)}</div>
                     <div class='flex flex-row leading-none'>
                       <div class='details text-light flex'>
-                        <span class='text-nowrap flex items-center'>{fastPrettyBytes(result.size)}</span>
-                        <span class='text-nowrap flex items-center'>{result.seeders} Seeders</span>
-                        <span class='text-nowrap flex items-center'>{since(new Date(result.date))}</span>
+                        {#if result.type === 'best'}
+                          <span class='rounded px-3 py-1 mr-0.5 border text-nowrap flex items-center' style='background: #1d2d1e; border-color: #53da33 !important; color: #53da33'>
+                            Best Release
+                          </span>
+                        {:else if result.type === 'alt'}
+                          <span class='rounded px-3 py-1 mr-0.5 border text-nowrap flex items-center' style='background: #391d20; border-color: #c52d2d !important; color: #c52d2d'>
+                            Alt Release
+                          </span>
+                        {:else if result.type === 'batch'}
+                          <span class='rounded px-3 py-1 mr-0.5 border text-nowrap flex items-center' style='background: #1d2031; border-color: #2d5ec5 !important; color: #2d5ec5'>
+                            Batch
+                          </span>
+                        {/if}
+                        <span class={cn('text-nowrap flex items-center', result.seeders > 20 ? 'text-green-600' : result.seeders < 5 ? 'text-red-600' : 'text-yellow-600')}>{result.seeders} Seeders</span>
+                        <span class='text-nowrap flex items-center text-white/80'>{fastPrettyBytes(result.size)}</span>
+                        <span class='text-nowrap flex items-center text-white/80'>{since(new Date(result.date))}</span>
                       </div>
                       <div class='flex ml-auto flex-row-reverse'>
-                        {#if result.type === 'best'}
-                          <div class='rounded px-3 py-1 ml-2 border text-nowrap flex items-center' style='background: #1d2d1e; border-color: #53da33 !important; color: #53da33'>
-                            Best Release
-                          </div>
-                        {:else if result.type === 'alt'}
-                          <div class='rounded px-3 py-1 ml-2 border text-nowrap flex items-center' style='background: #391d20; border-color: #c52d2d !important; color: #c52d2d'>
-                            Alt Release
-                          </div>
-                        {/if}
                         {#each sanitiseTerms(result.parseObject) as { text, color }, i (i)}
                           <div class='rounded px-3 py-1 ml-2 text-nowrap font-bold flex items-center' style:background={color}>
                             <div class='text-contrast-filter'>
