@@ -5,9 +5,10 @@
   import * as Dialog from '$lib/components/ui/dialog'
   import { Input } from '$lib/components/ui/input'
   import * as Select from '$lib/components/ui/select'
-  import { cover, title, type Media } from '$lib/modules/anilist'
+  import { banner, cover, title, type Media } from '$lib/modules/anilist'
   import { list, progress as _progress, score as _score, repeat as _repeat, authAggregator, lists } from '$lib/modules/auth'
   import { dragScroll } from '$lib/modules/navigate'
+  import { breakpoints } from '$lib/utils'
 
   export let media: Media
 
@@ -41,10 +42,10 @@
       <PencilLine class='size-4' />
     </Button>
   </Dialog.Trigger>
-  <Dialog.Content class='flex justify-center max-h-[80%] p-0'>
-    <div class='flex flex-col md:flex-row w-full overflow-y-auto' use:dragScroll>
-      <div class='relative w-full h-[120px] md:w-[260px] md:h-[400px] shrink-0'>
-        <img alt='images' loading='lazy' decoding='async' class='object-cover w-full h-full' style:background={media.coverImage?.color ?? '#000'} src={cover(media)} />
+  <Dialog.Content class='flex justify-center max-h-[80%] max-w-3xl p-0 overflow-clip'>
+    <div class='flex flex-col sm:flex-row w-full overflow-y-auto' use:dragScroll>
+      <div class='relative w-full h-[150px] sm:w-[260px] sm:h-[400px] shrink-0'>
+        <img alt='images' loading='lazy' decoding='async' class='object-cover w-full h-full' style:background={media.coverImage?.color ?? '#000'} src={$breakpoints.sm ? cover(media) : banner(media)} />
       </div>
       <form class='flex flex-col w-full rounded-r-lg h-full'>
         <div class='pt-4 px-5 w-full'>

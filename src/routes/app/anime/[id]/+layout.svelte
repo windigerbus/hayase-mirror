@@ -86,8 +86,8 @@
           </div>
           <Load src={cover(media)} color={media.coverImage?.color} class='w-full h-full object-cover' />
         </Dialog.Trigger>
-        <Dialog.Content class='flex justify-center'>
-          <Load src={cover(media)} color={media.coverImage?.color} class='h-full object-cover rounded' />
+        <Dialog.Content class='flex justify-center p-0 overflow-clip'>
+          <Load src={cover(media)} color={media.coverImage?.color} class='h-full w-full object-cover' />
         </Dialog.Content>
       </Dialog.Root>
       <div class='flex flex-col gap-4 items-center md:items-start justify-end w-full'>
@@ -145,7 +145,7 @@
               <Clapperboard class='size-4' />
             </Button>
           </Dialog.Trigger>
-          <Dialog.Content class='flex justify-center max-h-[80%] h-full'>
+          <Dialog.Content class='flex justify-center max-h-[80%] h-full max-w-max'>
             <iframe class='h-full max-w-full aspect-video max-h-full rounded' src={`https://www.youtube-nocookie.com/embed/${media.trailer.id}?autoplay=1`} frameborder='0' allow='autoplay' allowfullscreen title={media.title?.userPreferred ?? ''} />
           </Dialog.Content>
         </Dialog.Root>

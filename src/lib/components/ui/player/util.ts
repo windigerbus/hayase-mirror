@@ -1,5 +1,8 @@
+import { toast } from 'svelte-sonner'
+
 import type { Media } from '$lib/modules/anilist'
 import type { ResolvedFile } from './resolver'
+import type Subtitles from './subtitles'
 import type { Track } from '../../../../app'
 import type { SessionMetadata } from 'native'
 
@@ -173,4 +176,25 @@ export function normalizeSubs (_tracks?: Record<number | string, { meta: { langu
     acc[track.language]!.push(track)
     return acc
   }, {})
+}
+
+export async function screenshot (video: HTMLVideoElement, subtitles?: Subtitles) {
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext('2d')
+  if (!context) return
+  canvas.width = video.videoWidth
+  canvas.height = video.videoHeight
+  context.drawImage(video, 0, 0)
+  if (subtitles?.renderer) {
+    subtitles.renderer.resize(video.videoWidth, video.videoHeight)
+    await new Promise(resolve => setTimeout(resolve, 500)) // this is hacky, but TLDR wait for canvas to update and re-render, in practice this will take at MOST 100ms, but just to be safe
+    context.drawImage(subtitles.renderer._canvas, 0, 0, canvas.width, canvas.height)
+    subtitles.renderer.resize(0, 0, 0, 0) // undo resize
+  }
+  const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!)))
+  canvas.remove()
+  await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
+  toast.success('Screenshot', {
+    description: 'Saved screenshot to clipboard.'
+  })
 }

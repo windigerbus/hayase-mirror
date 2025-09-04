@@ -1,8 +1,6 @@
 <script lang='ts'>
   import Captions from 'lucide-svelte/icons/captions'
-  import Cast from 'lucide-svelte/icons/cast'
-  import ChevronDown from 'lucide-svelte/icons/chevron-down'
-  import ChevronUp from 'lucide-svelte/icons/chevron-up'
+  // import Cast from 'lucide-svelte/icons/cast'
   import Contrast from 'lucide-svelte/icons/contrast'
   import DecimalsArrowLeft from 'lucide-svelte/icons/decimals-arrow-left'
   import DecimalsArrowRight from 'lucide-svelte/icons/decimals-arrow-right'
@@ -18,24 +16,25 @@
   import ScreenShare from 'lucide-svelte/icons/screen-share'
   import SkipBack from 'lucide-svelte/icons/skip-back'
   import SkipForward from 'lucide-svelte/icons/skip-forward'
-  import Users from 'lucide-svelte/icons/users'
   import Volume1 from 'lucide-svelte/icons/volume-1'
   import Volume2 from 'lucide-svelte/icons/volume-2'
   import VolumeX from 'lucide-svelte/icons/volume-x'
-  import { getContext, onDestroy, onMount } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import { fade } from 'svelte/transition'
   import { persisted } from 'svelte-persisted-store'
   import { toast } from 'svelte-sonner'
   import VideoDeband from 'video-deband'
 
   import Animations, { playAnimation } from './animations.svelte'
+  import DownloadStats from './downloadstats.svelte'
+  import EpisodesModal from './episodesmodal.svelte'
   import { condition, loadWithDefaults } from './keybinds.svelte'
   import Options from './options.svelte'
   import PictureInPicture from './pip'
   import Seekbar from './seekbar.svelte'
   import Subs from './subtitles'
   import Thumbnailer from './thumbnailer'
-  import { getChaptersAniSkip, getChapterTitle, sanitizeChapters, type Chapter, type MediaInfo } from './util'
+  import { getChaptersAniSkip, getChapterTitle, sanitizeChapters, screenshot, type Chapter, type MediaInfo } from './util'
   import Volume from './volume.svelte'
 
   import type { ResolvedFile } from './resolver'
@@ -44,25 +43,20 @@
 
   import { beforeNavigate, goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import EpisodesList from '$lib/components/EpisodesList.svelte'
   import PictureInPictureOff from '$lib/components/icons/PictureInPicture.svelte'
   import PictureInPictureExit from '$lib/components/icons/PictureInPictureExit.svelte'
   import Play from '$lib/components/icons/Play.svelte'
   import Subtitles from '$lib/components/icons/Subtitles.svelte'
   import { Maximize, Minimize } from '$lib/components/icons/animated'
   import { Button, iconSizes } from '$lib/components/ui/button'
-  import * as Sheet from '$lib/components/ui/sheet'
-  import { client } from '$lib/modules/anilist'
-  import { episodes } from '$lib/modules/anizip'
   import { authAggregator } from '$lib/modules/auth'
   import { isPlaying } from '$lib/modules/idle'
   import native from '$lib/modules/native'
   import { click, inputType, keywrap } from '$lib/modules/navigate'
   import { settings, SUPPORTS } from '$lib/modules/settings'
-  import { server } from '$lib/modules/torrent'
   import { w2globby } from '$lib/modules/w2g/lobby'
   import { getAnimeProgress, setAnimeProgress } from '$lib/modules/watchProgress'
-  import { toTS, fastPrettyBits, scaleBlurFade } from '$lib/utils'
+  import { toTS, scaleBlurFade } from '$lib/utils'
 
   export let mediaInfo: MediaInfo
   export let otherFiles: TorrentFile[]
@@ -117,7 +111,7 @@
   let paused = true
   let pointerMoving = false
   let fastForwarding = false
-  const cast = false
+  // const cast = false
 
   $: $isPlaying = !paused
 
@@ -145,9 +139,9 @@
     return fullscreenElement ? document.exitFullscreen() : document.getElementById('episodeListTarget')!.requestFullscreen()
   }
 
-  function toggleCast () {
-  // TODO: never
-  }
+  // function toggleCast () {
+  // // TODO: never
+  // }
 
   $: fullscreenElement ? screen.orientation.lock('landscape') : screen.orientation.unlock()
 
@@ -219,27 +213,6 @@
   function finishSeek () {
     seekTo(seekPercent * safeduration / 100)
     if (!wasPaused) video.play()
-  }
-
-  async function screenshot () {
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
-    if (!context) return
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-    context.drawImage(video, 0, 0)
-    if (subtitles?.renderer) {
-      subtitles.renderer.resize(video.videoWidth, video.videoHeight)
-      await new Promise(resolve => setTimeout(resolve, 500)) // this is hacky, but TLDR wait for canvas to update and re-render, in practice this will take at MOST 100ms, but just to be safe
-      context.drawImage(subtitles.renderer._canvas, 0, 0, canvas.width, canvas.height)
-      subtitles.renderer.resize(0, 0, 0, 0) // undo resize
-    }
-    const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!)))
-    canvas.remove()
-    await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
-    toast.success('Screenshot', {
-      description: 'Saved screenshot to clipboard.'
-    })
   }
 
   let chapters: Chapter[] = []
@@ -495,7 +468,7 @@
   let fitWidth = false
   loadWithDefaults({
     KeyX: {
-      fn: () => screenshot(),
+      fn: () => screenshot(video, subtitles),
       id: 'screenshot_monitor',
       icon: ScreenShare,
       type: 'icon',
@@ -576,13 +549,13 @@
       type: 'icon',
       desc: 'Toggle Video Cover'
     },
-    KeyD: {
-      fn: () => toggleCast(),
-      id: 'cast',
-      icon: Cast,
-      type: 'icon',
-      desc: 'Toggle Cast [broken]'
-    },
+    // KeyD: {
+    //   fn: () => toggleCast(),
+    //   id: 'cast',
+    //   icon: Cast,
+    //   type: 'icon',
+    //   desc: 'Toggle Cast [broken]'
+    // },
     KeyC: {
       fn: () => cycleSubtitles(),
       id: 'subtitles',
@@ -679,8 +652,6 @@
     }
   })
 
-  const torrentstats = server.stats
-
   $condition = () => !isMiniplayer
 
   function holdToFF (document: HTMLElement, type: 'key' | 'pointer') {
@@ -759,17 +730,6 @@
   const saveProgressLoop = setInterval(saveAnimeProgress, 10000)
   onDestroy(() => clearInterval(saveProgressLoop))
 
-  let episodeListOpen = false
-
-  const stopProgressBar = getContext<() => void>('stop-progress-bar')
-  beforeNavigate(({ cancel }) => {
-    if (episodeListOpen) {
-      episodeListOpen = false
-      cancel()
-      stopProgressBar()
-    }
-  })
-
   function handleWheel ({ shiftKey, deltaY }: WheelEvent) {
     const sign = Math.sign(deltaY)
     if (shiftKey) {
@@ -812,22 +772,7 @@
   />
   {#if !isMiniplayer}
     <div class='absolute w-full h-full flex items-center justify-center top-0 pointer-events-none'>
-      {#if !$settings.minimalPlayerUI}
-        <div class='absolute top-0 flex w-full pointer-events-none justify-center gap-4 pt-3 items-center font-bold text-lg transition-opacity gradient-to-bottom delay-150' class:opacity-0={immersed}>
-          <div class='flex justify-center items-center gap-2'>
-            <Users size={18} />
-            {$torrentstats.peers.seeders}
-          </div>
-          <div class='flex justify-center items-center gap-2'>
-            <ChevronDown size={18} />
-            {fastPrettyBits($torrentstats.speed.down * 8)}/s
-          </div>
-          <div class='flex justify-center items-center gap-2'>
-            <ChevronUp size={18} />
-            {fastPrettyBits($torrentstats.speed.up * 8)}/s
-          </div>
-        </div>
-      {/if}
+      <DownloadStats {immersed} />
       {#if seeking}
         {#await thumbnailer.getThumbnail(seekIndex) then src}
           {#if src}
@@ -885,19 +830,7 @@
     <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity delay-150 select:opacity-100' class:opacity-0={immersed}>
       <div class='flex justify-between gap-12 items-end'>
         <div class='flex flex-col gap-2 text-left cursor-pointer'>
-          <a class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300 hover:underline' href='/app/anime/{mediaInfo.media.id}' data-up='#player-options-button-top'>{mediaInfo.session.title}</a>
-          <Sheet.Root portal={wrapper} bind:open={episodeListOpen}>
-            <Sheet.Trigger id='episode-list-button' data-down='#player-seekbar' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left hover:underline bg-transparent'>{mediaInfo.session.description}</Sheet.Trigger>
-            <Sheet.Content class='w-full sm:w-[550px] p-3 sm:p-6 max-w-full sm:max-w-full h-full overflow-y-scroll flex flex-col !pb-0 shrink-0 gap-0 bg-black justify-between overflow-x-clip'>
-              {#if mediaInfo.media}
-                {#await Promise.all([episodes(mediaInfo.media.id), client.single(mediaInfo.media.id)]) then [eps, media]}
-                  {#if media.data?.Media}
-                    <EpisodesList {eps} media={media.data.Media} />
-                  {/if}
-                {/await}
-              {/if}
-            </Sheet.Content>
-          </Sheet.Root>
+          <EpisodesModal portal={wrapper} {mediaInfo} />
         </div>
         <div class='flex flex-col gap-2 grow-0 items-end self-end'>
           {#if currentSkippable}
@@ -958,7 +891,7 @@
               </div>
             {/if}
           </Button>
-          {#if false}
+          <!-- {#if false}
             <Button class='p-3 size-12' variant='ghost' on:click={toggleCast} on:keydown={keywrap(toggleCast)} data-up='#player-seekbar'>
               {#if cast}
                 <Cast size='24px' fill='white' strokeWidth='2' />
@@ -966,7 +899,7 @@
                 <Cast size='24px' strokeWidth='2' />
               {/if}
             </Button>
-          {/if}
+          {/if} -->
           <Button class='p-3 size-12 relative animated-icon shrink-0' variant='ghost' on:click={fullscreen} on:keydown={keywrap(fullscreen)} data-up='#player-seekbar'>
             {#if fullscreenElement}
               <div transition:scaleBlurFade class='absolute'>

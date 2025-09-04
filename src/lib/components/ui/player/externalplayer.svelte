@@ -4,7 +4,8 @@
   import { writable } from 'svelte/store'
 
   import { Button } from '../button'
-  import * as Sheet from '../sheet'
+
+  import EpisodesModal from './episodesmodal.svelte'
 
   import type { ResolvedFile } from './resolver'
   import type { MediaInfo } from './util'
@@ -12,12 +13,9 @@
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import EpisodesList from '$lib/components/EpisodesList.svelte'
   import * as Dialog from '$lib/components/ui/dialog'
-  import { episodes } from '$lib/modules/anizip'
   import { authAggregator } from '$lib/modules/auth'
   import native from '$lib/modules/native'
-  import { click } from '$lib/modules/navigate'
   import { settings } from '$lib/modules/settings'
   import { toTS } from '$lib/utils'
 
@@ -67,17 +65,7 @@
 <div class='flex-col w-full flex-shrink-0 relative overflow-clip flex justify-center items-center bg-black {isMiniplayer ? 'aspect-video cursor-pointer' : 'h-full' } px-8' on:click={openPlayer} bind:this={wrapper}>
   <div class='flex flex-col gap-2 text-left' class:min-w-[320px]={!isMiniplayer}>
     <div class='text-white text-2xl font-bold leading-none line-clamp-1 mb-2'>Now Watching</div>
-    <div class='text-white text-lg font-normal leading-none line-clamp-1 hover:text-neutral-300 cursor-pointer' use:click={() => goto(`/app/anime/${mediaInfo.media.id}`)}>{mediaInfo.session.title}</div>
-    <Sheet.Root portal={wrapper}>
-      <Sheet.Trigger id='episode-list-button' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left'>{mediaInfo.session.description}</Sheet.Trigger>
-      <Sheet.Content class='w-full sm:w-[550px] p-3 sm:p-6 max-w-full sm:max-w-full h-full overflow-y-scroll flex flex-col !pb-0 shrink-0 gap-0 bg-black justify-between overflow-x-clip'>
-        {#if mediaInfo.media}
-          {#await episodes(mediaInfo.media.id) then eps}
-            <EpisodesList {eps} media={mediaInfo.media} />
-          {/await}
-        {/if}
-      </Sheet.Content>
-    </Sheet.Root>
+    <EpisodesModal portal={wrapper} {mediaInfo} />
     {#await player}
       <div class='ml-auto self-end text-sm leading-none font-light text-nowrap mt-3'>{toTS(Math.min($elapsed, duration))} / {toTS(duration)}</div>
       <div class='relative w-full h-1 flex items-center justify-center overflow-clip rounded-[2px]'>

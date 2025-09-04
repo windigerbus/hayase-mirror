@@ -162,7 +162,7 @@
 </script>
 
 <Dialog.Root bind:open onOpenChange={close} portal='#episodeListTarget'>
-  <Dialog.Content class='bg-black h-full lg:border-x-4 border-b-0 max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex-col flex lg:rounded-t-xl overflow-hidden z-[100]'>
+  <Dialog.Content class='bg-black h-full max-w-5xl w-full max-h-[calc(100%-1rem)] mt-2 p-0 items-center flex-col flex lg:rounded-t-xl overflow-hidden z-[100] gap-0'>
     <!-- this hacky thing is required for dialog root focus trap... pitiful -->
     <div class='size-0' tabindex='0' />
     {#if $searchStore}
