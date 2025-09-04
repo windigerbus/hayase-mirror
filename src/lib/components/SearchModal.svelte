@@ -227,7 +227,7 @@
               {@const { results, errors } = search}
               {#each filterAndSortResults(results, inputText, downloaded) as result (result.hash)}
                 <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border group/card select:ring-1 select:ring-custom select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all [content-visibility:auto] [contain-intrinsic-height:auto_106px]' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name[0]}>
-                  <div class='size-20 relative shrink-0 flex items-center justify-center text-xs px-1 text-wrap break-all font-bold'>
+                  <div class='size-20 relative shrink-0 flex items-center justify-center text-xs px-1 text-wrap break-all font-bold text-center overflow-clip'>
                     {#if result.accuracy === 'high' || result.accuracy === 'medium'}
                       <BadgeCheck class={cn('absolute top-0 left-0 mix-blend-difference', result.accuracy === 'high' ? 'text-[#53da33]' : 'text-muted-foreground/20')} fill='currentColor' color='#000' size='1.2rem' />
                     {/if}
