@@ -232,8 +232,8 @@
                       <BadgeCheck class={cn('absolute top-0 left-0 mix-blend-difference', result.accuracy === 'high' ? 'text-[#53da33]' : 'text-muted-foreground/20')} fill='currentColor' color='#000' size='1.2rem' />
                     {/if}
                     {getGroup(result.parseObject)}
-                    {#if downloaded.has(result.hash) || Math.random() < 0.2}
-                      <Download class='text-[#53da33] absolute size-12 opacity-15' stroke-width='0.5' color='currentColor' stroke='currentColor' />
+                    {#if downloaded.has(result.hash)}
+                      <Download class='text-[#53da33] absolute size-12 opacity-40' stroke-width='0.5' color='currentColor' stroke='currentColor' />
                     {:else if result.type}
                       <Folder class='text-yellow-300 absolute size-12 opacity-15' fill='currentColor' />
                     {:else}
