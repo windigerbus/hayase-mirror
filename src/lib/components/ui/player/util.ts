@@ -194,7 +194,21 @@ export async function screenshot (video: HTMLVideoElement, subtitles?: Subtitles
   const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!)))
   canvas.remove()
   await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
-  toast.success('Screenshot', {
-    description: 'Saved screenshot to clipboard.'
-  })
+  toast.success('Screenshot', { description: 'Saved screenshot to clipboard.' })
+}
+
+const skippableChaptersRx: Array<[string, RegExp]> = [
+  ['Opening', /^op$|opening$|^ncop|^opening /mi],
+  ['Ending', /^ed$|ending$|^nced|^ending /mi],
+  ['Recap', /recap/mi]
+]
+export function isChapterSkippable ({ text }: Chapter) {
+  for (const [name, regex] of skippableChaptersRx) {
+    if (regex.test(text)) return name
+  }
+  return null
+}
+
+export function findChapter (time: number, chapters: Chapter[]) {
+  return chapters.find(({ start, end }) => time >= start && time <= end)
 }
