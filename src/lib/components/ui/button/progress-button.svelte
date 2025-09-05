@@ -44,7 +44,7 @@
   on:click={onclick}>
   <slot />
   <div
-    class='absolute inset-0 bg-black/20 pointer-events-none'
+    class='absolute inset-0 bg-black/20 pointer-events-none translate-x-full'
     class:animate-progress={animating}
     style='animation-duration: {duration}ms;'
     on:animationend={handleAnimationEnd} />
