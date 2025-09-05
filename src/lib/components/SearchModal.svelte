@@ -209,7 +209,7 @@
         <div class='h-full overflow-y-auto px-4 sm:px-6 pt-2' role='menu' tabindex='-1' on:keydown={stopAnimation} on:focusin={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation} use:dragScroll style:--custom={$searchStore.media.coverImage?.color ?? '#fff'} style:--red={r} style:--green={g} style:--blue={b}>
           {#await Promise.all([searchResult, $downloaded])}
             {#each Array.from({ length: 12 }) as _, i (i)}
-              <div class='p-3 h-[106px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border flex-col justify-between [content-visibility:auto] [contain-intrinsic-height:auto_106px]'>
+              <div class='p-3 h-[106px] flex cursor-pointer mb-2 relative rounded-md overflow-hidden bg-neutral-950 flex-col justify-between [content-visibility:auto] [contain-intrinsic-height:auto_106px]'>
                 <div class='h-4 w-40 bg-primary/5 animate-pulse rounded mt-2' />
                 <div class='bg-primary/5 animate-pulse rounded h-2 w-28 mt-1' />
                 <div class='flex justify-between mb-1'>
@@ -226,23 +226,22 @@
             {#if search && media}
               {@const { results, errors } = search}
               {#each filterAndSortResults(results, inputText, downloaded) as result (result.hash)}
-                <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden border border-border group/card select:ring-1 select:ring-custom select:bg-accent select:text-accent-foreground select:scale-[1.02] select:shadow-lg scale-100 transition-all [content-visibility:auto] [contain-intrinsic-height:auto_106px]' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name[0]}>
+                <div class='p-3 flex cursor-pointer mb-2 relative rounded-md overflow-hidden bg-neutral-950 group/card select:ring-1 select:ring-custom select:bg-neutral-900 select:scale-[1.02] select:shadow-lg scale-100 transition-all [content-visibility:auto] [contain-intrinsic-height:auto_106px]' class:opacity-40={result.accuracy === 'low'} use:click={() => play(result)} title={result.parseObject.file_name[0]}>
                   <div class='size-20 relative shrink-0 flex items-center justify-center text-xs px-1 text-wrap break-all font-bold text-center overflow-clip'>
                     {#if result.accuracy === 'high' || result.accuracy === 'medium'}
                       <BadgeCheck class={cn('absolute top-0 left-0 mix-blend-difference', result.accuracy === 'high' ? 'text-[#53da33]' : 'text-muted-foreground/20')} fill='currentColor' color='#000' size='1.2rem' />
                     {/if}
-                    {getGroup(result.parseObject)}
                     {#if downloaded.has(result.hash)}
-                      <Download class='text-[#53da33] absolute size-12 opacity-40' stroke-width='0.5' color='currentColor' stroke='currentColor' />
+                      <Download class='text-[#53da33] size-12 opacity-80' stroke-width='0.5' color='currentColor' stroke='currentColor' />
                     {:else if result.type}
-                      <Folder class='text-yellow-300 absolute size-12 opacity-15' fill='currentColor' />
+                      <Folder class='text-yellow-300 size-12 opacity-80' fill='currentColor' />
                     {:else}
-                      <File class='absolute size-12 opacity-15 text-muted-foreground' />
+                      <File class='text-muted-foreground size-12 opacity-80' />
                     {/if}
                   </div>
                   <div class='flex pl-2 flex-col justify-between w-full h-20 relative min-w-0 text-[.7rem]'>
                     <div class='flex w-full items-center'>
-                      <div class='text-xl font-bold text-nowrap group-select/card:text-custom transition-colors'>{result.type ? 'Multiple Episodes' : `Episode ${$searchStore.episode}`}</div>
+                      <div class='text-xl font-bold text-nowrap group-select/card:text-custom transition-colors'>{getGroup(result.parseObject)}</div>
                       <div class='ml-auto flex gap-2 self-start'>
                         {#each result.extension as id (id)}
                           {#if $saved[id]}
