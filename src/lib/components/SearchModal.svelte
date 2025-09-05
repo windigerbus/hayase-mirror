@@ -184,7 +184,7 @@
           <div class='flex items-center relative scale-parent'>
             <Input
               class='pl-9 bg-background select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'
-              placeholder='Filter by text, or paste a magnet link or torrent file to specify a torrent manually'
+              placeholder='Filter by text, or paste a magnet link or torrent file here to specify a torrent manually'
               bind:value={inputText} />
             <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
           </div>

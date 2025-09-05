@@ -36,8 +36,8 @@
 
 <ButtonPrimitive.Root
   class={cn(
-    buttonVariants({ variant, size, className }),
-    'relative overflow-hidden'
+    'relative overflow-hidden',
+    buttonVariants({ variant, size, className })
   )}
   type='button'
   on:click={stopAnimation}

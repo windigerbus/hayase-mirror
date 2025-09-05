@@ -25,6 +25,8 @@
   import { toast } from 'svelte-sonner'
   import VideoDeband from 'video-deband'
 
+  import ProgressButton from '../button/progress-button.svelte'
+
   import Animations, { playAnimation } from './animations.svelte'
   import DownloadStats from './downloadstats.svelte'
   import EpisodesModal from './episodesmodal.svelte'
@@ -34,7 +36,7 @@
   import Seekbar from './seekbar.svelte'
   import Subs from './subtitles'
   import Thumbnailer from './thumbnailer'
-  import { getChaptersAniSkip, getChapterTitle, sanitizeChapters, screenshot, type Chapter, type MediaInfo } from './util'
+  import { findChapter, getChaptersAniSkip, getChapterTitle, isChapterSkippable, sanitizeChapters, screenshot, type Chapter, type MediaInfo } from './util'
   import Volume from './volume.svelte'
 
   import type { ResolvedFile } from './resolver'
@@ -56,7 +58,7 @@
   import { settings, SUPPORTS } from '$lib/modules/settings'
   import { w2globby } from '$lib/modules/w2g/lobby'
   import { getAnimeProgress, setAnimeProgress } from '$lib/modules/watchProgress'
-  import { toTS, scaleBlurFade } from '$lib/utils'
+  import { toTS, scaleBlurFade, cn } from '$lib/utils'
 
   export let mediaInfo: MediaInfo
   export let otherFiles: TorrentFile[]
@@ -316,40 +318,27 @@
 
   let currentSkippable: string | null = null
   function checkSkippableChapters () {
-    const current = findChapter(currentTime)
+    const current = findChapter(currentTime, chapters)
+    const wasSkippable = currentSkippable
     if (current) {
       currentSkippable = isChapterSkippable(current)
+      if ($settings.playerSkip && !wasSkippable) animating = true
     }
   }
 
-  $: if (currentSkippable && $settings.playerSkip) skip()
-
-  const skippableChaptersRx: Array<[string, RegExp]> = [
-    ['Opening', /^op$|opening$|^ncop|^opening /mi],
-    ['Ending', /^ed$|ending$|^nced|^ending /mi],
-    ['Recap', /recap/mi]
-  ]
-  function isChapterSkippable (chapter: Chapter) {
-    for (const [name, regex] of skippableChaptersRx) {
-      if (regex.test(chapter.text)) {
-        return name
-      }
-    }
-    return null
+  function stopAnimation () {
+    animating = false
   }
 
-  function findChapter (time: number) {
-    return chapters.find(({ start, end }) => time >= start && time <= end)
-  }
+  let animating = false
 
   function skip () {
-    const current = findChapter(currentTime)
+    const current = findChapter(currentTime, chapters)
     if (current) {
       if (!isChapterSkippable(current) && (current.end - current.start) > 100) {
         currentTime = currentTime + 85
       } else {
         const endtime = current.end
-        if ((safeduration - endtime | 0) === 0) return next?.()
         currentTime = endtime
         currentSkippable = null
       }
@@ -360,7 +349,6 @@
     } else {
       currentTime = currentTime + 85
     }
-    video.currentTime = currentTime
   }
 
   let stats: {
@@ -742,7 +730,7 @@
 
 <svelte:document bind:fullscreenElement bind:visibilityState use:holdToFF={'key'} />
 
-<div class='w-full h-full relative content-center bg-black overflow-clip text-left touch-none' class:fitWidth class:seeking class:pip={pictureInPictureElement} bind:this={wrapper} on:navigate={() => resetMove(2000)} on:wheel={handleWheel}>
+<div class='w-full h-full relative content-center bg-black overflow-clip text-left touch-none' class:fitWidth class:seeking class:pip={pictureInPictureElement} bind:this={wrapper} on:navigate={() => resetMove(2000)} on:wheel={handleWheel} on:keydown={stopAnimation} on:focusin={stopAnimation} on:pointerenter={stopAnimation} on:pointermove={stopAnimation}>
   <video class='w-full h-full touch-none' preload='metadata' class:cursor-none={immersed} class:cursor-pointer={isMiniplayer} class:object-cover={fitWidth} class:opacity-0={$settings.playerDeband || seeking || pictureInPictureElement} class:absolute={$settings.playerDeband} class:top-0={$settings.playerDeband}
     use:createSubtitles
     use:createDeband={$settings.playerDeband}
@@ -795,7 +783,7 @@
         </div>
       {/if}
       <Options {wrapper} bind:openSubs {video} {seekTo} {selectAudio} {selectVideo} {fullscreen} {chapters} {subtitles} {videoFiles} {selectFile} {pip} bind:playbackRate={$playbackRate} bind:subtitleDelay id='player-options-button-top'
-        class='{($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 size-12 absolute z-[1] top-4 left-4 bg-black/20 pointer-events-auto transition-opacity select:opacity-100 delay-150 {immersed && 'opacity-0'}' />
+        class='{($settings.minimalPlayerUI || SUPPORTS.isAndroid) ? 'inline-flex' : 'mobile:inline-flex hidden'} p-3 size-12 absolute z-[1] top-4 left-4 bg-black/20 pointer-events-auto transition-opacity delay-150 select:opacity-100 {immersed && 'opacity-0'}' />
       {#if fastForwarding}
         <div class='absolute top-10 font-bold text-sm animate-[fade-in_.4s_ease] flex items-center leading-none bg-black/60 px-4 py-2 rounded-2xl'>x2 <FastForward class='ml-2' size='12' fill='currentColor' /></div>
       {/if}
@@ -827,17 +815,17 @@
       {/if}
       <Animations />
     </div>
+    {#if currentSkippable}
+      <ProgressButton onclick={skip} bind:animating size='default' duration={3000} class={cn('px-7 font-bold absolute bottom-40 right-10 transition-opacity delay-150', immersed && !animating && 'opacity-0')}>
+        Skip {currentSkippable}
+      </ProgressButton>
+    {/if}
     <div class='absolute w-full bottom-0 flex flex-col gradient px-6 py-3 transition-opacity delay-150 select:opacity-100' class:opacity-0={immersed}>
       <div class='flex justify-between gap-12 items-end'>
         <div class='flex flex-col gap-2 text-left cursor-pointer'>
           <EpisodesModal portal={wrapper} {mediaInfo} />
         </div>
         <div class='flex flex-col gap-2 grow-0 items-end self-end'>
-          {#if currentSkippable}
-            <Button on:click={skip} class='font-bold mb-2'>
-              Skip {currentSkippable}
-            </Button>
-          {/if}
           <div class='text-[rgba(217,217,217,0.6)] text-sm leading-none font-light line-clamp-1 capitalize'>{getChapterTitle(seeking ? seekPercent * safeduration / 100 : currentTime, chapters) || ''}</div>
           <div class='ml-auto self-end text-sm leading-none font-light text-nowrap'>{toTS(seeking ? seekPercent * safeduration / 100 : currentTime)} / {toTS(safeduration)}</div>
         </div>
