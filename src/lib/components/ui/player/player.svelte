@@ -338,7 +338,7 @@
       if (!isChapterSkippable(current) && (current.end - current.start) > 100) {
         currentTime = currentTime + 85
       } else {
-        const endtime = current.end
+        const endtime = current.end + 0.5
         currentTime = endtime
         currentSkippable = null
       }
