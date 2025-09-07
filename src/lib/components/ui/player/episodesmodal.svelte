@@ -29,12 +29,14 @@
 <Sheet.Root {portal} bind:open={episodeListOpen}>
   <Sheet.Trigger id='episode-list-button' data-down='#player-seekbar' class='text-[rgba(217,217,217,0.6)] hover:text-neutral-500 text-sm leading-none font-light line-clamp-1 text-left hover:underline bg-transparent'>{mediaInfo.session.description}</Sheet.Trigger>
   <Sheet.Content class='w-full sm:w-[550px] p-3 sm:p-6 max-w-full sm:max-w-full h-full overflow-y-scroll flex flex-col !pb-0 shrink-0 gap-0 bg-black justify-between overflow-x-clip'>
-    {#if mediaInfo.media}
-      {#await Promise.all([episodes(mediaInfo.media.id), client.single(mediaInfo.media.id)]) then [eps, media]}
-        {#if media.data?.Media}
-          <EpisodesList {eps} media={media.data.Media} />
-        {/if}
-      {/await}
-    {/if}
+    <div class='contents' on:wheel|stopPropagation>
+      {#if mediaInfo.media}
+        {#await Promise.all([episodes(mediaInfo.media.id), client.single(mediaInfo.media.id)]) then [eps, media]}
+          {#if media.data?.Media}
+            <EpisodesList {eps} media={media.data.Media} />
+          {/if}
+        {/await}
+      {/if}
+    </div>
   </Sheet.Content>
 </Sheet.Root>
