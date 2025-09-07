@@ -17,7 +17,7 @@
 {#if !SUPPORTS.isAndroid}
   <Wrapper let:platform>
     <div class='w-[calc(100%-3.5rem)] left-[3.5rem] top-0 z-[2000] flex navbar absolute h-8'>
-      <div class='w-full {fullscreenElement ? 'not-draggable' : 'draggable'}' />
+      <div class='w-full {fullscreenElement ? 'not-draggable' : 'draggable'}' on:contextmenu|preventDefault />
       {#if platform !== 'macOS'}
         <div class='window-controls not-draggable flex text-white backdrop-blur'>
           <button class='max-button flex items-center justify-center h-8 w-[46px]' use:click={native.minimise} use:tabindex>
