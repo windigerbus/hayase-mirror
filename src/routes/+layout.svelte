@@ -8,7 +8,7 @@
   import { toast } from 'svelte-sonner'
 
   import { onNavigate } from '$app/navigation'
-  import Backplate from '$lib/components/Backplate.svelte'
+  // import Backplate from '$lib/components/Backplate.svelte'
   import Online from '$lib/components/Online.svelte'
   import { Menubar } from '$lib/components/ui/menubar'
   import { Toaster } from '$lib/components/ui/sonner'
@@ -60,6 +60,6 @@
   <Online />
   <slot />
 </div>
-{#if !SUPPORTS.isAndroid}
+<!-- {#if !SUPPORTS.isAndroid}
   <Backplate {root} />
-{/if}
+{/if} -->
