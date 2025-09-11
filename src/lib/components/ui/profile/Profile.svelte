@@ -5,9 +5,9 @@
 
   import Shadow from '$lib/components/Shadow.svelte'
   import * as Avatar from '$lib/components/ui/avatar'
+  import { Load } from '$lib/components/ui/img'
   import * as Popover from '$lib/components/ui/popover'
   import { cn, since } from '$lib/utils'
-    import { Load } from '../img';
 
   type $$Props = HTMLAttributes<HTMLImageElement> & {
     user: ResultOf<typeof UserFrag>

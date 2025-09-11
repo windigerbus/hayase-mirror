@@ -14,11 +14,11 @@
     --padding-left: unset !important;
   }
 
-  .draggable {
+  .custom-draggable {
     -webkit-app-region: drag;
   }
 
-  .not-draggable {
+  .custom-not-draggable {
     -webkit-app-region: no-drag;
   }
 
