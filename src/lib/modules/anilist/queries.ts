@@ -25,6 +25,17 @@ export const MediaEdgeFrag = gql(`
       synonyms,
       season,
       seasonYear,
+      relations {
+        edges {
+          relationType(version:2),
+          node {
+            id,
+            type,
+            title { userPreferred },
+            coverImage { medium }
+          }
+        }
+      },
       startDate {
         year,
         month,
@@ -458,6 +469,38 @@ export const DeleteThreadComment = gql(`
   mutation DeleteThreadComment ($id: Int) {
     DeleteThreadComment(id: $id) {
       deleted
+    }
+  }
+`)
+
+export const RecrusiveRelations = gql(`
+  query RecrusiveRelations ($ids: [Int]!) {
+    Page {
+      pageInfo { hasNextPage },
+      media(id_in: $ids, type: ANIME) {
+        id,
+        title { userPreferred },
+        relations {
+          edges {
+            relationType,
+            node {
+              id,
+              type,
+              title { userPreferred },
+              relations {
+                edges {
+                  relationType,
+                  node {
+                    id,
+                    type,
+                    title { userPreferred }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 `)
