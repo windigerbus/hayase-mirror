@@ -20,7 +20,7 @@
   import { Input } from '$lib/components/ui/input'
   import { Switch } from '$lib/components/ui/switch'
   import { Textarea } from '$lib/components/ui/textarea'
-  import native from '$lib/modules/native'
+  // import native from '$lib/modules/native'
   import { settings, SUPPORTS } from '$lib/modules/settings'
 
   const angle = {
@@ -51,11 +51,11 @@
     <SettingCard title='ANGLE Backend' description="What ANGLE backend to use for rendering. DON'T CHANGE WITHOUT REASON! On some Windows machines D3D9 might help with flicker. Changing this setting to something your device doesn't support might prevent Hayase from opening which will require a full reinstall. While Vulkan is an available option it might not be fully supported on Linux.">
       <SingleCombo bind:value={$settings.angle} items={angle} class='w-40 shrink-0 border-input border' />
     </SettingCard>
-
+    <!--
     <div class='font-weight-bold text-xl font-bold'>UI Settings</div>
     <SettingCard title='Idle Animation' description='Enable/Disable the 3d idle animation. Changing this setting will restart the app.' let:id>
       <Switch bind:checked={$settings.idleAnimation} on:click={native.restart} {id} />
-    </SettingCard>
+    </SettingCard> -->
   {:else}
     <div class='font-weight-bold text-xl font-bold'>UI Settings</div>
   {/if}

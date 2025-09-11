@@ -10,7 +10,7 @@
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import Logo from '$lib/components/icons/Logo.svelte'
-  import { Home, Search, Calendar, Users, Download, Bolt, LogIn, Messages } from '$lib/components/icons/animated'
+  import { Home, Search, Calendar, Users, Download, Bolt, LogIn } from '$lib/components/icons/animated'
   import * as Avatar from '$lib/components/ui/avatar'
   import client from '$lib/modules/auth/client'
   import { lockedState, idleState, activityState } from '$lib/modules/idle'
@@ -52,9 +52,9 @@
 <SidebarButton href='/app/w2g/' class='animated-icon'>
   <Users size={18} />
 </SidebarButton>
-<SidebarButton href='/app/chat/' class='animated-icon'>
+<!-- <SidebarButton href='/app/chat/' class='animated-icon'>
   <Messages size={18} />
-</SidebarButton>
+</SidebarButton> -->
 <SidebarButton href='/app/client/' id='sidebar-client' data-down='#sidebar-donate' class='animated-icon'>
   <Download size={18} />
 </SidebarButton>
@@ -64,8 +64,8 @@
 <SidebarButton href='/app/settings/' class='animated-icon'>
   <Bolt size={18} />
 </SidebarButton>
-<!-- <SidebarButton href='/app/profile/'> -->
-<SidebarButton href='/app/profile/' class='hidden md:flex py-0 animated-icon'>
+<SidebarButton href='/app/profile/'>
+  <!-- <SidebarButton href='/app/profile/' class='hidden md:flex py-0 animated-icon'> -->
   {#if hasAuth}
     {@const viewer = client.profile()}
     <Avatar.Root class='size-6 rounded-md'>
