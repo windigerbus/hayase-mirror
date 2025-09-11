@@ -1,14 +1,12 @@
 <script lang='ts'>
-
-  import { Handle } from '@xyflow/svelte'
-  import { Position } from '@xyflow/system'
+  import { Handle, Position } from '@xyflow/svelte'
 
   import { cn } from '$lib/utils'
 
   export let data: { label: string, id: number, current?: boolean }
   export let id: string
-  export let targetPosition: Position = Position.Top
-  export let sourcePosition: Position = Position.Bottom
+  export let targetPosition: Position = Position.Left
+  export let sourcePosition: Position = Position.Right
 
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   $$restProps
