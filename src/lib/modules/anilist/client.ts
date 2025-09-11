@@ -1,13 +1,14 @@
 import { queryStore, type OperationResultState, gql as _gql } from '@urql/svelte'
 import Debug from 'debug'
 import lavenshtein from 'js-levenshtein'
-import { derived, readable, writable, type Writable } from 'svelte/store'
+import { derived, get, readable, writable, type Writable } from 'svelte/store'
 
-import { Comments, DeleteEntry, DeleteThreadComment, Entry, Following, IDMedia, SaveThreadComment, Schedule, Search, Threads, ToggleFavourite, ToggleLike, UserLists } from './queries'
+import { Comments, DeleteEntry, DeleteThreadComment, Entry, Following, type FullMedia, IDMedia, RecrusiveRelations, SaveThreadComment, Schedule, Search, Threads, ToggleFavourite, ToggleLike, UserLists } from './queries'
 import urqlClient from './urql-client'
 import { currentSeason, currentYear, lastSeason, lastYear, nextSeason, nextYear } from './util'
 
 import type { Media } from './types'
+import type { Edge, Node } from '@xyflow/svelte'
 import type { ResultOf, VariablesOf } from 'gql.tada'
 import type { AnyVariables, OperationContext, RequestPolicy, TypedDocumentNode } from 'urql'
 
@@ -252,7 +253,81 @@ class AnilistClient {
     debug('deleteComment: deleting comment with ID', id, 'rootCommentId', rootCommentId)
     return await this.client.mutation(DeleteThreadComment, { id, rootCommentId })
   }
+
+  _relationsTreeCache = new Map<number, RelationsStore>()
+
+  relationsTree (media: ResultOf<typeof FullMedia>): RelationsStore {
+    if (this._relationsTreeCache.has(media.id)) return this._relationsTreeCache.get(media.id)!
+
+    const store: RelationsStore = writable({ nodes: new Map(), edges: new Map() })
+
+    this._generateRelationsTree(store, media)
+
+    return store
+  }
+
+  async _generateRelationsTree (store: RelationsStore, media: NonNullable<NonNullable<ResultOf<typeof RecrusiveRelations>['Page']>['media']>[0]) {
+    const { nodes, edges } = get(store)
+
+    const startMedia = media
+
+    const position = { x: 0, y: 0 }
+
+    const lastEdgeMedia: number[] = []
+
+    const processEdges = (media: typeof startMedia) => {
+      if (!media) return
+      if ('type' in media && media.type !== 'ANIME') return
+      if (!nodes.has(media.id)) {
+        if (!media.relations) lastEdgeMedia.push(media.id)
+        nodes.set(media.id, {
+          id: '' + media.id,
+          data: { label: media.title?.userPreferred ?? 'No title', id: media.id },
+          position
+        })
+      }
+
+      for (const edge of media.relations?.edges ?? []) {
+        if (!edge?.node) continue
+        const { node, relationType } = edge
+        if (node.type !== 'ANIME' || relationType === 'CHARACTER') continue
+        const edgeName = [node.id, media.id].sort((a, b) => a - b).join('-')
+        if (!edges.has(edgeName)) {
+          const isPrequel = relationType === 'PREQUEL'
+          edges.set(edgeName, {
+            id: 'e' + edgeName,
+            source: '' + (isPrequel ? node.id : media.id),
+            target: '' + (isPrequel ? media.id : node.id),
+            data: { ids: [media.id, node.id] },
+            animated: true,
+            label: isPrequel ? 'SEQUEL' : relationType?.replaceAll('_', ' ') ?? ''
+          })
+
+          // @ts-expect-error yeah recursive, last node has different types since it doesnt have relations
+          processEdges(node)
+        }
+      }
+    }
+
+    const totalSize = nodes.size + edges.size
+    processEdges(startMedia)
+
+    for (const id of nodes.keys()) this._relationsTreeCache.set(id, store)
+    if (totalSize !== (nodes.size + edges.size)) store.set({ nodes, edges })
+
+    if (!lastEdgeMedia.length) return
+    const res = await this.client.query(RecrusiveRelations, { ids: lastEdgeMedia }, { requestPolicy: 'cache-first' })
+    if (res.error) console.error(res.error)
+
+    if (res.data?.Page) {
+      for (const media of res.data.Page.media ?? []) {
+        await this._generateRelationsTree(store, media)
+      }
+    }
+  }
 }
+
+type RelationsStore = Writable<{ nodes: Map<number, Node>, edges: Map<string, Edge> }>
 
 // sveltekit/vite does the funny and evaluates at compile, this is a hack to fix development mode
 const client = (typeof indexedDB !== 'undefined' && new AnilistClient()) as AnilistClient

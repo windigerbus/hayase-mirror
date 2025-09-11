@@ -1,6 +1,6 @@
 {
 	"name": "ui",
-	"version": "6.4.128",
+	"version": "6.4.129",
 	"license": "BUSL-1.1",
 	"private": true,
 	"packageManager": "pnpm@9.15.5",
@@ -51,6 +51,7 @@
 	"type": "module",
 	"dependencies": {
 		"@cloudflare/speedtest": "^1.6.0",
+		"@dagrejs/dagre": "^1.1.5",
 		"@fontsource-variable/nunito": "^5.2.6",
 		"@fontsource/geist-mono": "^5.2.6",
 		"@prgm/sveltekit-progress-bar": "2.0.0",
@@ -62,6 +63,7 @@
 		"@urql/exchange-request-policy": "^2.0.0",
 		"@urql/exchange-retry": "^2.0.0",
 		"@urql/svelte": "^5.0.0",
+		"@xyflow/svelte": "^0.1.36",
 		"abslink": "^1.1.2",
 		"anitomyscript": "github:thaunknown/anitomyscript",
 		"bittorrent-tracker": "10.0.12",
