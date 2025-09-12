@@ -244,6 +244,7 @@ export async function traceAnime (image: File | string) { // WAIT lookup logic
 }
 
 export function codeToEmoji (c: string) {
+  if (c === 'ALL') return '🌎'
   return c.replace(/./g, (ch) => String.fromCodePoint(0x1f1a5 + ch.charCodeAt(0)))
 }
 
