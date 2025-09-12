@@ -185,7 +185,7 @@ importers:
         version: 1.8.13(@gql.tada/svelte-support@1.0.1(svelte@4.2.19)(typescript@5.9.2))(graphql@16.10.0)(typescript@5.9.2)
       hayase-extensions:
         specifier: github:hayase-app/extensions
-        version: https://codeload.github.com/hayase-app/extensions/tar.gz/785940de1833af9b5eb0f41dc3a537c881cb6276
+        version: https://codeload.github.com/hayase-app/extensions/tar.gz/0fad214a4a0aacd826c0801255ced65bd1d49a13
       jassub:
         specifier: ^1.8.6
         version: 1.8.6
@@ -1708,8 +1708,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hayase-extensions@https://codeload.github.com/hayase-app/extensions/tar.gz/785940de1833af9b5eb0f41dc3a537c881cb6276:
-    resolution: {tarball: https://codeload.github.com/hayase-app/extensions/tar.gz/785940de1833af9b5eb0f41dc3a537c881cb6276}
+  hayase-extensions@https://codeload.github.com/hayase-app/extensions/tar.gz/0fad214a4a0aacd826c0801255ced65bd1d49a13:
+    resolution: {tarball: https://codeload.github.com/hayase-app/extensions/tar.gz/0fad214a4a0aacd826c0801255ced65bd1d49a13}
     version: 1.0.6
 
   idb-keyval@6.2.2:
@@ -4553,7 +4553,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hayase-extensions@https://codeload.github.com/hayase-app/extensions/tar.gz/785940de1833af9b5eb0f41dc3a537c881cb6276: {}
+  hayase-extensions@https://codeload.github.com/hayase-app/extensions/tar.gz/0fad214a4a0aacd826c0801255ced65bd1d49a13: {}
 
   idb-keyval@6.2.2: {}
 

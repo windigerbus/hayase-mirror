@@ -17,7 +17,7 @@
 <script lang='ts'>
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { SingleCombo } from '$lib/components/ui/combobox'
-  import { Input } from '$lib/components/ui/input'
+  import { Slider } from '$lib/components/ui/slider'
   import { Switch } from '$lib/components/ui/switch'
   import { Textarea } from '$lib/components/ui/textarea'
   // import native from '$lib/modules/native'
@@ -33,6 +33,12 @@
     swiftshader: 'SwiftShader',
     vulkan: 'Vulkan',
     metal: 'Metal'
+  }
+
+  let value = [$settings.uiScale]
+
+  function saveScale () {
+    $settings.uiScale = value[0]!
   }
 </script>
 
@@ -60,6 +66,7 @@
     <div class='font-weight-bold text-xl font-bold'>UI Settings</div>
   {/if}
   <SettingCard title='UI Scale' description='Change the zoom level of the interface.' let:id>
-    <Input type='number' inputmode='numeric' pattern='[0-9]*' min='0' max='65536' bind:value={$settings.uiScale} {id} class='w-32 shrink-0 bg-background' />
+    <Slider bind:value min={0.3} max={2.5} step={0.1} class='w-60 shrink-0' on:pointerup={saveScale} />
+    <div class='text-muted-foreground text-xs'>{value[0]?.toFixed(1)}</div>
   </SettingCard>
 </div>
