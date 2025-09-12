@@ -21,12 +21,6 @@
     url: 'URL'
   }
   let value = 'extensions'
-  let inputText = ''
-
-  function filterSearch <T extends Array<[string, unknown]>> (repositories: T, input: string): T {
-    if (!input) return repositories
-    return repositories.filter(([id]) => id.toLowerCase().includes(input.toLowerCase())) as T
-  }
 
   let extensionInput = ''
 
@@ -51,17 +45,10 @@
       <Tabs.Trigger tabindex={0} value='extensions'>Extensions</Tabs.Trigger>
       <Tabs.Trigger tabindex={0} value='repositories'>Repositories</Tabs.Trigger>
     </Tabs.List>
-    <div class='flex items-center relative scale-parent md:max-w-56 w-full'>
-      <Input
-        class='pl-9 bg-neutral-950 select:bg-accent select:text-accent-foreground shadow-sm no-scale placeholder:opacity-50'
-        placeholder='Search {value}...'
-        bind:value={inputText} />
-      <MagnifyingGlass class='h-4 w-4 shrink-0 opacity-50 absolute left-3 text-muted-foreground z-10 pointer-events-none' />
-    </div>
   </div>
   <Tabs.Content value='extensions' tabindex={-1}>
     <div class='flex flex-col gap-y-2 justify-center py-3'>
-      {#each filterSearch(Object.entries($saved), inputText) as [id, config] (id)}
+      {#each Object.entries($saved) as [id, config] (id)}
         <div class='bg-neutral-950 px-4 py-3 rounded-md flex flex-row space-x-3 justify-between w-full border border-border'>
           <div class='flex flex-col space-y-3'>
             <div class='flex flex-row space-x-3'>
@@ -139,7 +126,7 @@
       {/await}
     </div>
     <div class='flex flex-col gap-y-2 justify-center py-3'>
-      {#each filterSearch(Object.entries(Object.groupBy(Object.values($saved), saved => saved.update ?? '')), inputText) as [id, extensions] (id) }
+      {#each Object.entries(Object.groupBy(Object.values($saved), saved => saved.update ?? '')) as [id, extensions] (id) }
         {@const url = new URL(id)}
         <div class='bg-neutral-950 px-4 py-3 rounded-md flex flex-row space-x-3 justify-between items-center w-full border border-border'>
           <div class='flex space-x-2 items-center'>
