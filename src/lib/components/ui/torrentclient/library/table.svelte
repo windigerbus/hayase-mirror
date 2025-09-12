@@ -101,7 +101,7 @@
 
   const tableModel = table.createViewModel(columns)
 
-  const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } = tableModel
+  const { headerRows, pageRows, rows, tableAttrs, tableBodyAttrs, pluginStates } = tableModel
 
   async function playEntry ({ mediaID, episode, hash }: LibraryEntry) {
     if (!mediaID || !hash) return
@@ -163,6 +163,9 @@
   <Button variant='destructive' size='icon' class='border-0 animated-icon' on:click={deleteTorrents} disabled={!$someRowsSelected}>
     <Trash class={cn('size-4')} />
   </Button>
+</div>
+<div class='text-muted-foreground flex-1 text-sm text-right mb-1'>
+  {Object.keys($selectedDataIds).length} of {$rows.length} row(s) selected.
 </div>
 <div class='rounded-md border size-full overflow-clip contain-strict'>
   <Table.Root {...$tableAttrs} class='max-h-full'>
