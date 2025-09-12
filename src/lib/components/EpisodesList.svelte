@@ -77,10 +77,10 @@
                 {episode}. {title?.en ?? 'Episode ' + episode}
               </div>
               {#if watched || completed}
-                <div class='mb-2 h-0.5 overflow-hidden w-full bg-blue-600 shrink-0' />
+                <div class='mb-2 h-0.5 overflow-hidden w-full bg-custom shrink-0' />
               {:else if $watchProgress?.episode === episode}
                 <div class='w-full bg-neutral-800 mb-2'>
-                  <div class='h-0.5 overflow-hidden bg-blue-600 shrink-0' style:width={$watchProgress.progress + '%'} />
+                  <div class='h-0.5 overflow-hidden bg-custom shrink-0' style:width={$watchProgress.progress + '%'} />
                 </div>
               {/if}
               <div class='text-[9.6px] text-muted-foreground overflow-hidden'>
