@@ -63,5 +63,5 @@ uiScale.subscribe(native.setZoom)
 showDetailsInRPC.subscribe(native.toggleDiscordDetails)
 angle.subscribe(native.setAngle)
 dohSettings.subscribe(({ enableDoH, doHURL }) => {
-  if (enableDoH) native.setDOH(doHURL)
+  native.setDOH(enableDoH ? doHURL : '')
 })
