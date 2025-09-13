@@ -14,6 +14,6 @@
   }
 </script>
 
-<div class='w-full inset-0 h-full flex justify-center items-center' on:click|stopPropagation|stopImmediatePropagation={check}>
+<div class='w-full inset-0 h-full flex justify-center items-center' on:click|stopPropagation|stopImmediatePropagation|self={check}>
   <Checkbox bind:checked={$checked} {...$$restProps} class='mx-4' />
 </div>
