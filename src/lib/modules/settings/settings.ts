@@ -4,6 +4,8 @@ import { persisted } from 'svelte-persisted-store'
 
 import native from '../native'
 
+import SUPPORTS from './supports'
+
 import { defaults } from '.'
 
 const _debug = Debug('ui:settings')
@@ -63,5 +65,9 @@ uiScale.subscribe(native.setZoom)
 showDetailsInRPC.subscribe(native.toggleDiscordDetails)
 angle.subscribe(native.setAngle)
 dohSettings.subscribe(({ enableDoH, doHURL }) => {
-  native.setDOH(enableDoH ? doHURL : '')
+  if (SUPPORTS.isAndroid) {
+    if (enableDoH) native.setDOH('')
+  } else {
+    native.setDOH(enableDoH ? doHURL : '')
+  }
 })
