@@ -17,7 +17,7 @@ async function toResolvedFile (file: TorrentFile, media: Media): Promise<Resolve
   return {
     ...file,
     metadata: {
-      episode: parseObject.episode_number[0] ?? undefined,
+      episode: Number(parseObject.episode_number[0]),
       parseObject,
       media,
       failed: false
@@ -308,7 +308,7 @@ const AnimeResolver = new class AnimeResolver {
       }
       // debug(`Resolved ${parseObj.anime_title} ${parseObj.episode_number} ${episode} ${media.id}:${media.title.userPreferred}`)
       fileAnimes.push({
-        episode: episode ?? parseObj.episode_number[0],
+        episode: episode ?? Number(parseObj.episode_number[0]),
         parseObject: parseObj,
         media,
         failed
