@@ -17,7 +17,7 @@ async function toResolvedFile (file: TorrentFile, media: Media): Promise<Resolve
   return {
     ...file,
     metadata: {
-      episode: parseObject.episode_number[0] ?? undefined,
+      episode: Number(parseObject.episode_number[0]),
       parseObject,
       media,
       failed: false
