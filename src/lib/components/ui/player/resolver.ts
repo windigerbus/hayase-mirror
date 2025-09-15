@@ -308,7 +308,7 @@ const AnimeResolver = new class AnimeResolver {
       }
       // debug(`Resolved ${parseObj.anime_title} ${parseObj.episode_number} ${episode} ${media.id}:${media.title.userPreferred}`)
       fileAnimes.push({
-        episode: episode ?? parseObj.episode_number[0],
+        episode: episode ?? Number(parseObj.episode_number[0]),
         parseObject: parseObj,
         media,
         failed
