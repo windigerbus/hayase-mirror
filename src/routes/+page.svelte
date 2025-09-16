@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { goto, preloadCode } from '$app/navigation'
+  import { goto, preloadData } from '$app/navigation'
   import Logo from '$lib/components/icons/Logo.svelte'
   import { storagePromise } from '$lib/modules/anilist/urql-client'
 
@@ -21,7 +21,7 @@
   // this was previously in anilist/client but it was a top level await, which isn't a great solution, this *should* be better?
 
   // we want to wait for the cache to be ready, for the page preload to finish, and for the animation to finish, in that order, but as fast as possible for each
-  const promise = storagePromise.promise.then(() => preloadCode(data.goto))
+  const promise = storagePromise.promise.then(() => preloadData(data.goto))
 
   async function navigate () {
     await promise
@@ -61,8 +61,8 @@
         0 0 0 1 0' />
     <feOffset in='red_' dy='0' result='red'>
       <animate attributeName='dx'
-        values='4;2;0'
-        dur='0.2s'
+        values='4;0'
+        dur='0.1s'
         begin='0s' />
     </feOffset>
     <feColorMatrix type='matrix'
@@ -74,8 +74,8 @@
         0 0 0 1 0' />
     <feOffset in='blue_' dy='0' result='blue'>
       <animate attributeName='dx'
-        values='-6;-3;0'
-        dur='0.2s'
+        values='-6;0'
+        dur='0.1s'
         begin='0s' />
     </feOffset>
     <feBlend mode='screen' in='red' in2='blue' />

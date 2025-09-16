@@ -13,7 +13,7 @@ const dummyFiles = [
     type: 'video/webm',
     size: 1234567890,
     path: '/Amebku.webm',
-    url: '/test2.mkv',
+    url: 'video.mkv',
     id: 0
   }
 // {

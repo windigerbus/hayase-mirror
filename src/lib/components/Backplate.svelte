@@ -48,6 +48,8 @@
   }
 
   $: checkIdleState(active, $settings.idleAnimation)
+
+// MOLOT font was commented out in app.css since this feature was shelved
 </script>
 
 <svelte:document bind:visibilityState />
