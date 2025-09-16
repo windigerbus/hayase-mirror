@@ -138,10 +138,10 @@
   }
 }
 
-@font-face {
+/* @font-face {
   font-family: 'molotregular';
   src: url('/Molot-webfont-subset.woff') format('woff');
-}
+} */
 
 @font-face {
   font-family: "Twemoji";
@@ -475,9 +475,9 @@ body {
   background-size: 119px;
 }
 
-.font-molot {
+/* .font-molot {
   font-family: 'molotregular';
-}
+} */
 
 .font-twemoji {
   font-family: 'Twemoji';

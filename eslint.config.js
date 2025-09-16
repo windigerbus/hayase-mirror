@@ -12,6 +12,16 @@ export default tseslint.config(
         svelteConfig
       }
     },
-    ignores: ['build/', '.svelte-kit/', 'node_modules/']
+    ignores: ['build/', '.svelte-kit/', 'node_modules/'],
+    rules: {
+      '@typescript-eslint/prefer-nullish-coalescing': [
+        'error',
+        {
+          ignoreConditionalTests: true,
+          ignoreMixedLogicalExpressions: false,
+          ignorePrimitives: true
+        }
+      ]
+    }
   }
 )
