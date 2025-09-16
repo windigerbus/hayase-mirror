@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { goto } from '$app/navigation'
+  import { goto, preloadCode } from '$app/navigation'
   import Logo from '$lib/components/icons/Logo.svelte'
   import { storagePromise } from '$lib/modules/anilist/urql-client'
 
@@ -19,16 +19,21 @@
 
   // hydrating the cache re-starts all queries, it's better to wait for cache to hydrate, than waste rate limit on requests which are dumped anyways
   // this was previously in anilist/client but it was a top level await, which isn't a great solution, this *should* be better?
-  storagePromise.promise.then(() => {
+
+  // we want to wait for the cache to be ready, for the page preload to finish, and for the animation to finish, in that order, but as fast as possible for each
+  const promise = storagePromise.promise.then(() => preloadCode(data.goto))
+
+  async function navigate () {
+    await promise
     goto(data.goto, { replaceState: true })
-  })
+  }
 
   // storing hardcoded objects is faster as json, https://www.youtube.com/watch?v=ff4fgQxPaO0
   const spotlightData: Spotlight[] = JSON.parse('[{"tox":37,"toy":9,"toangle":-2.056662501122422,"tosize":8,"todistance":15,"fromx":39,"fromy":9,"fromdist":15,"fromangle":-2.08562414586023,"fromsize":5},{"tox":35.5,"toy":8.5,"toangle":-0.12083697915707219,"tosize":8,"todistance":15,"fromx":35.5,"fromy":8.5,"fromdist":15,"fromangle":-1.709436063929055,"fromsize":6},{"tox":9,"toy":13,"toangle":3.0890095919788516,"tosize":16,"todistance":15,"fromx":9,"fromy":13,"fromdist":15,"fromangle":1.6368324342229479,"fromsize":16},{"tox":24,"toy":12,"toangle":2.1149541274082813,"tosize":20,"todistance":15,"fromx":23,"fromy":11,"fromdist":15,"fromangle":1.6101247484847512,"fromsize":20},{"tox":32,"toy":20,"toangle":1.07942520581382,"tosize":13,"todistance":15,"fromx":35,"fromy":20,"fromdist":15,"fromangle":1.4487802605792384,"fromsize":13},{"tox":33,"toy":9,"toangle":-0.9299524305252777,"tosize":8,"todistance":15,"fromx":33,"fromy":9,"fromdist":15,"fromangle":-1.402804055149021,"fromsize":6}]')
 </script>
 
 <div class='size-full flex justify-center items-center'>
-  <div class='size-10 relative logo-container'>
+  <div class='size-10 relative logo-container' on:animationend|self={navigate}>
     <Logo class='size-10 [filter:url(#chromaticAberration)]' />
     {#each spotlightData as s, i (i)}
       <div class='spotlight absolute blurred origin-left'
