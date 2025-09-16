@@ -59,11 +59,12 @@
         0 0 0 0 0
         0 0 0 0 0
         0 0 0 1 0' />
-    <feOffset in='red_' dy='0' result='red'>
+    <feOffset in='red_' dy='0' dx='4' result='red'>
       <animate attributeName='dx'
-        values='4;0'
+        values='4; 0'
         dur='0.1s'
-        begin='0s' />
+        fill='freeze'
+        begin='0.15s' />
     </feOffset>
     <feColorMatrix type='matrix'
       in='SourceGraphic'
@@ -72,11 +73,12 @@
         0 3 0 0 0
         0 0 10 0 0
         0 0 0 1 0' />
-    <feOffset in='blue_' dy='0' result='blue'>
+    <feOffset in='blue_' dy='0' dx='-6' result='blue'>
       <animate attributeName='dx'
-        values='-6;0'
+        values='-6; 0'
         dur='0.1s'
-        begin='0s' />
+        fill='freeze'
+        begin='0.15s' />
     </feOffset>
     <feBlend mode='screen' in='red' in2='blue' />
   </filter>
@@ -120,7 +122,7 @@
   }
 
   .logo-container {
-    animation: logo-scale .2s ease-out .05s both;
+    animation: logo-scale .2s ease-out .2s both;
   }
 
   @keyframes logo-scale {
@@ -139,7 +141,7 @@
     background: linear-gradient(to right, #fff, transparent);
     opacity: calc(var(--dist-factor, 0) * var(--spotlight-opacity, 1));
     transform: rotate(var(--to-angle)) perspective(calc(var(--to-size) * 2px)) rotateY(calc(var(--dist-factor) * -50deg - 20deg));
-    animation: spotlight-properties .1s ease-out both, spotlight-fade .4s ease-out both;
+    animation: spotlight-properties .1s ease-out .15s both, spotlight-fade .55s ease-out both;
   }
 
   @keyframes spotlight-properties {

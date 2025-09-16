@@ -8,8 +8,8 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 /**
  * Custom adapter wrapper that extends @sveltejs/adapter-static
  * to inject font preload links after the build is complete
- * 
- * @param {import('@sveltejs/adapter-static').AdapterOptions & {fontNames?: string[], formats?: string[]}} options 
+ *
+ * @param {import('@sveltejs/adapter-static').AdapterOptions & {fontNames?: string[], formats?: string[]}} options
  * @returns {import('@sveltejs/kit').Adapter}
  */
 const adapterWithFontPreload = (options = {}) => {
