@@ -49,7 +49,7 @@
       <Switch {id} bind:checked={$settings.showDetailsInRPC} />
     </SettingCard>
   {/if}
-  <SettingCard let:id title='CSS Variables' description='Used for custom themes. Can change colors, sizes, spacing and more. Supports only variables. Best way to discover variables is to use the built-in devtools via Ctrl+Shift+I or F12.'>
+  <SettingCard let:id title='CSS Variables' description='Used for custom themes. Can change colors, sizes, spacing and more. Supports only variables.'>
     <Textarea class='form-control w-60 shrink-0 mw-full bg-dark' placeholder='--accent-color: #e5204c;' bind:value={$variables} {id} />
   </SettingCard>
   {#if !SUPPORTS.isAndroid}
@@ -67,6 +67,6 @@
   {/if}
   <SettingCard title='UI Scale' description='Change the zoom level of the interface.' let:id>
     <Slider bind:value min={0.3} max={2.5} step={0.1} class='w-60 shrink-0' on:pointerup={saveScale} />
-    <div class='text-muted-foreground text-xs'>{value[0]?.toFixed(1)}</div>
+    <div class='text-muted-foreground text-xs'>{Number(value[0]).toFixed(1)}</div>
   </SettingCard>
 </div>
