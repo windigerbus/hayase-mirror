@@ -14,6 +14,8 @@ export const settings = persisted('settings', defaults, { beforeRead: value => (
 
 export const debug = persisted('debug-key', '')
 
+export const nsfw = derived(settings, $settings => ($settings.showHentai ? null : ['Hentai']) as ['Hentai'] | null)
+
 debug.subscribe((value) => {
   native.debug(value)
   Debug.enable(value)
