@@ -3,6 +3,8 @@ import Debug from 'debug'
 import lavenshtein from 'js-levenshtein'
 import { derived, get, readable, writable, type Writable } from 'svelte/store'
 
+import { nsfw } from '../settings/settings'
+
 import { Comments, DeleteEntry, DeleteThreadComment, Entry, Following, type FullMedia, IDMedia, RecrusiveRelations, SaveThreadComment, Schedule, Search, Threads, ToggleFavourite, ToggleLike, UserLists } from './queries'
 import urqlClient from './urql-client'
 import { currentSeason, currentYear, lastSeason, lastYear, nextSeason, nextYear } from './util'
@@ -105,7 +107,7 @@ class AnilistClient {
   })
 
   search (variables: VariablesOf<typeof Search>, pause?: boolean) {
-    return queryStore({ client: this.client, query: Search, variables, pause })
+    return queryStore({ client: this.client, query: Search, variables: { ...variables, nsfw: get(nsfw) }, pause })
   }
 
   async searchCompound (flattenedTitles: Array<{key: string, title: string, year?: string, isAdult: boolean}>) {
@@ -199,8 +201,8 @@ class AnilistClient {
     return Object.fromEntries(Object.values(res.data ?? {}).flatMap(({ media }) => media).map(media => [media.idMal, media.id]))
   }
 
-  schedule (ids?: number[], onList = true) {
-    return queryStore({ client: this.client, query: Schedule, variables: { ids, onList, seasonCurrent: currentSeason, seasonYearCurrent: currentYear, seasonLast: lastSeason, seasonYearLast: lastYear, seasonNext: nextSeason, seasonYearNext: nextYear } })
+  schedule (ids?: number[], onList: boolean | null = true) {
+    return queryStore({ client: this.client, query: Schedule, variables: { ids, onList, seasonCurrent: currentSeason, seasonYearCurrent: currentYear, seasonLast: lastSeason, seasonYearLast: lastYear, seasonNext: nextSeason, seasonYearNext: nextYear, formatNot: onList ? null : 'TV_SHORT', nsfw: get(nsfw) } })
   }
 
   async toggleFav (id: number) {

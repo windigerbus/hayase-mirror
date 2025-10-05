@@ -153,12 +153,12 @@ export const UserFrag = gql(`
 `)
 
 export const Search = gql(`
-  query Search($page: Int, $perPage: Int, $search: String, $genre: [String], $format: [MediaFormat], $status: [MediaStatus], $statusNot: [MediaStatus], $season: MediaSeason, $seasonYear: Int, $isAdult: Boolean, $sort: [MediaSort], $onList: Boolean, $ids: [Int]) {
+  query Search($page: Int, $perPage: Int, $search: String, $genre: [String], $format: [MediaFormat], $status: [MediaStatus], $statusNot: [MediaStatus], $season: MediaSeason, $seasonYear: Int, $isAdult: Boolean, $sort: [MediaSort], $onList: Boolean, $ids: [Int], $nsfw: [String]) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
         hasNextPage
       },
-      media(type: ANIME, format_not: MUSIC, id_in: $ids, search: $search, genre_in: $genre, format_in: $format, status_in: $status, status_not_in: $statusNot, season: $season, seasonYear: $seasonYear, isAdult: $isAdult, sort: $sort, onList: $onList) {
+      media(type: ANIME, format_not: MUSIC, id_in: $ids, search: $search, genre_in: $genre, format_in: $format, status_in: $status, status_not_in: $statusNot, season: $season, seasonYear: $seasonYear, isAdult: $isAdult, sort: $sort, onList: $onList, genre_not_in: $nsfw) {
         ...FullMedia
       }
     }
@@ -254,34 +254,34 @@ export const ScheduleMedia = gql(`
 `)
 
 export const Schedule = gql(`
-  query Schedule($seasonCurrent: MediaSeason, $seasonYearCurrent: Int, $seasonLast: MediaSeason, $seasonYearLast: Int, $seasonNext: MediaSeason, $seasonYearNext: Int, $onList: Boolean, $ids: [Int]) {
+  query Schedule($seasonCurrent: MediaSeason, $seasonYearCurrent: Int, $seasonLast: MediaSeason, $seasonYearLast: Int, $seasonNext: MediaSeason, $seasonYearNext: Int, $onList: Boolean, $ids: [Int], $formatNot: MediaFormat, $nsfw: [String]) {
     curr1: Page(page: 1) {
-      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
+      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, format_not: $formatNot, onList: $onList, id_in: $ids, genre_not_in: $nsfw) {
         ...ScheduleMedia
       }
     }
     curr2: Page(page: 2) {
-      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
+      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, format_not: $formatNot, onList: $onList, id_in: $ids, genre_not_in: $nsfw) {
         ...ScheduleMedia
       }
     }
     curr3: Page(page: 3) {
-      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
+      media(type: ANIME, season: $seasonCurrent, seasonYear: $seasonYearCurrent, format_not: $formatNot, onList: $onList, id_in: $ids, genre_not_in: $nsfw) {
         ...ScheduleMedia
       }
     }
     residue: Page(page: 1) {
-      media(type: ANIME, season: $seasonLast, seasonYear: $seasonYearLast, episodes_greater: 16, countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
+      media(type: ANIME, season: $seasonLast, seasonYear: $seasonYearLast, episodes_greater: 11, format_not: $formatNot, onList: $onList, id_in: $ids, genre_not_in: $nsfw) {
         ...ScheduleMedia
       }
     },
     next1: Page(page: 1) {
-      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
+      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], format_not: $formatNot, onList: $onList, id_in: $ids, genre_not_in: $nsfw) {
         ...ScheduleMedia
       }
     },
     next2: Page(page: 2) {
-      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], countryOfOrigin: JP, format_not: TV_SHORT, onList: $onList, id_in: $ids) {
+      media(type: ANIME, season: $seasonNext, seasonYear: $seasonYearNext, sort: [START_DATE], format_not: $formatNot, onList: $onList, id_in: $ids, genre_not_in: $nsfw) {
         ...ScheduleMedia
       }
     }

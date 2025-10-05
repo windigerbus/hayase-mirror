@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { onMount } from 'svelte'
+  // import { onMount } from 'svelte'
   import { persisted } from 'svelte-persisted-store'
 
   import Footer, { type Checks } from '../Footer.svelte'
@@ -7,13 +7,13 @@
 
   import type { ExtensionConfig } from 'hayase-extensions'
 
-  import { DEFAULT_EXTENSIONS } from '$lib'
+  // import { DEFAULT_EXTENSIONS } from '$lib'
   import SettingCard from '$lib/components/SettingCard.svelte'
   import { SingleCombo } from '$lib/components/ui/combobox'
   import { Extensions } from '$lib/components/ui/extensions'
   import { saved, options } from '$lib/modules/extensions'
   import { dragScroll } from '$lib/modules/navigate'
-  import { lookupPreferences, settings, SUPPORTS } from '$lib/modules/settings'
+  import { lookupPreferences, settings } from '$lib/modules/settings'
 
   function checkExtensions (svd: Record<string, ExtensionConfig>, opts: Record<string, {
     options: Record<string, string | number | boolean | undefined>
@@ -37,14 +37,14 @@
     pending: 'At least one extension needs to be installed.'
   }]
 
-  onMount(() => {
-    if (!SUPPORTS.isAndroid && !Object.keys($saved).length) importExtension(DEFAULT_EXTENSIONS)
-  })
+  // onMount(() => {
+  //   if (!SUPPORTS.isAndroid && !Object.keys($saved).length) importExtension(DEFAULT_EXTENSIONS)
+  // })
 
   const hasForwarding = persisted('torrent-port-forwarding', false)
   $settings.lookupPreference = $hasForwarding ? 'quality' : 'seeders'
 
-  let importExtension: ((ext?: string) => void)
+// let importExtension: ((ext?: string) => void)
 </script>
 
 <Progress step={2} />
@@ -54,7 +54,7 @@
     <SingleCombo bind:value={$settings.lookupPreference} items={lookupPreferences} class='w-32 shrink-0 border-input border' />
   </SettingCard>
   <div class='px-6'>
-    <Extensions bind:importExtension />
+    <Extensions />
   </div>
 
 </div>

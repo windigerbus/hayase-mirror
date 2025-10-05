@@ -72,7 +72,7 @@ export default new class AuthAggregator {
 
   // QUERIES/MUTATIONS
 
-  schedule (onList = true) {
+  schedule (onList: boolean | null = true) {
     if (this.anilist()) return client.schedule(undefined, onList)
     if (this.kitsu()) return kitsu.schedule(onList)
     if (this.mal()) return mal.schedule(onList)

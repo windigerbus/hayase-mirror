@@ -417,7 +417,7 @@ export default new class KitsuSync {
 
   // QUERIES/MUTATIONS
 
-  schedule (onList = true) {
+  schedule (onList: boolean | null = true) {
     const ids = Object.keys(this.userlist.value).map(id => parseInt(id))
     debug('Kitsu schedule called with onList:', onList, 'and ids:', ids)
     return client.schedule(onList && ids.length ? ids : undefined)

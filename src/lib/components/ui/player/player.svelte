@@ -73,7 +73,12 @@
   let currentTime = 0
   let seekPercent = 0
   let duration = 1
-  const playbackRate = persisted('playbackRate', 1)
+  const playbackRate = persisted('playbackRate', 1, {
+    serializer: {
+      stringify: (value) => value.toString(),
+      parse: (value) => Math.min(16, Math.max(0.1, parseFloat(value)))
+    }
+  })
   let buffered: SvelteMediaTimeRange[] = []
   let subtitleDelay = 0
   $: buffer = Math.max(...buffered.map(({ end }) => end))
@@ -604,14 +609,14 @@
       desc: 'Volume Down'
     },
     BracketLeft: {
-      fn: () => { $playbackRate -= 0.1 },
+      fn: () => { $playbackRate = Math.min(16, Math.max(0.1, $playbackRate - 0.1)) },
       id: 'history',
       icon: RotateCcw,
       type: 'icon',
       desc: 'Decrease Playback Rate'
     },
     BracketRight: {
-      fn: () => { $playbackRate += 0.1 },
+      fn: () => { $playbackRate = Math.min(16, Math.max(0.1, $playbackRate + 0.1)) },
       id: 'update',
       icon: RotateCw,
       type: 'icon',

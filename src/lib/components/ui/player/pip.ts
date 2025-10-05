@@ -75,8 +75,7 @@ export default class PictureInPicture {
     const renderFrame = (noskip?: number) => {
       if (noskip) this.video!.paused ? video.pause() : video.play()
       context.drawImage(this.deband?.canvas ?? this.video!, 0, 0)
-      // @ts-expect-error internal call on canvas
-      if (canvas.width && canvas.height && this.subtitles.renderer?._canvas) context.drawImage(this.subtitles.renderer._canvas, 0, 0, canvas.width, canvas.height)
+      if (canvas.width && canvas.height && this.subtitles?.renderer?._canvas) context.drawImage(this.subtitles.renderer._canvas, 0, 0, canvas.width, canvas.height)
       loop = this.video!.requestVideoFrameCallback(renderFrame)
     }
     ctrl.signal.addEventListener('abort', () => {
