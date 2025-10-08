@@ -2,8 +2,10 @@ import Debug from 'debug'
 import { writable } from 'simple-store-svelte'
 import { get } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
+import { toast } from 'svelte-sonner'
 
 import client from '../auth/client'
+import { extensions } from '../extensions'
 import native from '../native'
 import { SUPPORTS } from '../settings'
 import { w2globby } from '../w2g/lobby'
@@ -97,7 +99,20 @@ export const server = new class ServerClient {
     const result = { id, media, episode, files: await native.playTorrent(id, media.id, episode) }
     debug('torrent play result', result)
     this.downloaded.value = this.cachedSet()
+    this._addNZBs(result.files[0]!.hash)
     return result
+  }
+
+  async _addNZBs (hash: string) {
+    const nzbs = await extensions.getNZBResultsFromExtensions(hash)
+
+    for (const { nzb, options } of nzbs) {
+      try {
+        await native.createNZB(hash, nzb, options.domain!, Number(options.port!), options.username!, options.password!, Number(options.poolSize!))
+      } catch (e) {
+        toast.error('Failed to add NZB', { description: (e as Error).message })
+      }
+    }
   }
 }()
 
