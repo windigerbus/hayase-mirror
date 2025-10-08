@@ -13,5 +13,6 @@
     <div class='text-muted-foreground'>
       {location.country}
     </div>
+  {:catch}
   {/await}
 </div>

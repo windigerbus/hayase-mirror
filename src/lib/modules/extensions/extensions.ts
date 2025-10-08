@@ -1,6 +1,7 @@
 import anitomyscript, { type AnitomyResult } from 'anitomyscript'
 import Debug from 'debug'
 import { get } from 'svelte/store'
+import { toast } from 'svelte-sonner'
 
 import { dedupeAiring, episodes, isMovie, type Media, getParentForSpecial, isSingleEpisode } from '../anilist'
 import { episodes as _episodes } from '../anizip'
@@ -203,13 +204,14 @@ export const extensions = new class Extensions {
     debug(`Checking ${Object.keys(workers).length} extensions for ${media.id}:${media.title?.userPreferred} ${episode} ${resolution} ${checkMovie ? 'movie' : ''} ${checkBatch ? 'batch' : ''}`)
 
     for (const [id, worker] of Object.entries(workers)) {
-      if (!extopts[id]!.enabled) continue
+      const thisExtOpts = extopts[id]!
+      if (!thisExtOpts.enabled) continue
       if (configs[id]!.type !== 'torrent') continue
       try {
         const promises: Array<Promise<TorrentResult[]>> = []
-        promises.push(worker.single(options))
-        if (checkMovie) promises.push(worker.movie(options))
-        if (checkBatch) promises.push(worker.batch(options))
+        promises.push(worker.single(options, thisExtOpts.options))
+        if (checkMovie) promises.push(worker.movie(options, thisExtOpts.options))
+        if (checkBatch) promises.push(worker.batch(options, thisExtOpts.options))
 
         for (const result of await Promise.allSettled(promises)) {
           if (result.status === 'fulfilled') {
@@ -244,6 +246,37 @@ export const extensions = new class Extensions {
     })
 
     return { results: navigator.onLine ? await this.updatePeerCounts(deduped) : deduped, errors }
+  }
+
+  async getNZBResultsFromExtensions (hash: string) {
+    await storage.modules
+    const workers = storage.workers
+    const results: Array<{ nzb: string, options: Record<string, string> }> = []
+    const errors: Array<{ error: Error, extension: string }> = []
+
+    const extopts = get(extensionOptions)
+    const configs = get(saved)
+
+    for (const [id, worker] of Object.entries(workers)) {
+      const thisExtOpts = extopts[id]!
+      if (!thisExtOpts.enabled) continue
+      if (configs[id]!.type !== 'nzb') continue
+      try {
+        const nzb = await worker.query(hash, thisExtOpts.options)
+        if (!nzb) continue
+        results.push({ nzb, options: thisExtOpts.options })
+      } catch (error) {
+        errors.push({ error: error as Error, extension: id })
+      }
+    }
+
+    if (errors.length) {
+      for (const { error, extension } of errors) {
+        toast.error(`Error fetching NZB from ${configs[extension]?.name ?? extension}`, { description: error.message })
+      }
+    }
+
+    return results
   }
 
   async updatePeerCounts <T extends TorrentResult[]> (entries: T): Promise<T> {

@@ -138,6 +138,7 @@ export default Object.assign<Native, Partial<Native>>({
   navigate: async () => undefined,
   downloadProgress: async () => undefined,
   updateProgress: async () => undefined,
+  createNZB: async () => undefined,
   torrentInfo: async (): Promise<TorrentInfo> => ({
     name: '',
     progress: 0,
