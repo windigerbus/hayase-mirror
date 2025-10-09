@@ -108,7 +108,7 @@ export const server = new class ServerClient {
 
     for (const { nzb, options } of nzbs) {
       try {
-        await native.createNZB(hash, nzb, options.domain!, Number(options.port!), options.username!, options.password!, Number(options.poolSize!))
+        await native.createNZB(hash, nzb, options.domain!, Number(options.port!), options.username!, options.password!, Number(options.poolSize!) || 5)
       } catch (e) {
         toast.error('Failed to add NZB', { description: (e as Error).message })
       }
