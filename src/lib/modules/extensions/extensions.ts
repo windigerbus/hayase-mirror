@@ -260,6 +260,7 @@ export const extensions = new class Extensions {
     for (const [id, worker] of Object.entries(workers)) {
       const thisExtOpts = extopts[id]!
       if (!thisExtOpts.enabled) continue
+      if (!thisExtOpts.options.username || !thisExtOpts.options.password) continue
       if (configs[id]!.type !== 'nzb') continue
       try {
         const nzb = await worker.query(hash, thisExtOpts.options)
