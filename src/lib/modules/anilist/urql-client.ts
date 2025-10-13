@@ -1,6 +1,5 @@
 import { authExchange } from '@urql/exchange-auth'
 import { offlineExchange } from '@urql/exchange-graphcache'
-import { makeDefaultStorage } from '@urql/exchange-graphcache/default-storage'
 import { Client, fetchExchange } from '@urql/svelte'
 import Bottleneck from 'bottleneck'
 import Debug from 'debug'
@@ -11,6 +10,7 @@ import gql from './gql'
 import { CommentFrag, CustomLists, type Entry, FullMedia, FullMediaList, ThreadFrag, type ToggleFavourite, UserLists, Viewer } from './queries'
 import { refocusExchange } from './refocus'
 import schema from './schema.json' with { type: 'json' }
+import { makeDefaultStorage } from './storage'
 
 import type { ResultOf } from 'gql.tada'
 
@@ -34,10 +34,12 @@ class FetchError extends Error {
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 export const storagePromise = Promise.withResolvers<void>()
 export const storage = makeDefaultStorage({
-  idbName: 'graphcache-v3',
+  idbName: 'anilist-cache-v1',
   onCacheHydrated: () => storagePromise.resolve(),
   maxAge: 14 // The maximum age of the persisted data in days
 })
+
+indexedDB.deleteDatabase('graphcache-v3') // old version
 
 debug('Loading urql client')
 storagePromise.promise.finally(() => {
