@@ -34,7 +34,7 @@
 
 <div class='size-full flex justify-center items-center'>
   <div class='size-10 relative logo-container' on:animationend|self={navigate}>
-    <Logo class='size-10' />
+    <Logo class='size-10 [filter:url(#chromaticAberration)]' />
     {#each spotlightData as s, i (i)}
       <div class='spotlight absolute blurred origin-left'
         style:--to-x={s.tox}
@@ -51,7 +51,6 @@
   </div>
 </div>
 
-<!--
 <svg width='0' height='0'>
   <filter id='chromaticAberration'>
     <feColorMatrix type='matrix'
@@ -83,7 +82,7 @@
     </feOffset>
     <feBlend mode='screen' in='red' in2='blue' />
   </filter>
-</svg> -->
+</svg>
 
 <style>
   @property --spotlight-opacity {
@@ -132,7 +131,7 @@
   }
 
   .spotlight {
-    filter: blur(3px);
+    filter: url('#chromaticAberration') blur(3px);
     --impect-radius: 192;
     --dist-factor: calc((192 - min(var(--to-dist), 192)) / 192);
     left: calc(var(--to-x) * 1px);
