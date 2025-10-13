@@ -429,12 +429,13 @@
 
   let openSubs: () => Promise<void>
 
-  function cycleSubtitles () {
+  function cycleSubtitles (e: KeyboardEvent | MouseEvent) {
     if (!subtitles) return
     const entries = Object.entries(subtitles._tracks.value)
     if (!entries.length) return
-    const index = entries.findIndex(([index]) => index === subtitles!.current.value) + 1
-    const [id, info] = entries[index] ?? [-1, { meta: { name: 'Off', language: 'Eng' } }]
+    const offset = e.shiftKey ? -1 : 1
+    const index = entries.findIndex(([index]) => index === subtitles!.current.value) + offset
+    const [id, info] = entries.at(index) ?? [-1, { meta: { name: 'Off', language: 'Eng' } }]
     playAnimation(info.meta.name ?? info.meta.language ?? 'Eng')
     subtitles.selectCaptions(id)
   }
@@ -476,9 +477,7 @@
     },
     Space: {
       fn: (e) => {
-        e.preventDefault()
-        e.stopImmediatePropagation()
-        e.stopPropagation()
+        if ('repeat' in e && e.repeat) return
         playPause()
       },
       id: 'play_arrow',
@@ -550,7 +549,7 @@
     //   desc: 'Toggle Cast [broken]'
     // },
     KeyC: {
-      fn: () => cycleSubtitles(),
+      fn: (e) => cycleSubtitles(e),
       id: 'subtitles',
       icon: Captions,
       type: 'icon',
@@ -674,6 +673,7 @@
       if (isMiniplayer) return
       if ('code' in event && (event.code !== 'Space')) return
       if ('button' in event && event.button !== 0) return
+      if ('repeat' in event && event.repeat) return
       if ('pointerId' in event) {
         document.setPointerCapture(event.pointerId)
       }
