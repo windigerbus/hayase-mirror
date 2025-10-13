@@ -13,6 +13,7 @@
 
   import { goto } from '$app/navigation'
   import { FolderSync, Trash } from '$lib/components/icons/animated'
+  import * as Dialog from '$lib/components/ui/dialog'
   import { Input } from '$lib/components/ui/input'
   import * as Table from '$lib/components/ui/table'
   import { client } from '$lib/modules/anilist'
@@ -115,11 +116,11 @@
   const { selectedDataIds, someRowsSelected } = pluginStates.select
 
   function getSelected () {
-    return Object.keys($selectedDataIds).map(id => $lib[id as unknown as number]?.hash).filter(e => e) as string[]
+    return Object.keys($selectedDataIds).map(id => $lib[id as unknown as number]).filter(e => e) as LibraryEntry[]
   }
 
   function rescanTorrents () {
-    toast.promise(native.rescanTorrents(getSelected()), {
+    toast.promise(native.rescanTorrents(getSelected().map(e => e.hash)), {
       loading: 'Rescanning torrents...',
       success: 'Rescan complete',
       error: e => {
@@ -129,11 +130,12 @@
       description: 'This may take a VERY long while depending on the number of torrents.'
     })
   }
+
   function deleteTorrents () {
     toast.promise(
-      native.deleteTorrents(getSelected())
+      native.deleteTorrents(getSelected().map(e => e.hash))
         .then(() => server.updateLibrary()
-          .then(() => pluginStates.select.allPageRowsSelected.set(false))
+          .then(() => pluginStates.select.selectedDataIds.clear())
         ), {
         loading: 'Deleting torrents...',
         success: 'Torrents deleted',
@@ -160,9 +162,36 @@
   <Button variant='secondary' size='icon' class='border-0 animated-icon' on:click={rescanTorrents} disabled={!$someRowsSelected}>
     <FolderSync class={cn('size-4')} />
   </Button>
-  <Button variant='destructive' size='icon' class='border-0 animated-icon' on:click={deleteTorrents} disabled={!$someRowsSelected}>
-    <Trash class={cn('size-4')} />
-  </Button>
+  <Dialog.Root portal='#root'>
+    <Dialog.Trigger asChild let:builder>
+      <Button variant='destructive' size='icon' class='border-0 animated-icon' builders={[builder]} disabled={!$someRowsSelected}>
+        <Trash class={cn('size-4')} />
+      </Button>
+    </Dialog.Trigger>
+    <Dialog.Content class='max-w-5xl flex flex-col !w-auto'>
+      <Dialog.Header>
+        <Dialog.Title>Are you absolutely sure?</Dialog.Title>
+        <Dialog.Description>
+          You are about to permanently delete {$someRowsSelected ? Object.keys($selectedDataIds).length : '0'} torrent(s) from your library. This action cannot be undone.
+        </Dialog.Description>
+        <ul class='text-xs text-muted-foreground pl-5 space-y-2 py-4 list-disc overflow-clip max-h-[50vh] overflow-y-auto'>
+          {#each getSelected() as entry (entry.hash)}
+            <li class='text-ellipsis text-nowrap max-w-full'>{entry.name}</li>
+          {/each}
+        </ul>
+      </Dialog.Header>
+      <Dialog.Footer>
+        <Dialog.Close let:builder asChild>
+          <Button variant='destructive' builders={[builder]} on:click={deleteTorrents}>
+            Delete
+          </Button>
+        </Dialog.Close>
+        <Dialog.Close let:builder asChild>
+          <Button variant='secondary' builders={[builder]}>Cancel</Button>
+        </Dialog.Close>
+      </Dialog.Footer>
+    </Dialog.Content>
+  </Dialog.Root>
 </div>
 <div class='text-muted-foreground flex-1 text-sm text-right mb-1'>
   {Object.keys($selectedDataIds).length} of {$rows.length} row(s) selected.
