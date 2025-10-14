@@ -9,7 +9,7 @@ import { Comments, DeleteEntry, DeleteThreadComment, Entry, Following, type Full
 import urqlClient from './urql-client'
 import { currentSeason, currentYear, lastSeason, lastYear, nextSeason, nextYear } from './util'
 
-import type { Media } from './types'
+import type { Media, RelationTreeMedia } from './types'
 import type { Edge, Node } from '@xyflow/svelte'
 import type { ResultOf, VariablesOf } from 'gql.tada'
 import type { AnyVariables, OperationContext, RequestPolicy, TypedDocumentNode } from 'urql'
@@ -268,7 +268,7 @@ class AnilistClient {
     return store
   }
 
-  async _generateRelationsTree (store: RelationsStore, media: NonNullable<NonNullable<ResultOf<typeof RecrusiveRelations>['Page']>['media']>[0]) {
+  async _generateRelationsTree (store: RelationsStore, media: RelationTreeMedia) {
     const { nodes, edges } = get(store)
 
     const startMedia = media
@@ -277,14 +277,14 @@ class AnilistClient {
 
     const lastEdgeMedia: number[] = []
 
-    const processEdges = (media: typeof startMedia) => {
+    const processEdges = (media: RelationTreeMedia) => {
       if (!media) return
       if ('type' in media && media.type !== 'ANIME') return
       if (!nodes.has(media.id)) {
         if (!media.relations) lastEdgeMedia.push(media.id)
         nodes.set(media.id, {
           id: '' + media.id,
-          data: { label: media.title?.userPreferred ?? 'No title', id: media.id },
+          data: { id: media.id, media },
           position
         })
       }

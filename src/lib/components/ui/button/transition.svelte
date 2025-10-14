@@ -1,5 +1,4 @@
 <script lang='ts'>
-
   import { Button, type Props } from '$lib/components/ui/button'
   import { clickwrap, keywrap } from '$lib/modules/navigate'
   import { cn, scaleBlurFade } from '$lib/utils'
