@@ -42,7 +42,7 @@
     native.share({
       title: `Watch on Hayase - ${media.title?.romaji ?? ''}`,
       text: desc(media),
-      url: `https://hayas.ee/anime/${media.id}`
+      url: `https://hayase.watch/anime/${media.id}`
     })
   }
 

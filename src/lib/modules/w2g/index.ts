@@ -57,7 +57,7 @@ export class W2GClient extends EventEmitter<{index: [number], player: [PlayerSta
   peers = writable<PeerList>({ [this.self.id]: { user: this.self } })
 
   get inviteLink () {
-    return `https://hayas.ee/w2g/${this.code}`
+    return `https://hayase.watch/w2g/${this.code}`
   }
 
   constructor (code: string, isHost: boolean, media?: MediaState) {
