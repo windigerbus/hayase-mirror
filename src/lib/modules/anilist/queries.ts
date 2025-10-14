@@ -11,16 +11,24 @@ export const FullMediaList = gql(`
   }
 `)
 
+// cant include mediaListEntry in here, because AL API doesn't return data for it on the 3rd edge of relations
+const RelationMedia = gql(`
+  fragment RelationMedia on Media @_unmask {
+    id,
+    status,
+    format,
+    episodes,
+    title { userPreferred }
+  }
+`)
+
 export const MediaEdgeFrag = gql(`
   fragment MediaEdgeFrag on MediaEdge @_unmask {
     relationType(version:2),
     node {
-      id,
-      title {userPreferred},
+      ...RelationMedia,
       coverImage {medium},
       type,
-      status,
-      format,
       episodes,
       synonyms,
       season,
@@ -29,9 +37,8 @@ export const MediaEdgeFrag = gql(`
         edges {
           relationType(version:2),
           node {
-            id,
+            ...RelationMedia,
             type,
-            title { userPreferred },
             coverImage { medium }
           }
         }
@@ -48,7 +55,7 @@ export const MediaEdgeFrag = gql(`
       }
     }
   }
-`)
+`, [RelationMedia])
 
 export const FullMedia = gql(`
   fragment FullMedia on Media @_unmask {
@@ -478,22 +485,19 @@ export const RecrusiveRelations = gql(`
     Page {
       pageInfo { hasNextPage },
       media(id_in: $ids, type: ANIME) {
-        id,
-        title { userPreferred },
+        ...RelationMedia,
         relations {
           edges {
             relationType,
             node {
-              id,
               type,
-              title { userPreferred },
+              ...RelationMedia,
               relations {
                 edges {
                   relationType,
                   node {
-                    id,
                     type,
-                    title { userPreferred }
+                    ...RelationMedia
                   }
                 }
               }
@@ -503,4 +507,4 @@ export const RecrusiveRelations = gql(`
       }
     }
   }
-`)
+`, [RelationMedia])
